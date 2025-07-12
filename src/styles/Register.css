@@ -1,0 +1,168 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #a18cd1, #fbc2eb);
+  color: #333;
+}
+
+nav {
+  background: linear-gradient(to right, #b388eb, #e0b3ff);
+  padding: 1rem 4%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+nav .logo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #3a0ca3;
+}
+
+.nav-links a {
+  margin-left: 1.5rem;
+  color: #3a0ca3;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #5f0f40;
+  text-decoration: underline;
+}
+
+.register-container {
+  max-width: 450px;
+  margin: 3rem auto;
+  background: #f6f2ff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.role-toggle {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  background-color: #e3d6f5;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.role-toggle button {
+  flex: 1;
+  padding: 0.8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #5d3d9c;
+  transition: background 0.3s, color 0.3s;
+}
+
+.role-toggle button.active {
+  background-color: #b57edc;
+  color: white;
+}
+
+.register-form input,
+.register-form select {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: white;
+  color: #333;
+}
+
+.register-form select option {
+  background-color: white;
+  color: black;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.checkbox-container label {
+  margin-left: 0.5rem;
+  color: #555;
+}
+
+.checkbox-container a {
+  color: #7a00cc;
+  text-decoration: none;
+}
+
+.checkbox-container a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #8000ff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(128, 0, 255, 0.3);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #6b00cc;
+}
+
+.social-login {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.or-divider {
+  text-align: center;
+  color: #5e239d;
+  font-weight: 500;
+  margin: 1rem 0 0.5rem;
+}
+
+.social {
+  margin: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 140px;
+  text-align: center;
+}
+
+.social.google {
+  background-color: #db4437;
+  color: white;
+}
+
+.social.facebook {
+  background-color: #3b5998;
+  color: white;
+}
