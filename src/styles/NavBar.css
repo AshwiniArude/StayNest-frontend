@@ -1,36 +1,98 @@
+/* Navbar layout */
 .navbar {
-  background: linear-gradient(to right, #b388eb, #e0b3ff);
+  background: linear-gradient(to right, #f9f7ff, #fff0e3);
   padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
+/* Logo */
 .navbar-logo a {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #3a0ca3;
+  font-size: 5 rem; 
+  font-weight: 900; 
+  font-family: 'Poppins', sans-serif;
   text-decoration: none;
+  white-space: nowrap;
+  line-height: 1;
+
+  background: linear-gradient(to right, #7c5ff0, #ffb366);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.navbar-links {
+/* Center links */
+.navbar-center-links {
   display: flex;
-  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
 }
 
-.navbar-links a {
-  color: #3a0ca3;
+/* Right: Login & Register */
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+/* Common link styling */
+.navbar a {
+  color: #5e4b8b;
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
   transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.navbar-links a:hover {
-  color: #5f0f40;
-  text-decoration: underline;
+.navbar a:hover {
+  color: #ff9f59;
 }
+
+/* Login link */
+.login-link {
+  font-weight: bold;
+}
+
+/* Register button */
+.btn-register {
+  background-color: #ff9f59;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-register:hover {
+  background-color: #e8812f;
+  transform: translateY(-2px);
+}
+
+/* Icon styling */
+.nav-icon {
+  font-size: 1rem;
+}
+
+/* Responsive logo size */
+@media screen and (min-width: 1024px) {
+  .navbar-logo a {
+    font-size: 2.5 rem;
+    font-weight: 700;
+  }
+}
+
+
+
+
+
+
+
