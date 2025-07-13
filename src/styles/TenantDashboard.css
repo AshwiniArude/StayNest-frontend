@@ -1,0 +1,146 @@
+/* TenantDashboard.css */
+
+/* Page Container */
+.dashboard-container.light-theme {
+  background: linear-gradient(to bottom right, #fce4ec, #f3e5f5); /* light pink/lavender */
+  color: #64168e;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Hero Header */
+.hero-section h1 {
+  color: #4b0082;
+  font-weight: 700;
+}
+
+.hero-section p {
+  color: #4b0082;
+  margin-bottom: 1rem;
+}
+
+.highlight {
+  color: #7b1fa2;
+  font-weight: bold;
+}
+
+/* Stats Section */
+.stats-cards {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-card {
+  flex: 1;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 2px solid #e1bee7;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card h2 {
+  color: #4b0082;
+  font-size: 2.2rem;
+  margin-bottom: 0.3rem;
+}
+
+.stat-card p {
+  color: #7b1fa2;
+}
+
+/* Section Titles */
+.section h2 {
+  color: #4b0082;
+  margin: 2rem 0 1rem;
+  font-size: 1.8rem;
+}
+
+/* Card Layout (Used for Bookings, Actions, Reviews) */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+/* Card Style */
+.card {
+  background: #fff;
+  border: 2px solid #e1bee7;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card h3 {
+  color: #4b0082;
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  color: #6a1b9a;
+  margin-bottom: 0.5rem;
+}
+
+/* Booking Status Labels */
+.status-label {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.status-booked {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.status-completed {
+  background-color: #bbdefb;
+  color: #1565c0;
+}
+
+.status-cancelled {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+/* Action Button */
+.view-all-btn {
+  margin-top: 1rem;
+  background-color: #7b1fa2;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  align-self: flex-start;
+}
+
+.view-all-btn:hover {
+  background-color: #6a1b9a;
+}
+
+/* Space at Bottom of Dashboard */
+.footer-spacing {
+  height: 60px;
+}
+
+/* Optional Reuse */
+.bordered-box {
+  border: 2px solid #d1c4e9;
+}
