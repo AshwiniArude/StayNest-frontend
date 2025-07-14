@@ -9,7 +9,7 @@ html, body {
   height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #a66db6 0%, #f2def3 100%);
-
+  scroll-behavior: smooth;
   color: #f0f0f0;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
