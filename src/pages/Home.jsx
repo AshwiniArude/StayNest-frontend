@@ -2,6 +2,8 @@ import '../styles/Home.css';
 import { Link } from 'react-router-dom';
 import { FaMapMarkerAlt, FaSearch } from 'react-icons/fa';
 import About from './About'; 
+import WhyChoose from './WhyChoose';
+import Cta from './Cta';
 
 const Home = () => {
   return (
@@ -52,9 +54,17 @@ const Home = () => {
         </div> 
       </div>
 
-      {/* --- Separate About container --- */}
+      
       <div className="about-wrapper">
         <About />
+      </div>
+
+      <div className="whychoose-wrapper">
+        <WhyChoose />
+      </div>
+
+      <div className="Cta-wrapper">
+        <Cta />
       </div>
     </>
   );
