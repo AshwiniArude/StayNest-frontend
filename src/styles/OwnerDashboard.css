@@ -1,0 +1,189 @@
+/* OwnerDashboard.css */
+
+.dashboard-container {
+  background: linear-gradient(to bottom right, #fce4ec, #f3e5f5); /* lavender-pink */
+  color: #3a004f; /* darker lavender */
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.owner-welcome h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #3a004f;
+  text-align: center;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  flex: 1;
+  background-color: #faf3f8;
+  border: 2px solid #f3c1da;
+  border-radius: 12px;
+  text-align: center;
+  padding: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.stat-box h3 {
+  font-size: 2rem;
+  color: #d17d00;
+}
+
+.stat-box p {
+  color: #5e2480;
+  margin-top: 0.3rem;
+}
+
+.section-title {
+  font-size: 1.6rem;
+  color: #3a004f;
+  margin: 2rem 0 1rem;
+}
+
+.pg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.pg-card {
+  background: #faf3f8;
+  border: 2px solid #f3c1da;
+  padding: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.pg-card h4 {
+  margin-bottom: 0.5rem;
+  color: #3a004f;
+}
+
+.pg-card p {
+  color: #5e2480;
+  margin-bottom: 1rem;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.edit-btn,
+.booking-btn,
+.add-listing-box button,
+.action-box button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  background-color: #b36fb3;
+}
+
+.add-listing-box {
+  text-align: center;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #fff3e0;
+  border: 2px dashed #ffb74d;
+  border-radius: 12px;
+}
+
+.quick-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.overview-box {
+  background: #faf3f8;
+  border: 2px solid #e1bee7;
+  border-radius: 10px;
+  text-align: center;
+  padding: 1rem;
+}
+
+.overview-box h4 {
+  color: #3a004f;
+  margin-bottom: 0.3rem;
+}
+
+.recent-bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.recent-bookings-table th,
+.recent-bookings-table td {
+  border: 1px solid #e1bee7;
+  padding: 0.6rem;
+  text-align: center;
+  color: #3a004f;
+  background-color: #fef7fc;
+}
+
+.recent-bookings-table th {
+  background-color: #f3e5f5;
+  color: #3a004f;
+}
+
+.reviews-section {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.review-card {
+  flex: 1;
+  background: #faf3f8;
+  border: 2px solid #f3c1da;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: #3a004f;
+}
+
+.review-card h5 {
+  color: #3a004f;
+}
+
+.performance-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.performance-box,
+.action-box {
+  background: #faf3f8;
+  border: 2px solid #f3c1da;
+  border-radius: 12px;
+  padding: 1rem;
+  color: #3a004f;
+}
+
+.performance-box h4,
+.action-box h4 {
+  color: #3a004f;
+  margin-bottom: 0.5rem;
+}
+
+.performance-box p {
+  color: #5e2480;
+}
