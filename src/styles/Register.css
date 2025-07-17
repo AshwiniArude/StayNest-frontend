@@ -93,10 +93,11 @@ nav .logo {
   align-items: center;
   font-size: 0.85rem;
   margin-bottom: 1rem;
+  width:100%;
 }
 
 .checkbox-container label {
-  margin-left: 0.5rem;
+  margin-left: 0.1rem;
   color: #555;
 }
 
@@ -165,4 +166,77 @@ nav .logo {
 .social.facebook {
   background-color: #3b5998;
   color: white;
+}
+/* Container for social buttons */
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.social-login {
+  text-align: center;
+  margin: 1px;
+}
+
+.or-divider {
+  font-weight: 600;
+  color: #6b2c91;
+  margin-bottom: 15px;
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.social.google {
+  background-color: #db4437;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.social.facebook {
+  background-color: #3b5998;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+.checkbox-new {
+  display: flex;
+  align-items: flex-start;  /* ensures top alignment */
+  padding: 0 10%;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  background-color: #f6f2ff;
+}
+
+.checkbox-new input[type="checkbox"] {
+      width: 10%;
+  margin-top: 2px; /* slight adjustment to align with text */
+}
+
+.checkbox-new label {
+  line-height: 1.4;
+}
+
+.checkbox-new a {
+  color: purple;
+  text-decoration: none;
+}
+
+.checkbox-new a:hover {
+  text-decoration: underline;
 }

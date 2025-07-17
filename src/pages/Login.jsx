@@ -29,6 +29,7 @@ const Login = () => {
   };
 
   return (
+    <div className="login-page">
     <div className="login-container">
       <form onSubmit={handleSubmit}>
         <select name="role" value={formData.role} onChange={handleChange}>
@@ -54,8 +55,8 @@ const Login = () => {
         <button type="submit">Sign In</button>
       </form>
     </div>
+    </div>
   );
 };
 
 export default Login;
-
