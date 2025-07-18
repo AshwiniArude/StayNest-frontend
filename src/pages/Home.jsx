@@ -1,7 +1,7 @@
 import '../styles/Home.css';
 import { Link } from 'react-router-dom';
 import { FaMapMarkerAlt, FaSearch } from 'react-icons/fa';
-import About from './About'; 
+import About from './about'; 
 import WhyChoose from './WhyChoose';
 import Cta from './Cta';
 

@@ -240,3 +240,19 @@ nav .logo {
 .checkbox-new a:hover {
   text-decoration: underline;
 }
+.login-redirect {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.login-redirect a {
+  color: #6c63ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-redirect a:hover {
+  text-decoration: underline;
+}

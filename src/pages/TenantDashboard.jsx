@@ -57,18 +57,18 @@ const TenantDashboard = () => {
       <section className="section">
         <h2>My Bookings</h2>
         <div className="card-grid">
-          {bookings.map((booking) => (
-            <div className="card" key={booking.id}>
-              <div className={`status-label status-${booking.status.toLowerCase()}`}>
-                {booking.status}
-              </div>
-              <h3>{booking.name}</h3>
-              <p><FaMapMarkerAlt /> {booking.location}</p>
-              <p><FaRegCalendarAlt /> Check-in: {booking.checkIn}</p>
-              <p><FaRegCalendarAlt /> Check-out: {booking.checkOut}</p>
-              <button className="view-all-btn">View Details</button>
-            </div>
-          ))}
+        {bookings.map((booking) => (
+        <div className="card" key={booking.id}>
+        <div className={`status-label status-${booking.status.toLowerCase()}`}>
+        {booking.status}
+         </div>
+        <h3>{booking.name}</h3>
+         <p><FaMapMarkerAlt /> {booking.location}</p>
+         <p><FaRegCalendarAlt /> Check-in: {booking.checkIn}</p>
+         <p><FaRegCalendarAlt /> Check-out: {booking.checkOut}</p>
+         <button className="view-all-btn">View Details</button>
+         </div>
+         ))}
         </div>
       </section>
 

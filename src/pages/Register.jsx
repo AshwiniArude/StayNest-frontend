@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Register.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -53,9 +55,6 @@ const Register = () => {
 
   return (
     <>
-      {/* Nav */}
-
-      {/* Form */}
       <div className="register-container">
         <div className="role-toggle">
           <button
@@ -72,6 +71,10 @@ const Register = () => {
           >
             I'm an Owner
           </button>
+        </div>
+
+        <div className="register-icon">
+          <FontAwesomeIcon icon={faUserPlus} />
         </div>
 
         <form className="register-form" onSubmit={handleSubmit}>
@@ -153,8 +156,8 @@ const Register = () => {
               name="agree"
               checked={formData.agree}
               onChange={handleChange}
-              class="checkbox-new"
-              style={{ width: '10%' }}
+              className="checkbox-new"
+              style={{ width: "10%" }}
             />
             <label>
               I agree to StayNest’s <a href="/terms">Terms of Service</a> and{" "}
@@ -166,11 +169,16 @@ const Register = () => {
           <button type="submit" className="submit-btn">
             Create Account →
           </button>
+
+          {/* ✅ Login Redirect Link */}
+          <div className="login-redirect">
+            Already have an account? <a href="/login">Login</a>
+          </div>
         </form>
 
         <div className="social-login">
           <div className="or-divider">
-            Or continue with 
+            Or continue with
             <div className="social-buttons">
               <button className="social google">Google</button>
               <button className="social facebook">Facebook</button>
