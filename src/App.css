@@ -1,6 +1,11 @@
 .App {
   text-align: center;
 }
+/* Example fix */
+.dashboard-container {
+  padding-top: 100px; /* or margin-top */
+}
+
 
 .App-logo {
   height: 40vmin;

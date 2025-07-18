@@ -12,7 +12,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import TenantDashboard from "./pages/TenantDashboard";
 import OwnerDashboard from "./pages/OwnerDashboard";
-import NavbarDashboard from "./pages/NavbarDashboard";
+import NavbarDashboard from "./components/NavbarDashboard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "./styles/global.css";
@@ -23,10 +23,8 @@ function AppContent() {
   // Paths where Navbar and Footer should be hidden (e.g., login only)
   const hideLayoutPaths = ["/login","/register"];
   const hideLayout = hideLayoutPaths.includes(location.pathname);
+const isDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/owner/dashboard");
 
-  // Dashboard routes use different Navbar
-  const dashboardPaths = ["/tenant/dashboard", "/owner/dashboard"];
-  const isDashboard = dashboardPaths.includes(location.pathname);
 
   return (
     <div className="flex flex-col min-h-screen">
