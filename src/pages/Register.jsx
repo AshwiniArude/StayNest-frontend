@@ -154,7 +154,7 @@ const Register = () => {
               checked={formData.agree}
               onChange={handleChange}
               class="checkbox-new"
-              
+              style={{ width: '10%' }}
             />
             <label>
               I agree to StayNest’s <a href="/terms">Terms of Service</a> and{" "}

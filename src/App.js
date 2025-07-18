@@ -21,7 +21,7 @@ function AppContent() {
   const location = useLocation();
 
   // Paths where Navbar and Footer should be hidden (e.g., login only)
-  const hideLayoutPaths = ["/login"];
+  const hideLayoutPaths = ["/login","/register"];
   const hideLayout = hideLayoutPaths.includes(location.pathname);
 
   // Dashboard routes use different Navbar
