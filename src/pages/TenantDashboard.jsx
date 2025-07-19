@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/TenantDashboard.css";
-import { FaRegCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaHome } from "react-icons/fa";
 
 
 const bookings = [
@@ -34,22 +34,29 @@ const TenantDashboard = () => {
   return (
     <div className="dashboard-container">
       <section className="hero-section">
-        <h1>
-          Hi Shreya, welcome back to StayNest! 🌸
-        </h1>
-        <p>Here’s a quick look at your upcoming stays and reviews.</p>
-        <div className="stats-cards">
-          <div className="stat-card">
-            <h2>2</h2>
-            <p>Active Bookings</p>
+        <div className="hero-card-gradient">
+          <div className="hero-card-header">
+            <div>
+              <h1 className="hero-welcome hero-welcome-dark">Hi Shreya, welcome back to StayNest!</h1>
+              <p className="hero-subtitle hero-subtitle-orange">Here's a quick look at your upcoming stays and reviews.</p>
+            </div>
+            <div className="hero-icon-box">
+              <FaHome />
+            </div>
           </div>
-          <div className="stat-card">
-            <h2>4.8</h2>
-            <p>Avg Rating</p>
-          </div>
-          <div className="stat-card">
-            <h2>8</h2>
-            <p>Total Reviews</p>
+          <div className="stats-pills">
+            <div className="stat-pill">
+              <span className="stat-number">2</span>
+              <span className="stat-label">Active Bookings</span>
+            </div>
+            <div className="stat-pill">
+              <span className="stat-number">4.8</span>
+              <span className="stat-label"><span className="star">★</span> Avg Rating</span>
+            </div>
+            <div className="stat-pill">
+              <span className="stat-number">8</span>
+              <span className="stat-label">Total Reviews</span>
+            </div>
           </div>
         </div>
       </section>
@@ -72,32 +79,64 @@ const TenantDashboard = () => {
         </div>
       </section>
 
-      <section className="section">
-        <h2>Quick Actions</h2>
-        <div className="card-grid">
-          <div className="card">
-            <h3>Browse New PGs</h3>
-            <p>Discover more amazing places</p>
+      <section className="section quick-actions-section">
+        <h2 className="quick-actions-title">Quick Actions</h2>
+        <p className="quick-actions-subtitle">Everything you need is just a click away</p>
+        <div className="quick-actions-grid">
+          <div className="quick-action-card green">
+            <div className="icon-bg"><FaSearch /></div>
+            <div className="action-content">
+              <div className="action-title-row">
+                <h3>Browse New PGs</h3>
+                <FaArrowRight className="action-arrow" />
+              </div>
+              <p className="action-desc">Discover more amazing places</p>
+              <div className="accent-bar green"></div>
+            </div>
           </div>
-          <div className="card">
-            <h3>Update My Profile</h3>
-            <p>Keep your info current</p>
+          <div className="quick-action-card yellow">
+            <div className="icon-bg"><FaUser /></div>
+            <div className="action-content">
+              <div className="action-title-row">
+                <h3>Update My Profile</h3>
+                <FaArrowRight className="action-arrow" />
+              </div>
+              <p className="action-desc">Keep your info current</p>
+              <div className="accent-bar yellow"></div>
+            </div>
           </div>
-          <div className="card">
-            <h3>Contact Support</h3>
-            <p>We're here to help 24/7</p>
+          <div className="quick-action-card green">
+            <div className="icon-bg"><FaRegCommentDots /></div>
+            <div className="action-content">
+              <div className="action-title-row">
+                <h3>Contact Support</h3>
+                <FaArrowRight className="action-arrow" />
+              </div>
+              <p className="action-desc">We're here to help 24/7</p>
+              <div className="accent-bar green"></div>
+            </div>
           </div>
-          <div className="card">
-            <h3>Payment History</h3>
-            <p>View all transactions</p>
+          <div className="quick-action-card pink">
+            <div className="icon-bg"><FaHeart /></div>
+            <div className="action-content">
+              <div className="action-title-row">
+                <h3>My Favorites</h3>
+                <FaArrowRight className="action-arrow" />
+              </div>
+              <p className="action-desc">Saved PGs & Hostels</p>
+              <div className="accent-bar pink"></div>
+            </div>
           </div>
-          <div className="card">
-            <h3>My Favorites</h3>
-            <p>Saved PGs & Hostels</p>
-          </div>
-          <div className="card">
-            <h3>Account Settings</h3>
-            <p>Privacy & preferences</p>
+          <div className="quick-action-card gray">
+            <div className="icon-bg"><FaCog /></div>
+            <div className="action-content">
+              <div className="action-title-row">
+                <h3>Account Settings</h3>
+                <FaArrowRight className="action-arrow" />
+              </div>
+              <p className="action-desc">Privacy & preferences</p>
+              <div className="accent-bar gray"></div>
+            </div>
           </div>
         </div>
       </section>

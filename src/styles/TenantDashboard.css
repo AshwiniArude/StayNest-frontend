@@ -1,31 +1,30 @@
-/* TenantDashboard.css */
-
-/* Page Container */
-.dashboard-container.light-theme {
-  background: linear-gradient(to bottom right, #fce4ec, #f3e5f5); /* light pink/lavender */
-  color: #64168e;
+/* Dashboard Container - Home Gradient Background */
+.dashboard-container {
+  background: linear-gradient(to right, #f9f7ff, #fff0e3);
+  color: #5e4b8b;
   padding: 2rem;
-  font-family: 'Segoe UI', sans-serif;
   padding-top: 70px;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
 }
 
-/* Hero Header */
+/* Hero Section Text */
 .hero-section h1 {
-  color: #4b0082;
+  color: #5e4b8b;
   font-weight: 700;
 }
 
 .hero-section p {
-  color: #4b0082;
+  color: #5e4b8b;
   margin-bottom: 1rem;
 }
 
 .highlight {
-  color: #7b1fa2;
+  color: #ff9f59;
   font-weight: bold;
 }
 
-/* Stats Section */
+/* Stats Cards - White with Purple Border */
 .stats-cards {
   display: flex;
   gap: 1rem;
@@ -36,65 +35,66 @@
   flex: 1;
   text-align: center;
   padding: 1.5rem;
-  background-color: #ffffff;
-  border: 2px solid #e1bee7;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  border: 2px solid #9f8fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(124, 95, 240, 0.08);
 }
 
 .stat-card h2 {
-  color: #4b0082;
+  color: #7c5ff0;
   font-size: 2.2rem;
   margin-bottom: 0.3rem;
 }
 
 .stat-card p {
-  color: #7b1fa2;
+  color: #5e4b8b;
 }
 
-/* Section Titles */
+/* Section Headings */
 .section h2 {
-  color: #4b0082;
+  color: #5e4b8b;
   margin: 2rem 0 1rem;
   font-size: 1.8rem;
 }
 
-/* Card Layout (Used for Bookings, Actions, Reviews) */
+/* Booking Cards Grid */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
-/* Card Style */
+/* Booking Cards - White with Soft Shadow */
 .card {
   background: #fff;
-  border: 2px solid #e1bee7;
-  border-radius: 12px;
+  border: 2px solid #f0e8ff;
+  border-radius: 16px;
   padding: 1.5rem;
   min-height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s ease;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 32px rgba(94, 75, 139, 0.08);
 }
 
 .card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(124, 95, 240, 0.12);
 }
 
 .card h3 {
-  color: #4b0082;
+  color: #7c5ff0;
   margin-bottom: 0.5rem;
 }
 
 .card p {
-  color: #6a1b9a;
+  color: #5e4b8b;
   margin-bottom: 0.5rem;
 }
 
-/* Booking Status Labels */
+/* Status Labels */
 .status-label {
   display: inline-block;
   padding: 0.3rem 0.7rem;
@@ -105,45 +105,256 @@
 }
 
 .status-booked {
-  background-color: #c8e6c9;
-  color: #2e7d32;
+  background-color: #baf2e9;
+  color: #1b5e20;
 }
 
 .status-completed {
-  background-color: #bbdefb;
-  color: #1565c0;
+  background-color: #d0e2ff;
+  color: #0d47a1;
 }
 
 .status-cancelled {
-  background-color: #ffcdd2;
-  color: #c62828;
+  background-color: #ffd6d6;
+  color: #b71c1c;
 }
 
-/* Action Button */
+/* View All Button */
 .view-all-btn {
   margin-top: 1rem;
-  background-color: #7b1fa2;
-  color: #fff;
+  background-color: #7c5ff0;
+  color: #ffffff;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: bold;
   align-self: flex-start;
+  transition: background-color 0.3s ease;
 }
 
 .view-all-btn:hover {
-  background-color: #6a1b9a;
+  background-color: #7f6cd6;
 }
 
-/* Space at Bottom of Dashboard */
+/* Quick Actions Card Titles */
+.card h3 {
+  color: #ff9f59;
+}
+
+/* Footer Spacing */
 .footer-spacing {
   height: 60px;
 }
 
-/* Optional Reuse */
-.bordered-box {
-  border: 2px solid #d1c4e9;
+/* Quick Actions Section */
+.quick-actions-section {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+.quick-actions-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #232323;
+  margin-bottom: 0.2rem;
+}
+.quick-actions-subtitle {
+  color: #888;
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem;
+}
+/* Quick Actions Grid: original modern card size */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+}
+.quick-action-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(44, 34, 84, 0.08);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  width: 100%;
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+@media (max-width: 1100px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+  .quick-action-card {
+    width: 100%;
+  }
+}
+.icon-bg {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  margin-right: 0.5rem;
+  margin-top: 0.2rem;
+  box-shadow: 0 2px 8px rgba(44, 34, 84, 0.08);
+}
+.icon-bg.green { background: #1ec28b1a; color: #1ec28b; }
+.icon-bg.yellow { background: #ffb3001a; color: #ffb300; }
+.icon-bg.purple { background: #7c5ff01a; color: #7c5ff0; }
+.icon-bg.pink { background: #ff4f8b1a; color: #ff4f8b; }
+.icon-bg.gray { background: #6c6c6c1a; color: #6c6c6c; }
+
+.action-content {
+  flex: 1;
+  text-align: left;
+}
+.action-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+}
+.action-title-row h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #232323;
+  margin: 0;
+}
+.action-arrow {
+  font-size: 1.1rem;
+  color: #bbb;
+  margin-left: 0.5rem;
+}
+.action-desc {
+  color: #888;
+  font-size: 0.98rem;
+  margin-bottom: 0.7rem;
+}
+.accent-bar {
+  height: 4px;
+  width: 40px;
+  border-radius: 2px;
+  margin-top: 0.2rem;
+}
+.accent-bar.green { background: #1ec28b; }
+.accent-bar.yellow { background: #ffb300; }
+.accent-bar.purple { background: #7c5ff0; }
+.accent-bar.pink { background: #ff4f8b; }
+.accent-bar.gray { background: #6c6c6c; }
+
+/* Hero Gradient Card - Themed */
+.hero-card-gradient {
+  background: linear-gradient(120deg, #7c5ff0 0%, #9f8fff 100%);
+  border-radius: 28px;
+  padding: 2.5rem 3.5rem 2.2rem 3.5rem;
+  margin-bottom: 2.5rem;
+  margin-top: 48px;
+  box-shadow: 0 8px 32px rgba(124, 95, 240, 0.10);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  width: 100%;
+  max-width: 98vw;
+}
+.hero-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.hero-welcome {
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.3rem;
+}
+.hero-emoji {
+  font-size: 1.7rem;
+  vertical-align: middle;
+}
+.hero-subtitle {
+  color:  #ff9f59;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.hero-subtitle-orange {
+  color: #ff9f59;
+}
+.hero-icon-box {
+  background: rgba(255,255,255,0.13);
+  border-radius: 18px;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(124, 95, 240, 0.10);
+}
+.stats-pills {
+  display: flex;
+  gap: 0.5cm;
+  justify-content: space-between;
+  width: 100%;
+}
+.stat-pill {
+  background: rgba(255,255,255,0.13);
+  border-radius: 30px;
+  padding: 1.3rem 9rem 1.1rem 9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 520px;
+  box-shadow: 0 2px 8px rgba(124, 95, 240, 0.08);
+}
+.stat-number {
+  color: #ff9f59;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+.stat-label {
+  color: #fff;
+  font-size: 1.08rem;
+  font-weight: 500;
+  opacity: 0.97;
+}
+.star {
+  color: #ff9f59;
+  font-size: 1.1rem;
+  margin-right: 0.2rem;
+}
+@media (max-width: 1100px) {
+  .hero-card-gradient {
+    padding: 1.2rem 0.7rem 1.2rem 0.7rem;
+  }
+  .stats-pills {
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: stretch;
+  }
+  .stat-pill {
+    min-width: 0;
+    width: 100%;
+    padding: 1.2rem 1.2rem 1rem 1.2rem;
+  }
 }
 
+.hero-welcome-dark {
+  color: #ff9f59;
+}
 
+.hero-welcome-orange {
+  color: #ff9f59;
+}
