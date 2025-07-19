@@ -1,9 +1,11 @@
 // src/pages/Listings.jsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Listings.css"; // keep using the BrowsePGs styling
 
 const pgData = [
   {
+    id: "skyline-pg",
     name: "Skyline PG for Girls, Koramangala",
     location: "Koramangala, Bangalore",
     rating: 4.8,
@@ -14,6 +16,7 @@ const pgData = [
     occupancy: "12/15 occupied"
   },
   {
+    id: "urban-nest",
     name: "Urban Nest Co-living, Gachibowli",
     location: "Gachibowli, Hyderabad",
     rating: 4.6,
@@ -24,6 +27,7 @@ const pgData = [
     occupancy: "13/20 occupied"
   },
   {
+    id: "comfort-zone",
     name: "Comfort Zone PG, Andheri West",
     location: "Andheri West, Mumbai",
     rating: 4.9,
@@ -34,6 +38,7 @@ const pgData = [
     occupancy: "10/12 occupied"
   },
   {
+    id: "student-haven",
     name: "Student Haven, Sector 18",
     location: "Sector 18, Noida",
     rating: 4.5,
@@ -44,6 +49,7 @@ const pgData = [
     occupancy: "13/18 occupied"
   },
   {
+    id: "elite-girls",
     name: "Elite Girls Hostel, HSR Layout",
     location: "HSR Layout, Bangalore",
     rating: 4.7,
@@ -54,6 +60,7 @@ const pgData = [
     occupancy: "9/10 occupied"
   },
   {
+    id: "tech-hub",
     name: "Tech Hub PG, Whitefield",
     location: "Whitefield, Bangalore",
     rating: 4.4,
@@ -64,6 +71,7 @@ const pgData = [
     occupancy: "17/25 occupied"
   },
   {
+    id: "pearl-pg",
     name: "Pearl PG for Girls, Kothrud",
     location: "Kothrud, Pune",
     rating: 4.3,
@@ -74,6 +82,7 @@ const pgData = [
     occupancy: "8/12 occupied"
   },
   {
+    id: "sunshine-pg",
     name: "Sunshine PG, Salt Lake",
     location: "Salt Lake, Kolkata",
     rating: 4.2,
@@ -84,6 +93,7 @@ const pgData = [
     occupancy: "9/15 occupied"
   },
   {
+    id: "green-nest",
     name: "Green Nest Hostel, Anna Nagar",
     location: "Anna Nagar, Chennai",
     rating: 4.6,
@@ -94,6 +104,7 @@ const pgData = [
     occupancy: "14/16 occupied"
   },
   {
+    id: "bliss-coliving",
     name: "Bliss Co-Living, Hinjewadi",
     location: "Hinjewadi, Pune",
     rating: 4.5,
@@ -106,6 +117,12 @@ const pgData = [
 ];
 
 const Listings = () => {
+  const navigate = useNavigate();
+
+  const handleViewDetails = (pgId) => {
+    navigate(`/book-pg/${pgId}`);
+  };
+
   return (
     <div className="browsepgs-container">
       <h1>Available PGs</h1>
@@ -130,7 +147,12 @@ const Listings = () => {
             <p>{pg.sharing}</p>
             <p>Occupancy: {pg.occupancy}</p>
             <p className="availability">Availability: {pg.availability}</p>
-            <button className="details-btn">View Details</button>
+            <button 
+              className="details-btn"
+              onClick={() => handleViewDetails(pg.id)}
+            >
+              View Details
+            </button>
           </div>
         ))}
       </div>

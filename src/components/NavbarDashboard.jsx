@@ -341,32 +341,15 @@ const NavbarDashboard = () => {
         {/* Main User Menu Card */}
         <div className="menu-card">
           <div className="menu-section">
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-heart"></i><span>Wishlists</span></div>
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-suitcase"></i><span>Trips</span></div>
             <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-comment-dots"></i><span>Messages</span></div>
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-user"></i><span>Profile</span></div>
+            <div className="menu-item" onClick={() => { navigate('/my-profile'); setIsMenuOpen(false); }}><i className="far fa-user"></i><span>Profile</span></div>
           </div>
           <div className="menu-section">
             <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-bell"></i><span>Notifications</span><span className="notification-badge">1</span></div>
             <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="fas fa-cog"></i><span>Account settings</span></div>
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="fas fa-globe"></i><span>Languages & currency</span></div>
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-question-circle"></i><span>Help Centre</span></div>
           </div>
           <div className="menu-section">
-            <div className="menu-item host-option" onClick={() => setIsMenuOpen(false)}>
-              {/* <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-start' }}>
-                <div>
-                  <div className="host-option-text">Become a host</div>
-                  <div className="host-option-description">It's easy to start hosting and earn extra income.</div>
-                </div>
-                <img src="https://placehold.co/60x60/87CEEB/FFFFFF?text=House" alt="Host" className="host-option-image" />
-              </div> */}
-            </div>
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="fas fa-handshake"></i><span>Refer a host</span></div>
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="fas fa-users"></i><span>Find a co-host</span></div>
-          </div>
-          <div className="menu-section">
-            <div className="menu-item logout-item" onClick={handleLogout}> {/* Changed class name */}
+            <div className="menu-item logout-item" onClick={handleLogout}>
               <i className="fas fa-sign-out-alt"></i><span>Log out</span>
             </div>
           </div>

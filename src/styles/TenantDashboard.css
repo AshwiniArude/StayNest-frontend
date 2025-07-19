@@ -358,3 +358,16 @@
 .hero-welcome-orange {
   color: #ff9f59;
 }
+
+.hero-card-gradient .hero-welcome,
+.hero-card-gradient .hero-subtitle,
+.hero-card-gradient .stat-number,
+.hero-card-gradient .stat-label {
+  color: #fff;
+}
+.hero-card-gradient .star {
+  color: #ff9f59;
+}
+.hero-card-gradient .stat-label {
+  opacity: 0.97;
+}

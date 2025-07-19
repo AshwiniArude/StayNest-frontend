@@ -44,7 +44,7 @@ const Footer = () => {
           <h4>Contact</h4>
           <p><FaEnvelope /> support@staynest.com</p>
           <p><FaPhone /> +91 91561 95970</p>
-          <p><FaMapMarkerAlt /> HSR Layout, Bangalore, Karnataka, India</p>
+          <p><FaMapMarkerAlt /> Pune, Maharastra, India</p>
           <div className="social-icons">
             <FaFacebook />
             <FaTwitter />

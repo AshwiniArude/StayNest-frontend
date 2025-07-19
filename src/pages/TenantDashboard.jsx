@@ -1,36 +1,79 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/TenantDashboard.css";
-import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaHome } from "react-icons/fa";
-
-
-const bookings = [
-  {
-    id: 1,
-    name: "Skyline PG for Girls, Koramangala",
-    location: "Koramangala, Bangalore",
-    checkIn: "15 July 2025",
-    checkOut: "15 Dec 2025",
-    status: "Booked",
-  },
-  {
-    id: 2,
-    name: "Urban Nest Co-living, Gachibowli",
-    location: "Gachibowli, Hyderabad",
-    checkIn: "10 Jan 2025",
-    checkOut: "10 June 2025",
-    status: "Completed",
-  },
-  {
-    id: 3,
-    name: "Student Haven, Sector 18",
-    location: "Sector 18, Noida",
-    checkIn: "20 Aug 2024",
-    checkOut: "20 Dec 2024",
-    status: "Cancelled",
-  },
-];
+import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaHome, FaStar } from "react-icons/fa";
 
 const TenantDashboard = () => {
+  const navigate = useNavigate();
+  
+  // Convert bookings to state so it can be updated
+  const [bookings, setBookings] = useState([
+    {
+      id: 1,
+      name: "Skyline PG for Girls, Koramangala",
+      location: "Koramangala, Bangalore",
+      checkIn: "15 July 2025",
+      checkOut: "15 Dec 2025",
+      status: "Booked",
+    },
+    {
+      id: 2,
+      name: "Urban Nest Co-living, Gachibowli",
+      location: "Gachibowli, Hyderabad",
+      checkIn: "10 Jan 2025",
+      checkOut: "10 June 2025",
+      status: "Completed",
+    },
+    {
+      id: 3,
+      name: "Student Haven, Sector 18",
+      location: "Sector 18, Noida",
+      checkIn: "20 Aug 2024",
+      checkOut: "20 Dec 2024",
+      status: "Cancelled",
+    },
+  ]);
+
+  // Function to add new booking
+  const addNewBooking = (newBooking) => {
+    setBookings(prevBookings => [newBooking, ...prevBookings]);
+  };
+
+  // Listen for new bookings from localStorage or other sources
+  useEffect(() => {
+    const checkForNewBookings = () => {
+      const newBookings = JSON.parse(localStorage.getItem('newBookings') || '[]');
+      if (newBookings.length > 0) {
+        newBookings.forEach(booking => {
+          addNewBooking({
+            id: Date.now() + Math.random(), // Generate unique ID
+            name: booking.pgName,
+            location: booking.location,
+            checkIn: booking.checkInDate,
+            checkOut: booking.checkOutDate,
+            status: "Booked",
+          });
+        });
+        // Clear the new bookings from localStorage
+        localStorage.removeItem('newBookings');
+      }
+    };
+
+    checkForNewBookings();
+  }, []);
+
+  const handleCreateReview = () => {
+    navigate('/my-reviews');
+  };
+
+  const handleViewDetails = (bookingId) => {
+    // Navigate to booking details or PG details
+    console.log('View details for booking:', bookingId);
+  };
+
+  // Calculate active bookings count
+  const activeBookingsCount = bookings.filter(booking => booking.status === 'Booked').length;
+
   return (
     <div className="dashboard-container">
       <section className="hero-section">
@@ -46,7 +89,7 @@ const TenantDashboard = () => {
           </div>
           <div className="stats-pills">
             <div className="stat-pill">
-              <span className="stat-number">2</span>
+              <span className="stat-number">{activeBookingsCount}</span>
               <span className="stat-label">Active Bookings</span>
             </div>
             <div className="stat-pill">
@@ -73,7 +116,12 @@ const TenantDashboard = () => {
          <p><FaMapMarkerAlt /> {booking.location}</p>
          <p><FaRegCalendarAlt /> Check-in: {booking.checkIn}</p>
          <p><FaRegCalendarAlt /> Check-out: {booking.checkOut}</p>
-         <button className="view-all-btn">View Details</button>
+         <button 
+           className="view-all-btn"
+           onClick={() => handleViewDetails(booking.id)}
+         >
+           View Details
+         </button>
          </div>
          ))}
         </div>
@@ -136,6 +184,17 @@ const TenantDashboard = () => {
               </div>
               <p className="action-desc">Privacy & preferences</p>
               <div className="accent-bar gray"></div>
+            </div>
+          </div>
+          <div className="quick-action-card purple" onClick={handleCreateReview}>
+            <div className="icon-bg"><FaStar /></div>
+            <div className="action-content">
+              <div className="action-title-row">
+                <h3>Create Review</h3>
+                <FaArrowRight className="action-arrow" />
+              </div>
+              <p className="action-desc">Share your experience</p>
+              <div className="accent-bar purple"></div>
             </div>
           </div>
         </div>
