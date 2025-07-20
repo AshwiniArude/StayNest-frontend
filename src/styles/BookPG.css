@@ -847,3 +847,11 @@
     font-size: 1.5rem;
   }
 } 
+
+.room-header span:first-child,
+.room-header span:nth-child(2),
+.room-row span:first-child,
+.room-row span:nth-child(2) {
+  color: #232323;
+  font-weight: 700;
+} 

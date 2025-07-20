@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/TenantDashboard.css";
 import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaHome, FaStar } from "react-icons/fa";
+import TenantSearchBar from '../components/TenantSearchBar';
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
@@ -71,6 +72,10 @@ const TenantDashboard = () => {
     console.log('View details for booking:', bookingId);
   };
 
+  const handleUpdateProfile = () => {
+    navigate('/my-profile');
+  };
+
   // Calculate active bookings count
   const activeBookingsCount = bookings.filter(booking => booking.status === 'Booked').length;
 
@@ -102,9 +107,11 @@ const TenantDashboard = () => {
             </div>
           </div>
         </div>
+        {/* Advanced search bar below the purple hero box */}
+        <TenantSearchBar />
       </section>
 
-      <section className="section">
+      <section className="section" style={{ marginTop: '3.5rem' }}>
         <h2>My Bookings</h2>
         <div className="card-grid">
         {bookings.map((booking) => (
@@ -142,7 +149,7 @@ const TenantDashboard = () => {
               <div className="accent-bar green"></div>
             </div>
           </div>
-          <div className="quick-action-card yellow">
+          <div className="quick-action-card yellow" onClick={handleUpdateProfile}>
             <div className="icon-bg"><FaUser /></div>
             <div className="action-content">
               <div className="action-title-row">

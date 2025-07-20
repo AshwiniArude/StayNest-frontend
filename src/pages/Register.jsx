@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Register.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faUserPlus, faUser, faEnvelope, faPhone, faLock } from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,18 +19,21 @@ const Register = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [successMsg, setSuccessMsg] = useState("");
 
   const validate = () => {
     const newErrors = {};
+    const phoneDigits = formData.phoneNumber.replace(/\D/g, "");
+    const lastTen = phoneDigits.slice(-10);
 
     if (!/^[a-zA-Z\s]+$/.test(formData.name))
       newErrors.name = "Enter a valid name.";
     if (!/^\S+@\S+\.\S+$/.test(formData.email))
       newErrors.email = "Invalid email format.";
-    if (!/^[6-9]\d{9}$/.test(formData.phoneNumber))
-      newErrors.phoneNumber = "Invalid phone number.";
-    if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(formData.password))
-      newErrors.password = "Min 8 characters, at least 1 letter and 1 number.";
+    if (!/^[6-9]\d{9}$/.test(lastTen))
+      newErrors.phoneNumber = "Enter a valid 10-digit Indian mobile number (starts with 6-9).";
+    if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password))
+      newErrors.password = "Min 8 chars, 1 letter, 1 number. Special chars allowed.";
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match.";
     if (!formData.gender) newErrors.gender = "Please select gender.";
@@ -48,13 +53,18 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      alert("Data submitted Successfully ");
-      // send to backend API
+      setSuccessMsg("Account created successfully! Please login.");
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
     }
   };
 
   return (
     <>
+      {successMsg && (
+        <div className="register-success-popup">{successMsg}</div>
+      )}
       <div className="register-container">
         <div className="role-toggle">
           <button
