@@ -76,6 +76,14 @@ const TenantDashboard = () => {
     navigate('/my-profile');
   };
 
+  const handleAccountSettings = () => {
+    navigate('/account-settings');
+  };
+
+  const handleContactSupport = () => {
+    navigate('/contact-support');
+  };
+
   // Calculate active bookings count
   const activeBookingsCount = bookings.filter(booking => booking.status === 'Booked').length;
 
@@ -160,7 +168,7 @@ const TenantDashboard = () => {
               <div className="accent-bar yellow"></div>
             </div>
           </div>
-          <div className="quick-action-card green">
+          <div className="quick-action-card green" onClick={handleContactSupport}>
             <div className="icon-bg"><FaRegCommentDots /></div>
             <div className="action-content">
               <div className="action-title-row">
@@ -182,7 +190,7 @@ const TenantDashboard = () => {
               <div className="accent-bar pink"></div>
             </div>
           </div>
-          <div className="quick-action-card gray">
+          <div className="quick-action-card gray" onClick={handleAccountSettings}>
             <div className="icon-bg"><FaCog /></div>
             <div className="action-content">
               <div className="action-title-row">

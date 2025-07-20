@@ -21,6 +21,10 @@ const OwnerDashboard = () => {
     navigate(`/owner/edit-listing/${listingId}`);
   };
 
+  const handleAccountSettings = () => {
+    navigate('/account-settings');
+  };
+
   return (
     <div className="dashboard-container">
       {/* Hero Section with Stats */}
@@ -233,7 +237,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar pink"></div>
             </div>
           </div>
-          <div className="quick-action-card gray">
+          <div className="quick-action-card gray" onClick={handleAccountSettings}>
             <div className="icon-bg"><FaCog /></div>
             <div className="action-content">
               <div className="action-title-row">

@@ -32,6 +32,16 @@ const NavbarDashboard = () => {
     };
   }, []);
 
+  const handleNotifications = () => {
+    setIsMenuOpen(false);
+    navigate('/owner/notifications');
+  };
+
+  const handleAccountSettings = () => {
+    setIsMenuOpen(false);
+    navigate('/account-settings');
+  };
+
   return (
     <>
       {/* Global Styles for the component */}
@@ -345,8 +355,8 @@ const NavbarDashboard = () => {
             <div className="menu-item" onClick={() => { navigate('/my-profile'); setIsMenuOpen(false); }}><i className="far fa-user"></i><span>Profile</span></div>
           </div>
           <div className="menu-section">
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-bell"></i><span>Notifications</span><span className="notification-badge">1</span></div>
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="fas fa-cog"></i><span>Account settings</span></div>
+            <div className="menu-item" onClick={handleNotifications}><i className="far fa-bell"></i><span>Notifications</span><span className="notification-badge">1</span></div>
+            <div className="menu-item" onClick={handleAccountSettings}><i className="fas fa-cog"></i><span>Account settings</span></div>
           </div>
           <div className="menu-section">
             <div className="menu-item logout-item" onClick={handleLogout}>

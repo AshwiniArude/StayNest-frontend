@@ -12,6 +12,8 @@ const MyReviews = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingReviewId, setEditingReviewId] = useState(null);
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
 
   // Mock data for reviews
   const [reviews, setReviews] = useState([
@@ -78,8 +80,8 @@ const MyReviews = () => {
   };
 
   const handleSubmitReview = () => {
-    if (rating === 0 || !reviewText.trim()) {
-      alert('Please provide both rating and review text');
+    if (rating === 0 || !reviewText.trim() || !checkInDate || !checkOutDate) {
+      alert('Please provide rating, review text, check-in and check-out dates');
       return;
     }
     
@@ -88,7 +90,7 @@ const MyReviews = () => {
       setReviews(prevReviews => 
         prevReviews.map(review => 
           review.id === editingReviewId 
-            ? { ...review, rating, reviewText, date: new Date().toISOString().split('T')[0] }
+            ? { ...review, rating, reviewText, date: new Date().toISOString().split('T')[0], checkInDate, checkOutDate }
             : review
         )
       );
@@ -106,7 +108,9 @@ const MyReviews = () => {
           date: new Date().toISOString().split('T')[0],
           reviewText: reviewText,
           status: "published",
-          thumbnail: selectedPGData.thumbnail
+          thumbnail: selectedPGData.thumbnail,
+          checkInDate,
+          checkOutDate
         };
         
         setReviews(prevReviews => [...prevReviews, newReview]);
@@ -126,6 +130,8 @@ const MyReviews = () => {
     setRating(0);
     setReviewText('');
     setHoveredRating(0);
+    setCheckInDate('');
+    setCheckOutDate('');
     
     setTimeout(() => setShowSuccessMessage(false), 3000);
   };
@@ -138,6 +144,8 @@ const MyReviews = () => {
       setRating(reviewToEdit.rating);
       setReviewText(reviewToEdit.reviewText);
       setSelectedPG(reviewToEdit.pgName);
+      setCheckInDate(reviewToEdit.checkInDate || '');
+      setCheckOutDate(reviewToEdit.checkOutDate || '');
       setShowReviewForm(true);
     }
   };
@@ -156,6 +164,8 @@ const MyReviews = () => {
     setRating(0);
     setReviewText('');
     setHoveredRating(0);
+    setCheckInDate('');
+    setCheckOutDate('');
   };
 
   const getRatingText = (rating) => {
@@ -258,7 +268,14 @@ const MyReviews = () => {
                   )}
                 </select>
               </div>
-
+              <div className="form-group">
+                <label>Check-in Date</label>
+                <input type="date" value={checkInDate} onChange={e => setCheckInDate(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label>Check-out Date</label>
+                <input type="date" value={checkOutDate} onChange={e => setCheckOutDate(e.target.value)} />
+              </div>
               <div className="form-group">
                 <label>Rating</label>
                 <div className="star-rating">
@@ -331,7 +348,14 @@ const MyReviews = () => {
                     <p className="date">
                       <FaCalendarAlt />
                       {review.status === 'published' 
-                        ? `Reviewed on ${formatDate(review.date)}`
+                        ? (
+                            <>
+                              Reviewed on {formatDate(review.date)}
+                              {review.checkInDate && review.checkOutDate && (
+                                <><br />Stay: {formatDate(review.checkInDate)} - {formatDate(review.checkOutDate)}</>
+                              )}
+                            </>
+                          )
                         : `Stayed until ${formatDate(review.checkOutDate)}`
                       }
                     </p>

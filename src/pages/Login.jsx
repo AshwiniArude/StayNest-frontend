@@ -40,40 +40,40 @@ const Login = () => {
           </Link>
         </div>
         <div className="header-content">
-          <h2>Welcome Back</h2>
-          <p>Login to your account and manage your space</p>
+        <h2>Welcome Back</h2>
+        <p>Login to your account and manage your space</p>
         </div>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="role">Role</label>
             <select name="role" id="role" value={formData.role} onChange={handleChange}>
-              <option value="TENANT">Tenant</option>
-              <option value="OWNER">Owner</option>
-            </select>
+            <option value="TENANT">Tenant</option>
+            <option value="OWNER">Owner</option>
+          </select>
           </div>
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
+          <input
+            type="email"
               id="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            name="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
+          <input
+            type="password"
               id="password"
-              name="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            name="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
           </div>
           <div className="forgot-password">
             <a href="#" onClick={handleForgotPassword}>Forgot Password?</a>
