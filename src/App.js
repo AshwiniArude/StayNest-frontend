@@ -26,6 +26,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "./styles/global.css";
 import ContactSupport from "./pages/ContactSupport";
+import BookingDetails from './pages/BookingDetails';
+import BookingDetailsOwner from './pages/BookingDetailsOwner';
 
 function AppContent() {
   const location = useLocation();
@@ -59,6 +61,8 @@ const isDashboard = location.pathname.startsWith("/tenant/dashboard") || locatio
           <Route path="/owner/notifications" element={<OwnerNotifications />} />
           <Route path="/account-settings" element={<AccountSettings />} />
           <Route path="/contact-support" element={<ContactSupport />} />
+          <Route path="/booking-details" element={<BookingDetails />} />
+          <Route path="/owner/booking-details" element={<BookingDetailsOwner />} />
         </Routes>
       </main>
 

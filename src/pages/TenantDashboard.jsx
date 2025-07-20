@@ -68,8 +68,8 @@ const TenantDashboard = () => {
   };
 
   const handleViewDetails = (bookingId) => {
-    // Navigate to booking details or PG details
-    console.log('View details for booking:', bookingId);
+    // Navigate to booking details page (for now, always go to /booking-details)
+    navigate('/booking-details');
   };
 
   const handleUpdateProfile = () => {
@@ -82,6 +82,10 @@ const TenantDashboard = () => {
 
   const handleContactSupport = () => {
     navigate('/contact-support');
+  };
+
+  const handleBrowsePGs = () => {
+    navigate('/listings');
   };
 
   // Calculate active bookings count
@@ -116,9 +120,7 @@ const TenantDashboard = () => {
           </div>
         </div>
         {/* Advanced search bar below the purple hero box */}
-        <div className="search-wrapper">
-          <TenantSearchBar />
-        </div>
+        <TenantSearchBar />
       </section>
 
       <section className="section" style={{ marginTop: '3.5rem' }}>
@@ -148,7 +150,7 @@ const TenantDashboard = () => {
         <h2 className="quick-actions-title">Quick Actions</h2>
         <p className="quick-actions-subtitle">Everything you need is just a click away</p>
         <div className="quick-actions-grid">
-          <div className="quick-action-card green">
+          <div className="quick-action-card green" onClick={handleBrowsePGs} style={{cursor:'pointer'}}>
             <div className="icon-bg"><FaSearch /></div>
             <div className="action-content">
               <div className="action-title-row">

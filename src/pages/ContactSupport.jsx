@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import NavbarDashboard from '../components/NavbarDashboard';
 import { FaSearch, FaBoxOpen, FaComments, FaEnvelope, FaHeadset, FaPhone, FaCheckCircle, FaTimesCircle, FaPaperclip, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
 import '../styles/ContactSupport.css';
 
@@ -76,128 +77,115 @@ const ContactSupport = () => {
   };
 
   return (
-    <div className="contact-support-page">
-      {/* Top Section: Title & Quick Help */}
-      <section className="support-hero-section">
-        <h1>Need Help? We're here for you!</h1>
-        <p>Reach out to our team with any questions or issues.</p>
-        <div className="quick-help-grid">
-          <div className="quick-help-card">
-            <FaSearch className="quick-help-icon" color="#2AB7CA" />
-            <span>FAQs</span>
+    <>
+      <NavbarDashboard />
+      <div className="contact-support-page">
+        {/* Top Section: Title & Quick Help */}
+        <section className="support-hero-section">
+          <h1>Need Help? We're here for you!</h1>
+          <p>Reach out to our team with any questions or issues.</p>
+          <div className="quick-help-grid">
+            <div className="quick-help-card">
+              <FaSearch className="quick-help-icon" color="#7c5ff0" />
+              <span>FAQs</span>
+            </div>
+            <div className="quick-help-card">
+              <FaBoxOpen className="quick-help-icon" color="#7c5ff0" />
+              <span>My Bookings</span>
+            </div>
+            <div className="quick-help-card" ref={chatBtnRef}>
+              <FaHeadset className="quick-help-icon" color="#fff" style={{background:'#1ec28b',borderRadius:'12px',padding:'0.5rem'}} />
+              <span>Chat with Support</span>
+            </div>
+            <div className="quick-help-card">
+              <FaEnvelope className="quick-help-icon" color="#7c5ff0" />
+              <span>Submit a Request</span>
+            </div>
           </div>
-          <div className="quick-help-card">
-            <FaBoxOpen className="quick-help-icon" color="#2AB7CA" />
-            <span>My Bookings</span>
-          </div>
-          <div className="quick-help-card" ref={chatBtnRef}>
-            <FaHeadset className="quick-help-icon" color="#fff" style={{background:'#2AB7CA',borderRadius:'50%',padding:'0.4rem'}} />
-            <span>Chat with Support</span>
-          </div>
-          <div className="quick-help-card">
-            <FaEnvelope className="quick-help-icon" color="#2AB7CA" />
-            <span>Submit a Request</span>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Contact Form Card */}
-      <section className="contact-form-section">
-        <div className="contact-form-card">
-          <h2>Send us a Message</h2>
-          <form onSubmit={handleSubmit} autoComplete="off">
-            <div className="form-row">
-              <div className="form-group">
-                <label>Name</label>
-                <input name="name" value={form.name} onChange={handleInput} readOnly />
+        {/* Contact Form Card */}
+        <section className="contact-form-section">
+          <div className="contact-form-card">
+            <h2>Send us a Message</h2>
+            <form onSubmit={handleSubmit} autoComplete="off">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Name</label>
+                  <input name="name" value={form.name} onChange={handleInput} readOnly />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input name="email" value={form.email} readOnly />
+                </div>
               </div>
               <div className="form-group">
-                <label>Email</label>
-                <input name="email" value={form.email} readOnly />
+                <label>Subject</label>
+                <input name="subject" value={form.subject} onChange={handleInput} placeholder="Subject" />
+              </div>
+              <div className="form-group">
+                <label>Message</label>
+                <textarea name="message" value={form.message} onChange={handleInput} rows={6} placeholder="How can we help you?" />
+              </div>
+              <div className="form-group attachment-group">
+                <label htmlFor="attachment"><FaPaperclip /> Attachment (optional)</label>
+                <input id="attachment" name="attachment" type="file" onChange={handleInput} />
+                {form.attachment && <span className="attachment-name">{form.attachment.name}</span>}
+              </div>
+              {formError && <div className="form-error"><FaTimesCircle color="#FF6B6B" /> {formError}</div>}
+              {formSuccess && <div className="form-success"><FaCheckCircle color="#1ec28b" /> Message sent successfully!</div>}
+              <div className="form-actions">
+                <button type="submit" className="submit-btn" disabled={submitting}>{submitting ? 'Sending...' : 'Submit'}</button>
+                <button type="button" className="reset-btn" onClick={handleReset}>Reset Form</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        {/* Contact Options Grid */}
+        <section className="contact-options-section">
+          <h2>Talk to Us Directly</h2>
+          <div className="contact-options-grid">
+            <div className="contact-option-card">
+              <div className="option-icon"><FaHeadset color="#fff" style={{background:'#1ec28b',borderRadius:'12px',padding:'0.5rem'}} /></div>
+              <div className="option-label">Chat with an agent</div>
+              <button className="option-btn" style={{background:'#1ec28b',color:'#fff'}}>Start Chat</button>
+            </div>
+            <div className="contact-option-card">
+              <div className="option-icon"><FaPhone color="#7c5ff0" /></div>
+              <div className="option-label">Available 9 AM – 6 PM (Mon–Sat)</div>
+              <div className="option-number">1800-123-STAY</div>
+              <button className="option-btn" style={{background:'#ff9f59',color:'#232323'}}>Call Now</button>
+            </div>
+            <div className="contact-option-card">
+              <div className="option-icon"><FaEnvelope color="#7c5ff0" /></div>
+              <div className="option-label">support@staynest.in</div>
+              <button className="option-btn" style={{background:'#7c5ff0',color:'#fff'}} onClick={handleCopyEmail}>Copy Email</button>
+            </div>
+          </div>
+        </section>
+
+        {/* Support Hours & Location */}
+        <section className="support-hours-section">
+          <h2>Support Hours & Location</h2>
+          <div className="support-hours-grid">
+            <div className="support-hours-block">
+              <FaClock className="support-hours-icon" color="#7c5ff0" />
+              <div>
+                <div><b>Mon–Sat:</b> 9 AM to 6 PM</div>
+                <div><b>Sundays & Public Holidays:</b> Email Only</div>
               </div>
             </div>
-            <div className="form-group">
-              <label>Subject</label>
-              <input name="subject" value={form.subject} onChange={handleInput} placeholder="Subject" />
-            </div>
-            <div className="form-group">
-              <label>Message</label>
-              <textarea name="message" value={form.message} onChange={handleInput} rows={6} placeholder="How can we help you?" />
-            </div>
-            <div className="form-group attachment-group">
-              <label htmlFor="attachment"><FaPaperclip /> Attachment (optional)</label>
-              <input id="attachment" name="attachment" type="file" onChange={handleInput} />
-              {form.attachment && <span className="attachment-name">{form.attachment.name}</span>}
-            </div>
-            {formError && <div className="form-error"><FaTimesCircle color="#FF6B6B" /> {formError}</div>}
-            {formSuccess && <div className="form-success"><FaCheckCircle color="#10b981" /> Message sent successfully!</div>}
-            <div className="form-actions">
-              <button type="submit" className="submit-btn" disabled={submitting}>{submitting ? 'Sending...' : 'Submit'}</button>
-              <button type="button" className="reset-btn" onClick={handleReset}>Reset Form</button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      {/* Contact Options Grid */}
-      <section className="contact-options-section">
-        <h2>Talk to Us Directly</h2>
-        <div className="contact-options-grid">
-          <div className="contact-option-card">
-            <div className="option-icon"><FaHeadset color="#fff" style={{background:'#2AB7CA',borderRadius:'50%',padding:'0.4rem'}} /></div>
-            <div className="option-label">Chat with an agent</div>
-            <button className="option-btn" style={{background:'#2AB7CA',color:'#fff'}}>Start Chat</button>
-          </div>
-          <div className="contact-option-card">
-            <div className="option-icon"><FaPhone color="#2AB7CA" /></div>
-            <div className="option-label">Available 9 AM – 6 PM (Mon–Sat)</div>
-            <div className="option-number">1800-123-STAY</div>
-            <button className="option-btn" style={{background:'#FFC857',color:'#232323'}}>Call Now</button>
-          </div>
-          <div className="contact-option-card">
-            <div className="option-icon"><FaEnvelope color="#2AB7CA" /></div>
-            <div className="option-label">support@staynest.in</div>
-            <button className="option-btn" style={{background:'#2AB7CA',color:'#fff'}} onClick={handleCopyEmail}>Copy Email</button>
-          </div>
-        </div>
-      </section>
-
-      {/* Support Hours & Location */}
-      <section className="support-hours-section">
-        <h2>Support Hours & Location</h2>
-        <div className="support-hours-grid">
-          <div className="support-hours-block">
-            <FaClock className="support-hours-icon" />
-            <div>
-              <div><b>Mon–Sat:</b> 9 AM to 6 PM</div>
-              <div><b>Sundays & Public Holidays:</b> Email Only</div>
+            <div className="support-location-block">
+              <FaMapMarkerAlt className="support-location-icon" color="#7c5ff0" />
+              <div>
+                StayNest HQ, 4th Floor, Koramangala, Bangalore - 560034
+              </div>
             </div>
           </div>
-          <div className="support-location-block">
-            <FaMapMarkerAlt className="support-location-icon" />
-            <div>
-              StayNest HQ, 4th Floor, Koramangala, Bangalore - 560034
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Status Check / Ticket Lookup */}
-      <section className="ticket-lookup-section">
-        <h2>Check Your Request Status</h2>
-        <div className="ticket-lookup-card">
-          <FaSearch className="ticket-lookup-icon" />
-          <input
-            type="text"
-            placeholder="Enter your ticket ID"
-            value={ticketId}
-            onChange={e => setTicketId(e.target.value)}
-          />
-          <button className="track-btn" onClick={handleTrackTicket}>Track Ticket</button>
-        </div>
-        {ticketFeedback && <div className="ticket-feedback">{ticketFeedback}</div>}
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 };
 

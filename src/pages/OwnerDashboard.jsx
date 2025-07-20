@@ -29,6 +29,14 @@ const OwnerDashboard = () => {
     navigate('/manage-bookings');
   };
 
+  const handleContactSupport = () => {
+    navigate('/contact-support');
+  };
+
+  const handleViewBookingDetails = () => {
+    navigate('/owner/booking-details');
+  };
+
   return (
     <div className="dashboard-container">
       {/* Hero Section with Stats */}
@@ -219,7 +227,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar yellow"></div>
             </div>
           </div>
-          <div className="quick-action-card green">
+          <div className="quick-action-card green" onClick={handleContactSupport}>
             <div className="icon-bg"><FaRegCommentDots /></div>
             <div className="action-content">
               <div className="action-title-row">
@@ -265,7 +273,7 @@ const OwnerDashboard = () => {
             <p><FaMapMarkerAlt /> Sunshine PG</p>
             <p><FaRegCalendarAlt /> Dec 2024 - Jun 2025</p>
             <p>₹8,500 - Paid</p>
-            <button className="view-all-btn">View Details</button>
+            <button className="view-all-btn" onClick={handleViewBookingDetails}>View Details</button>
           </div>
           <div className="card">
             <div className="status-label status-booked">Booked</div>
@@ -273,7 +281,7 @@ const OwnerDashboard = () => {
             <p><FaMapMarkerAlt /> Elite Hostel</p>
             <p><FaRegCalendarAlt /> Jan 2025 - Dec 2025</p>
             <p>₹15,000 - Pending</p>
-            <button className="view-all-btn">View Details</button>
+            <button className="view-all-btn" onClick={handleViewBookingDetails}>View Details</button>
           </div>
         </div>
       </section>
