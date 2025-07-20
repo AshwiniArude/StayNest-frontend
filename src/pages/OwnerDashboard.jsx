@@ -25,6 +25,10 @@ const OwnerDashboard = () => {
     navigate('/account-settings');
   };
 
+  const handleManageBookings = () => {
+    navigate('/manage-bookings');
+  };
+
   return (
     <div className="dashboard-container">
       {/* Hero Section with Stats */}
@@ -204,14 +208,14 @@ const OwnerDashboard = () => {
               <div className="accent-bar green"></div>
             </div>
           </div>
-          <div className="quick-action-card yellow">
+          <div className="quick-action-card yellow" onClick={handleManageBookings}>
             <div className="icon-bg"><FaUser /></div>
             <div className="action-content">
               <div className="action-title-row">
-                <h3>Manage Tenants</h3>
+                <h3>Manage Bookings</h3>
                 <FaArrowRight className="action-arrow" />
               </div>
-              <p className="action-desc">View tenant details</p>
+              <p className="action-desc">View booking requests</p>
               <div className="accent-bar yellow"></div>
             </div>
           </div>
