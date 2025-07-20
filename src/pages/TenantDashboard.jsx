@@ -108,7 +108,9 @@ const TenantDashboard = () => {
           </div>
         </div>
         {/* Advanced search bar below the purple hero box */}
-        <TenantSearchBar />
+        <div className="search-wrapper">
+          <TenantSearchBar />
+        </div>
       </section>
 
       <section className="section" style={{ marginTop: '3.5rem' }}>

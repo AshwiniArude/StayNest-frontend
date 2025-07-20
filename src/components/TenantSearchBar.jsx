@@ -11,16 +11,40 @@ const tenantTypes = [
 const budgetOptions = [
   { label: 'Below ₹5,000', value: [1000, 5000] },
   { label: '₹5,000 - ₹10,000', value: [5000, 10000] },
-  { label: '₹10,000 - ₹20,000', value: [10000, 20000] },
-  { label: 'Above ₹20,000', value: [20000, 50000] },
+  { label: '₹10,000 - ₹15,000', value: [10000, 15000] },
+  { label: '₹15,000 - ₹20,000', value: [15000, 20000] },
+  { label: '₹20,000 - ₹30,000', value: [20000, 30000] },
+  { label: 'Above ₹30,000', value: [30000, 100000] },
 ];
 
 const suggestedDestinations = [
   { icon: '🧭', label: 'Nearby', desc: "+ Find what's around you" },
-  { icon: '🏖️', label: 'North Goa, Goa', desc: 'Popular beach destination' },
-  { icon: '🏞️', label: 'Lonavala, Maharashtra', desc: 'For sights like Karla Caves' },
   { icon: '🏙️', label: 'Pune City, Maharashtra', desc: 'Near you' },
-  { icon: '🏛️', label: 'New Delhi, Delhi', desc: 'For its stunning architecture' },
+  { icon: '🏢', label: 'Koregaon Park, Pune', desc: 'Popular area with cafes and restaurants' },
+  { icon: '🏫', label: 'Kalyani Nagar, Pune', desc: 'Residential area near airport' },
+  { icon: '🏪', label: 'Viman Nagar, Pune', desc: 'IT hub with shopping centers' },
+  { icon: '🏬', label: 'Hinjewadi, Pune', desc: 'Major IT park and residential area' },
+  { icon: '🏭', label: 'Pimpri-Chinchwad, Maharashtra', desc: 'Industrial and residential hub' },
+  { icon: '🏗️', label: 'Chinchwad, PCMC', desc: 'Industrial area with good connectivity' },
+  { icon: '🏘️', label: 'Pimple Saudagar, PCMC', desc: 'Residential area with amenities' },
+  { icon: '🏡', label: 'Wakad, PCMC', desc: 'Growing residential and commercial area' },
+  { icon: '🏢', label: 'Baner, Pune', desc: 'IT corridor with modern apartments' },
+  { icon: '🏫', label: 'Aundh, Pune', desc: 'Educational hub with good connectivity' },
+  { icon: '🏪', label: 'Kharadi, Pune', desc: 'IT park with residential complexes' },
+  { icon: '🏬', label: 'Magarpatta City, Pune', desc: 'Planned township with amenities' },
+  { icon: '🏭', label: 'Hadapsar, Pune', desc: 'Industrial and residential area' },
+  { icon: '🏗️', label: 'Pimple Gurav, PCMC', desc: 'Residential area with good facilities' },
+  { icon: '🏘️', label: 'Rahatani, PCMC', desc: 'Affordable residential area' },
+  { icon: '🏡', label: 'Moshi, PCMC', desc: 'Industrial area with housing options' },
+  { icon: '🏢', label: 'Bhosari, PCMC', desc: 'Industrial hub with residential areas' },
+  { icon: '🏫', label: 'Nigdi, PCMC', desc: 'Educational and residential area' },
+  { icon: '🏪', label: 'Akurdi, PCMC', desc: 'Industrial area with good connectivity' },
+  { icon: '🏬', label: 'Dehu Road, PCMC', desc: 'Industrial and residential hub' },
+  { icon: '🏭', label: 'Talegaon, Pune', desc: 'Industrial area with modern housing' },
+  { icon: '🏗️', label: 'Chakan, Pune', desc: 'Industrial hub with residential options' },
+  { icon: '🏘️', label: 'Lonavala, Maharashtra', desc: 'For sights like Karla Caves' },
+  { icon: '🏙️', label: 'New Delhi, Delhi', desc: 'For its stunning architecture' },
+  { icon: '🏖️', label: 'North Goa, Goa', desc: 'Popular beach destination' },
   { icon: '🏝️', label: 'South Goa, Goa', desc: 'Popular beach destination' },
   { icon: '🏯', label: 'Jaipur, Rajasthan', desc: 'For sights like Amber Fort' },
 ];
@@ -30,11 +54,12 @@ const TenantSearchBar = ({ onSearch }) => {
   const [recentSearches, setRecentSearches] = useState([]);
   const [tenantType, setTenantType] = useState('');
   const [showTenantDropdown, setShowTenantDropdown] = useState(false);
-  const [budget, setBudget] = useState([3000, 20000]);
+  const [budget, setBudget] = useState([]);
   const [showBudgetDropdown, setShowBudgetDropdown] = useState(false);
   const [showLocationPanel, setShowLocationPanel] = useState(false);
   const tenantPanelRef = useRef(null);
   const locationPanelRef = useRef(null);
+  const budgetPanelRef = useRef(null);
 
   // Handle location input
   const handleLocationChange = (e) => {
@@ -65,6 +90,18 @@ const TenantSearchBar = ({ onSearch }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showLocationPanel]);
 
+  // Click outside logic for budget panel
+  useEffect(() => {
+    if (!showBudgetDropdown) return;
+    const handleClickOutside = (event) => {
+      if (budgetPanelRef.current && !budgetPanelRef.current.contains(event.target)) {
+        setShowBudgetDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showBudgetDropdown]);
+
   // Handle tenant type dropdown
   const handleTenantType = (type) => {
     setTenantType(type);
@@ -81,7 +118,7 @@ const TenantSearchBar = ({ onSearch }) => {
   const handleClear = () => {
     setLocation('');
     setTenantType('');
-    setBudget([3000, 20000]);
+    setBudget([]);
   };
 
   // Search action
@@ -140,9 +177,8 @@ const TenantSearchBar = ({ onSearch }) => {
             className={`cell-value tenant-type-panel${tenantType ? '' : ' empty'}`}
             onClick={() => setShowTenantDropdown(v => !v)}
             tabIndex={0}
-            style={{ cursor: 'pointer', background: 'transparent', border: 'none', boxShadow: 'none' }}
           >
-            <span>{tenantType ? tenantTypes.find(t => t.value === tenantType).emoji + ' ' + tenantTypes.find(t => t.value === tenantType).label : ''}</span>
+            <span>{tenantType ? tenantTypes.find(t => t.value === tenantType).emoji + ' ' + tenantTypes.find(t => t.value === tenantType).label : 'Select tenant type'}</span>
           </div>
           {showTenantDropdown && (
             <>
@@ -168,17 +204,22 @@ const TenantSearchBar = ({ onSearch }) => {
         {/* Budget Dropdown Cell */}
         <div className="search-cell budget-cell">
           <div className="cell-label">Budget</div>
-          <div className="cell-value budget-dropdown" onClick={() => setShowBudgetDropdown(v => !v)} tabIndex={0} onBlur={() => setTimeout(() => setShowBudgetDropdown(false), 150)}>
-            <span>{budgetOptions.find(opt => opt.value[0] === budget[0] && opt.value[1] === budget[1])?.label || 'Select budget'}</span>
+          <div className="cell-value budget-dropdown" onClick={() => setShowBudgetDropdown(v => !v)} tabIndex={0} ref={budgetPanelRef}>
+            <span className="budget-text">
+              {budget.length === 2 ? budgetOptions.find(opt => opt.value[0] === budget[0] && opt.value[1] === budget[1])?.label : 'Select budget'}
+            </span>
             <FaChevronDown className="dropdown-arrow" />
             {showBudgetDropdown && (
-              <div className="dropdown-list">
-                {budgetOptions.map((opt) => (
-                  <div key={opt.label} className="dropdown-item" onClick={() => handleBudgetDropdown(opt.value)}>
-                    {opt.label}
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="budget-panel-backdrop" />
+                <div className="budget-panel-dropdown floating">
+                  {budgetOptions.map((opt) => (
+                    <div key={opt.label} className="budget-panel-option" onMouseDown={() => handleBudgetDropdown(opt.value)}>
+                      {opt.label}
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -192,6 +233,7 @@ const TenantSearchBar = ({ onSearch }) => {
               </button>
               <button className="clear-filters-btn" onClick={handleClear} title="Clear all filters">
                 <FaSoap />
+                <span className="clear-btn-text">Clear</span>
               </button>
             </>
           )}

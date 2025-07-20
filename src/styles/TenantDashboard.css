@@ -8,6 +8,22 @@
   min-height: 100vh;
 }
 
+.search-wrapper {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 5;
+}
+
+/* Remove border and match background for tenant dashboard search bar */
+.search-wrapper .tenant-search-bar,
+.search-wrapper .tenant-search-bar.sectioned,
+.search-wrapper .tenant-search-bar.sectioned.wide-bar {
+  border: none !important;
+  background: linear-gradient(to right, #f9f7ff, #fff0e3) !important;
+  box-shadow: none !important;
+}
+
 /* Hero Section Text */
 .hero-section h1 {
   color: #5e4b8b;

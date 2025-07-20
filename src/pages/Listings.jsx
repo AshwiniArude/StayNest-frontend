@@ -1,6 +1,7 @@
 // src/pages/Listings.jsx
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import TenantSearchBar from "../components/TenantSearchBar";
 import "../styles/Listings.css"; // keep using the BrowsePGs styling
 
 const pgData = [
@@ -118,6 +119,34 @@ const pgData = [
 
 const Listings = () => {
   const navigate = useNavigate();
+  const [filteredPgData, setFilteredPgData] = useState(pgData);
+
+  const handleSearch = (searchParams) => {
+    let filtered = [...pgData];
+    
+    // Filter by location
+    if (searchParams.location) {
+      filtered = filtered.filter(pg => 
+        pg.location.toLowerCase().includes(searchParams.location.toLowerCase())
+      );
+    }
+    
+    // Filter by tenant type (if implemented in pgData)
+    if (searchParams.tenantType) {
+      // You can add tenant type filtering logic here
+      // For now, we'll just pass through
+    }
+    
+    // Filter by budget
+    if (searchParams.budget && searchParams.budget.length === 2) {
+      const [minBudget, maxBudget] = searchParams.budget;
+      filtered = filtered.filter(pg => 
+        pg.price >= minBudget && pg.price <= maxBudget
+      );
+    }
+    
+    setFilteredPgData(filtered);
+  };
 
   const handleViewDetails = (pgId) => {
     navigate(`/book-pg/${pgId}`);
@@ -125,10 +154,14 @@ const Listings = () => {
 
   return (
     <div className="browsepgs-container">
+      <div className="search-section">
+        <h2 className="search-title">Find Your Perfect PG</h2>
+        <TenantSearchBar onSearch={handleSearch} />
+      </div>
       <h1>Available PGs</h1>
-      <p>{pgData.length} properties found</p>
+      <p>{filteredPgData.length} properties found</p>
       <div className="pg-grid">
-        {pgData.map((pg, index) => (
+        {filteredPgData.map((pg, index) => (
           <div className="pg-card" key={index}>
             <div className="pg-tags">
               {pg.tags.map((tag, i) => (

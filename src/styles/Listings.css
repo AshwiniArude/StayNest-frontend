@@ -5,11 +5,31 @@
   background: linear-gradient(to right, #f3e5f5, #fff8f9); /* light lavender to soft pink */
   font-family: 'Segoe UI', sans-serif;
   color: #333;
+  min-height: 100vh;
+  margin-top: 0;
+  position: relative;
+}
+
+.search-section {
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 5;
+  padding-top: 1rem;
+}
+
+.search-title {
+  text-align: center;
+  color: #4a0072;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
 }
 
 .browsepgs-container h1 {
   font-size: 2rem;
   color: #4a0072;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 
 .browsepgs-container p {
