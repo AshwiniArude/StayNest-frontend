@@ -327,19 +327,12 @@ const BookPG = () => {
                   <span>Type</span>
                   <span>Rent</span>
                   <span>Availability</span>
-                  <span>Action</span>
                 </div>
                 {pgData.roomOptions.map((room, index) => (
-                  <div key={index} className={`room-row ${selectedRoom === room ? 'selected' : ''}`}>
+                  <div key={index} className={`room-row`}>
                     <span>{room.type}</span>
                     <span>₹{room.rent}/month</span>
                     <span className="availability">{room.availability}</span>
-                    <button 
-                      className={`select-btn ${selectedRoom === room ? 'selected' : ''}`}
-                      onClick={() => setSelectedRoom(room)}
-                    >
-                      {selectedRoom === room ? 'Selected' : 'Select'}
-                    </button>
                   </div>
                 ))}
               </div>
@@ -376,7 +369,6 @@ const BookPG = () => {
                 {pgData.owner.verified && <span className="verified-badge">✓ Verified Owner</span>}
                 <p className="owner-phone"><FaPhone /> {pgData.owner.phone}</p>
               </div>
-              <button className="contact-btn">Contact Owner</button>
             </div>
           </section>
 
@@ -404,7 +396,7 @@ const BookPG = () => {
                 </div>
               ))}
             </div>
-            <button className="write-review-btn">Write a Review</button>
+            <button className="write-review-btn" onClick={() => navigate('/my-reviews')}>Write a Review</button>
           </section>
         </div>
 

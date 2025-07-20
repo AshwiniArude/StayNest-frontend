@@ -19,6 +19,7 @@ import BookPG from "./pages/BookPG";
 import MyReviews from "./pages/MyReviews";
 import MyProfile from "./pages/MyProfile";
 import ManageBookings from "./pages/ManageBookings";
+import ListingBookings from "./pages/ListingBookings";
 import OwnerNotifications from "./pages/OwnerNotifications";
 import AccountSettings from "./pages/AccountSettings";
 import NavbarDashboard from "./components/NavbarDashboard";
@@ -35,7 +36,7 @@ function AppContent() {
   // Paths where Navbar and Footer should be hidden (e.g., login only)
   const hideLayoutPaths = ["/login","/register","/forgot-password"];
   const hideLayout = hideLayoutPaths.includes(location.pathname);
-const isDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/owner/dashboard") || location.pathname.startsWith("/owner/create-listing") || location.pathname.startsWith("/owner/edit-listing") || location.pathname.startsWith("/my-reviews") || location.pathname.startsWith("/my-profile") || location.pathname.startsWith("/owner/notifications") || location.pathname.startsWith("/account-settings") || location.pathname === "/manage-bookings";
+const isDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/owner/dashboard") || location.pathname.startsWith("/owner/create-listing") || location.pathname.startsWith("/owner/edit-listing") || location.pathname.startsWith("/my-reviews") || location.pathname.startsWith("/my-profile") || location.pathname.startsWith("/owner/notifications") || location.pathname.startsWith("/account-settings") || location.pathname === "/manage-bookings" || location.pathname.startsWith("/listing-bookings");
 
 
   return (
@@ -58,6 +59,7 @@ const isDashboard = location.pathname.startsWith("/tenant/dashboard") || locatio
           <Route path="/owner/create-listing" element={<CreateListing />} />
           <Route path="/owner/edit-listing/:listingId" element={<EditListing />} />
           <Route path="/manage-bookings" element={<ManageBookings />} />
+          <Route path="/listing-bookings/:listingId" element={<ListingBookings />} />
           <Route path="/owner/notifications" element={<OwnerNotifications />} />
           <Route path="/account-settings" element={<AccountSettings />} />
           <Route path="/contact-support" element={<ContactSupport />} />

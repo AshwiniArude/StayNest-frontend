@@ -9,7 +9,8 @@
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
-  z-index: 2;
+  z-index: 3000;
+  position: relative;
 }
 
 .search-row,
@@ -69,7 +70,7 @@
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 8px 32px rgba(44, 34, 84, 0.13);
-  z-index: 10;
+  z-index: 3001;
   animation: dropdownIn 0.18s ease;
   padding: 0.5rem 0;
 }
@@ -411,13 +412,14 @@
   position: absolute;
   top: 110%;
   left: 0;
-  width: 100%;
+  min-width: 180px;
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(44, 34, 84, 0.13);
-  z-index: 20;
+  box-shadow: 0 8px 32px rgba(255, 153, 0, 0.13);
+  z-index: 3001;
   animation: dropdownIn 0.18s ease;
   padding: 0.5rem 0;
+  margin-top: 0.2rem;
 }
 .dropdown-item {
   padding: 0.5rem 1.2rem;
@@ -438,16 +440,16 @@
   position: absolute;
   top: 110%;
   left: 0;
-  min-width: 320px;
+  min-width: 220px;
   background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 8px 32px rgba(44, 34, 84, 0.13);
-  z-index: 30;
-  padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(255, 153, 0, 0.18);
+  z-index: 3002;
+  padding: 0.7rem 0.5rem 0.7rem 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  animation: dropdownIn 0.18s ease;
+  margin-top: 0.2rem;
 }
 .tenant-panel-option {
   display: flex;
@@ -515,26 +517,22 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0,0,0,0.18);
-  z-index: 25;
+  z-index: 3000;
 }
 .tenant-panel-dropdown.floating {
-  position: fixed;
-  left: 50%;
-  top: 160px;
-  transform: translateX(-50%);
-  min-width: 340px;
-  max-width: 95vw;
-  max-height: 380px;
-  overflow-y: auto;
+  position: absolute;
+  top: 110%;
+  left: 0;
+  min-width: 220px;
   background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 10px 40px rgba(44, 34, 84, 0.18);
-  z-index: 30;
-  padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(255, 153, 0, 0.18);
+  z-index: 3002;
+  padding: 0.7rem 0.5rem 0.7rem 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  animation: dropdownIn 0.18s ease;
+  margin-top: 0.2rem;
 }
 @media (max-width: 600px) {
   .tenant-panel-dropdown.floating {
@@ -557,7 +555,7 @@
   background: #fff;
   border-radius: 22px;
   box-shadow: 0 10px 40px rgba(44, 34, 84, 0.18);
-  z-index: 30;
+  z-index: 3003;
   padding: 1.2rem 0.5rem 1.2rem 0.5rem;
   display: flex;
   flex-direction: column;

@@ -98,7 +98,7 @@ const OwnerDashboard = () => {
               </div>
               <div className="listing-actions">
                 <button className="action-btn edit-btn" onClick={() => navigate(`/owner/edit-listing/${idx}`)}>Edit</button>
-                <button className="action-btn bookings-btn">Bookings</button>
+                <button className="action-btn bookings-btn" onClick={() => navigate(`/listing-bookings/${listing.pgName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`)}>Bookings</button>
               </div>
               <div className="listing-toggle">
                 <span className="toggle-label">Listing Status</span>
@@ -126,7 +126,7 @@ const OwnerDashboard = () => {
             </div>
             <div className="listing-actions">
               <button className="action-btn edit-btn" onClick={() => handleEditListing('sunshine-pg')}>Edit</button>
-              <button className="action-btn bookings-btn">Bookings</button>
+              <button className="action-btn bookings-btn" onClick={() => navigate('/listing-bookings/sunshine-pg-for-boys-pune')}>Bookings</button>
             </div>
             <div className="listing-toggle">
               <span className="toggle-label">Listing Status</span>
@@ -153,7 +153,7 @@ const OwnerDashboard = () => {
             </div>
             <div className="listing-actions">
               <button className="action-btn edit-btn" onClick={() => handleEditListing('elite-hostel')}>Edit</button>
-              <button className="action-btn bookings-btn">Bookings</button>
+              <button className="action-btn bookings-btn" onClick={() => navigate('/listing-bookings/elite-girls-hostel')}>Bookings</button>
             </div>
             <div className="listing-toggle">
               <span className="toggle-label">Listing Status</span>
@@ -179,7 +179,7 @@ const OwnerDashboard = () => {
             </div>
             <div className="listing-actions">
               <button className="action-btn edit-btn" onClick={() => handleEditListing('metro-coliving')}>Edit</button>
-              <button className="action-btn bookings-btn disabled">Bookings</button>
+              <button className="action-btn bookings-btn disabled" onClick={() => navigate('/listing-bookings/metro-co-living-space')}>Bookings</button>
             </div>
             <div className="listing-toggle">
               <span className="toggle-label">Listing Status</span>
