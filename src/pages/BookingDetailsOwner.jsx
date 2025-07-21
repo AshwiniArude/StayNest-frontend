@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavbarDashboard from '../components/NavbarDashboard';
+import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
 import { FaArrowLeft, FaUser, FaPhone, FaEnvelope, FaIdBadge, FaBed, FaMapMarkerAlt, FaRegCalendarAlt, FaCreditCard, FaFilePdf, FaLink, FaCheckCircle, FaClock, FaTimesCircle, FaChevronDown, FaChevronUp, FaComments, FaCalendarAlt, FaDownload, FaTimes, FaHeadset, FaGavel } from 'react-icons/fa';
 import '../styles/BookingDetails.css';
 
@@ -95,7 +95,7 @@ const BookingDetailsOwner = () => {
 
   return (
     <>
-      <NavbarDashboard />
+      <OwnerNavbarDashboard />
       <div className="booking-details-bg">
         {/* Header */}
         <div className="bd-header">

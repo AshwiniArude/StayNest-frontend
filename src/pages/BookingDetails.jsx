@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavbarDashboard from '../components/NavbarDashboard';
+import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
 import { FaArrowLeft, FaMapMarkerAlt, FaStar, FaRegCalendarAlt, FaBed, FaHashtag, FaCalendarCheck, FaCreditCard, FaFilePdf, FaEnvelope, FaComments, FaCheckCircle, FaClock, FaTimesCircle, FaChevronDown, FaChevronUp, FaHeadset } from 'react-icons/fa';
 import '../styles/BookingDetails.css';
 
@@ -99,7 +99,7 @@ const BookingDetails = () => {
 
   return (
     <>
-      <NavbarDashboard />
+      <TenantDashboardNavbar />
       <div className="booking-details-bg">
         {/* Header */}
         <div className="bd-header">

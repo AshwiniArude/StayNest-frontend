@@ -22,7 +22,8 @@ import ManageBookings from "./pages/ManageBookings";
 import ListingBookings from "./pages/ListingBookings";
 import OwnerNotifications from "./pages/OwnerNotifications";
 import AccountSettings from "./pages/AccountSettings";
-import NavbarDashboard from "./components/NavbarDashboard";
+import TenantDashboardNavbar from "./components/TenantDashboardNavbar";
+import OwnerNavbarDashboard from "./components/OwnerNavbarDashboard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "./styles/global.css";
@@ -33,18 +34,36 @@ import BookingDetailsOwner from './pages/BookingDetailsOwner';
 function AppContent() {
   const location = useLocation();
 
-  // Paths where Navbar and Footer should be hidden (e.g., login only)
-  const hideLayoutPaths = ["/login","/register","/forgot-password"];
+  // Paths where no nav/footer is shown
+  const hideLayoutPaths = ["/login", "/register", "/forgot-password"];
   const hideLayout = hideLayoutPaths.includes(location.pathname);
-const isDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/owner/dashboard") || location.pathname.startsWith("/owner/create-listing") || location.pathname.startsWith("/owner/edit-listing") || location.pathname.startsWith("/my-reviews") || location.pathname.startsWith("/my-profile") || location.pathname.startsWith("/owner/notifications") || location.pathname.startsWith("/account-settings") || location.pathname === "/manage-bookings" || location.pathname.startsWith("/listing-bookings");
 
+  // Detect dashboard type
+  const isTenantDashboard = location.pathname.startsWith("/tenant/dashboard");
+  const isOwnerDashboard = location.pathname.startsWith("/owner/dashboard") ||
+                           location.pathname.startsWith("/owner/create-listing") ||
+                           location.pathname.startsWith("/owner/edit-listing") ||
+                           location.pathname.startsWith("/owner/notifications") ||
+                           location.pathname.startsWith("/listing-bookings");
+
+  const isCommonDashboard = location.pathname.startsWith("/my-reviews") ||
+                            location.pathname.startsWith("/my-profile") ||
+                            location.pathname.startsWith("/account-settings") ||
+                            location.pathname === "/manage-bookings";
+
+  const showTenantNavbar = isTenantDashboard || isCommonDashboard;
+  const showOwnerNavbar = isOwnerDashboard || isCommonDashboard;
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!hideLayout && (isDashboard ? <NavbarDashboard /> : <Navbar />)}
+      {!hideLayout && (
+        showTenantNavbar ? <TenantDashboardNavbar /> :
+        showOwnerNavbar ? <OwnerNavbarDashboard /> :
+        <Navbar />
+      )}
 
       <main className="flex-grow">
-        <Routes>
+         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/listings" element={<Listings />} />
           <Route path="/listing/:id" element={<ListingDetail />} />
@@ -68,7 +87,7 @@ const isDashboard = location.pathname.startsWith("/tenant/dashboard") || locatio
         </Routes>
       </main>
 
-      <Footer />
+      {!hideLayout && <Footer />}
     </div>
   );
 }

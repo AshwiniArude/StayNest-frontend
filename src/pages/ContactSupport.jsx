@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import NavbarDashboard from '../components/NavbarDashboard';
+import Navbar from '../components/Navbar';
 import { FaSearch, FaBoxOpen, FaComments, FaEnvelope, FaHeadset, FaPhone, FaCheckCircle, FaTimesCircle, FaPaperclip, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
 import '../styles/ContactSupport.css';
 
@@ -78,7 +78,7 @@ const ContactSupport = () => {
 
   return (
     <>
-      <NavbarDashboard />
+      <Navbar />
       <div className="contact-support-page">
         {/* Top Section: Title & Quick Help */}
         <section className="support-hero-section">
