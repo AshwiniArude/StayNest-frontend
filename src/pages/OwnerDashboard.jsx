@@ -77,7 +77,6 @@ const OwnerDashboard = () => {
         <div className="listings-header">
           <h2>My PG Listings</h2>
           <button className="add-listing-btn" onClick={handleAddListing}>Add New Listing</button>
-          <button className="contact-support-btn" onClick={handleContactSupportOwner} style={{marginLeft: '1rem', background: '#2AB7CA', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.5rem 1.2rem', fontWeight: 600, cursor: 'pointer'}}>Contact Support</button>
         </div>
         <div className="listings-grid">
           {/* Render dynamic listings from localStorage */}
@@ -210,7 +209,7 @@ const OwnerDashboard = () => {
         <h2 className="quick-actions-title">Quick Actions</h2>
         <p className="quick-actions-subtitle">Manage your properties efficiently</p>
         <div className="quick-actions-grid">
-          <div className="quick-action-card green" onClick={handleAddListing}>
+          <div className="quick-action-card green" onClick={() => navigate('/owner/create-listing')}>
             <div className="icon-bg"><FaSearch /></div>
             <div className="action-content">
               <div className="action-title-row">
@@ -221,7 +220,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar green"></div>
             </div>
           </div>
-          <div className="quick-action-card yellow" onClick={handleManageBookings}>
+          <div className="quick-action-card yellow" onClick={() => navigate('/manage-bookings')}>
             <div className="icon-bg"><FaUser /></div>
             <div className="action-content">
               <div className="action-title-row">
@@ -232,7 +231,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar yellow"></div>
             </div>
           </div>
-          <div className="quick-action-card green" onClick={handleContactSupport}>
+          <div className="quick-action-card green" onClick={() => navigate('/owner/contact-support')}>
             <div className="icon-bg"><FaRegCommentDots /></div>
             <div className="action-content">
               <div className="action-title-row">
@@ -254,7 +253,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar pink"></div>
             </div>
           </div>
-          <div className="quick-action-card gray" onClick={handleAccountSettings}>
+          <div className="quick-action-card gray" onClick={() => navigate('/account-settings')}>
             <div className="icon-bg"><FaCog /></div>
             <div className="action-content">
               <div className="action-title-row">

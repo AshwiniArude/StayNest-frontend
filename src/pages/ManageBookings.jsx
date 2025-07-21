@@ -159,144 +159,146 @@ const ManageBookings = () => {
   }
 
   return (
-    <div className="manage-bookings-container">
-      <div className="header-section">
-        <h1>Manage Booking Requests</h1>
-        <p>Review and manage booking requests for your properties</p>
-      </div>
+    <>
+      <div className="manage-bookings-container">
+        <div className="header-section">
+          <h1>Manage Booking Requests</h1>
+          <p>Review and manage booking requests for your properties</p>
+        </div>
 
-      <div className="stats-section">
-        <div className="stat-card">
-          <h3>{requests.length}</h3>
-          <p>Total Requests</p>
+        <div className="stats-section">
+          <div className="stat-card">
+            <h3>{requests.length}</h3>
+            <p>Total Requests</p>
+          </div>
+          <div className="stat-card">
+            <h3>{requests.filter(r => r.status === 'pending').length}</h3>
+            <p>Pending</p>
+          </div>
+          <div className="stat-card">
+            <h3>{requests.filter(r => r.status === 'confirmed').length}</h3>
+            <p>Confirmed</p>
+          </div>
+          <div className="stat-card">
+            <h3>{requests.filter(r => r.status === 'cancelled').length}</h3>
+            <p>Cancelled</p>
+          </div>
         </div>
-        <div className="stat-card">
-          <h3>{requests.filter(r => r.status === 'pending').length}</h3>
-          <p>Pending</p>
-        </div>
-        <div className="stat-card">
-          <h3>{requests.filter(r => r.status === 'confirmed').length}</h3>
-          <p>Confirmed</p>
-        </div>
-        <div className="stat-card">
-          <h3>{requests.filter(r => r.status === 'cancelled').length}</h3>
-          <p>Cancelled</p>
-        </div>
-      </div>
 
-      <div className="filter-section">
-        <div className="filter-buttons">
-          <button 
-            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-            onClick={() => setFilter('all')}
-          >
-            All ({requests.length})
-          </button>
-          <button 
-            className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
-            onClick={() => setFilter('pending')}
-          >
-            Pending ({requests.filter(r => r.status === 'pending').length})
-          </button>
-          <button 
-            className={`filter-btn ${filter === 'confirmed' ? 'active' : ''}`}
-            onClick={() => setFilter('confirmed')}
-          >
-            Confirmed ({requests.filter(r => r.status === 'confirmed').length})
-          </button>
-          <button 
-            className={`filter-btn ${filter === 'cancelled' ? 'active' : ''}`}
-            onClick={() => setFilter('cancelled')}
-          >
-            Cancelled ({requests.filter(r => r.status === 'cancelled').length})
-          </button>
+        <div className="filter-section">
+          <div className="filter-buttons">
+            <button 
+              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+              onClick={() => setFilter('all')}
+            >
+              All ({requests.length})
+            </button>
+            <button 
+              className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
+              onClick={() => setFilter('pending')}
+            >
+              Pending ({requests.filter(r => r.status === 'pending').length})
+            </button>
+            <button 
+              className={`filter-btn ${filter === 'confirmed' ? 'active' : ''}`}
+              onClick={() => setFilter('confirmed')}
+            >
+              Confirmed ({requests.filter(r => r.status === 'confirmed').length})
+            </button>
+            <button 
+              className={`filter-btn ${filter === 'cancelled' ? 'active' : ''}`}
+              onClick={() => setFilter('cancelled')}
+            >
+              Cancelled ({requests.filter(r => r.status === 'cancelled').length})
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="requests-grid">
-        {filteredRequests.map((request) => (
-          <div key={request.id} className={`request-card ${request.status}`}>
-            <div className="request-header">
-              <div className="tenant-info">
-                <img 
-                  src={request.tenantImage} 
-                  alt={request.tenantName} 
-                  className="tenant-avatar"
-                />
-                <div className="tenant-details">
-                  <h3>{request.tenantName}</h3>
-                  <div className="tenant-rating">
-                    <FaStar className="star-icon" />
-                    <span>{request.tenantRating}</span>
+        <div className="requests-grid">
+          {filteredRequests.map((request) => (
+            <div key={request.id} className={`request-card ${request.status}`}>
+              <div className="request-header">
+                <div className="tenant-info">
+                  <img 
+                    src={request.tenantImage} 
+                    alt={request.tenantName} 
+                    className="tenant-avatar"
+                  />
+                  <div className="tenant-details">
+                    <h3>{request.tenantName}</h3>
+                    <div className="tenant-rating">
+                      <FaStar className="star-icon" />
+                      <span>{request.tenantRating}</span>
+                    </div>
                   </div>
                 </div>
+                <div className="status-badge" style={{ backgroundColor: getStatusColor(request.status) }}>
+                  {getStatusText(request.status)}
+                </div>
               </div>
-              <div className="status-badge" style={{ backgroundColor: getStatusColor(request.status) }}>
-                {getStatusText(request.status)}
+
+              <div className="property-info">
+                <h4>{request.pgName}</h4>
+                <p><FaMapMarkerAlt /> {request.location}</p>
+                <p><FaCalendarAlt /> {request.checkInDate} - {request.checkOutDate}</p>
+                <p className="sharing-info">{request.sharing}</p>
+                <p className="price-info">₹{request.price.toLocaleString()}/month</p>
               </div>
+
+              <div className="contact-info">
+                <p><FaEnvelope /> {request.tenantEmail}</p>
+                <p><FaPhone /> {request.tenantPhone}</p>
+                <p><FaClock /> Requested on {request.requestDate}</p>
+              </div>
+
+              <div className="message-section">
+                <h5>Message from tenant:</h5>
+                <p>{request.message}</p>
+              </div>
+
+              {request.status === 'pending' && (
+                <div className="action-buttons">
+                  <button 
+                    className="confirm-btn"
+                    onClick={() => handleConfirmBooking(request.id)}
+                  >
+                    <FaCheck /> Confirm Booking
+                  </button>
+                  <button 
+                    className="cancel-btn"
+                    onClick={() => handleCancelBooking(request.id)}
+                  >
+                    <FaTimes /> Cancel Request
+                  </button>
+                </div>
+              )}
+
+              {request.status === 'confirmed' && (
+                <div className="confirmed-info">
+                  <FaCheck className="confirmed-icon" />
+                  <span>Booking confirmed</span>
+                </div>
+              )}
+
+              {request.status === 'cancelled' && (
+                <div className="cancelled-info">
+                  <FaTimes className="cancelled-icon" />
+                  <span>Request cancelled</span>
+                </div>
+              )}
             </div>
-
-            <div className="property-info">
-              <h4>{request.pgName}</h4>
-              <p><FaMapMarkerAlt /> {request.location}</p>
-              <p><FaCalendarAlt /> {request.checkInDate} - {request.checkOutDate}</p>
-              <p className="sharing-info">{request.sharing}</p>
-              <p className="price-info">₹{request.price.toLocaleString()}/month</p>
-            </div>
-
-            <div className="contact-info">
-              <p><FaEnvelope /> {request.tenantEmail}</p>
-              <p><FaPhone /> {request.tenantPhone}</p>
-              <p><FaClock /> Requested on {request.requestDate}</p>
-            </div>
-
-            <div className="message-section">
-              <h5>Message from tenant:</h5>
-              <p>{request.message}</p>
-            </div>
-
-            {request.status === 'pending' && (
-              <div className="action-buttons">
-                <button 
-                  className="confirm-btn"
-                  onClick={() => handleConfirmBooking(request.id)}
-                >
-                  <FaCheck /> Confirm Booking
-                </button>
-                <button 
-                  className="cancel-btn"
-                  onClick={() => handleCancelBooking(request.id)}
-                >
-                  <FaTimes /> Cancel Request
-                </button>
-              </div>
-            )}
-
-            {request.status === 'confirmed' && (
-              <div className="confirmed-info">
-                <FaCheck className="confirmed-icon" />
-                <span>Booking confirmed</span>
-              </div>
-            )}
-
-            {request.status === 'cancelled' && (
-              <div className="cancelled-info">
-                <FaTimes className="cancelled-icon" />
-                <span>Request cancelled</span>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {filteredRequests.length === 0 && (
-        <div className="no-requests">
-          <div className="no-requests-icon">📋</div>
-          <h3>No requests found</h3>
-          <p>There are no {filter === 'all' ? '' : filter} requests at the moment.</p>
+          ))}
         </div>
-      )}
-    </div>
+
+        {filteredRequests.length === 0 && (
+          <div className="no-requests">
+            <div className="no-requests-icon">📋</div>
+            <h3>No requests found</h3>
+            <p>There are no {filter === 'all' ? '' : filter} requests at the moment.</p>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

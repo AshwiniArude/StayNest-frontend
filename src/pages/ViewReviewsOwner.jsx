@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaArrowLeft, FaStar, FaEllipsisV, FaUserCircle, FaDownload, FaThumbtack, FaFlag, FaReply } from 'react-icons/fa';
 import '../styles/MyProfile.css';
+import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
 
 const PG_LISTINGS = [
   { label: 'All', value: 'all' },
@@ -79,7 +80,8 @@ const ViewReviewsOwner = () => {
   );
 
   return (
-    <div className="profile-container" style={{ background: 'linear-gradient(to right, #f9f7ff, #fff0e3)', minHeight: '100vh', padding: 0 }}>
+    <>
+      <div className="profile-container" style={{ background: 'linear-gradient(to right, #f9f7ff, #fff0e3)', minHeight: '100vh', padding: 0 }}>
         {/* Header Section */}
         <section className="header-section">
           <div className="header-content" style={{alignItems:'flex-start'}}>
@@ -190,6 +192,7 @@ const ViewReviewsOwner = () => {
           </div>
         </div>
       </div>
+    </>
   );
 };
 

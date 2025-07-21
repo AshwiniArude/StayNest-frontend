@@ -292,14 +292,14 @@ const TenantDashboard = () => {
               <div className="accent-bar gray"></div>
             </div>
           </div>
-          <div className="quick-action-card purple" onClick={handleCreateReview}>
+          <div className="quick-action-card purple" onClick={() => navigate('/my-reviews')}>
             <div className="icon-bg"><FaStar /></div>
             <div className="action-content">
               <div className="action-title-row">
-                <h3>Create Review</h3>
+                <h3>View Reviews</h3>
                 <FaArrowRight className="action-arrow" />
               </div>
-              <p className="action-desc">Share your experience</p>
+              <p className="action-desc">See all your reviews and ratings</p>
               <div className="accent-bar purple"></div>
             </div>
           </div>

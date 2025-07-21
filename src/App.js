@@ -22,6 +22,12 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import OwnerNavbarDashboard from "./components/OwnerNavbarDashboard";
 import TenantDashboardNavbar from "./components/TenantDashboardNavbar";
+import ManageBookings from "./pages/ManageBookings";
+import ViewReviewsOwner from "./pages/ViewReviewsOwner";
+import AccountSettings from "./pages/AccountSettings";
+import ContactSupport from "./pages/ContactSupport";
+import ListingBookings from "./pages/ListingBookings";
+import BookingDetailsOwner from "./pages/BookingDetailsOwner";
 import "./styles/global.css";
 
 function AppContent() {
@@ -32,7 +38,14 @@ function AppContent() {
   const hideLayout = hideLayoutPaths.includes(location.pathname);
 
   // Show owner/tenant navbars for dashboard routes
-  const isOwnerDashboard = location.pathname.startsWith("/owner/dashboard") || location.pathname.startsWith("/owner/create-listing") || location.pathname.startsWith("/owner/edit-listing");
+  const isOwnerDashboard =
+    location.pathname.startsWith("/owner/dashboard") ||
+    location.pathname.startsWith("/owner/create-listing") ||
+    location.pathname.startsWith("/owner/edit-listing") ||
+    location.pathname.startsWith("/owner/view-reviews") ||
+    location.pathname.startsWith("/manage-bookings") ||
+    location.pathname.startsWith("/listing-bookings") ||
+    location.pathname.startsWith("/owner/booking-details");
   const isTenantDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/my-profile") || location.pathname.startsWith("/my-reviews");
 
   return (
@@ -54,6 +67,12 @@ function AppContent() {
           <Route path="/owner/dashboard" element={<OwnerDashboard />} />
           <Route path="/owner/create-listing" element={<CreateListing />} />
           <Route path="/owner/edit-listing/:listingId" element={<EditListing />} />
+          <Route path="/manage-bookings" element={<ManageBookings />} />
+          <Route path="/owner/view-reviews" element={<ViewReviewsOwner />} />
+          <Route path="/account-settings" element={<AccountSettings />} />
+          <Route path="/owner/contact-support" element={<ContactSupport />} />
+          <Route path="/listing-bookings/:pgId" element={<ListingBookings />} />
+          <Route path="/owner/booking-details" element={<BookingDetailsOwner />} />
         </Routes>
       </main>
 
