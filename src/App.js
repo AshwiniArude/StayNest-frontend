@@ -33,12 +33,13 @@ import "./styles/global.css";
 import AccountSettingsOwner from "./pages/AccountSettings owner.jsx";
 import ContactSupportOwner from "./pages/ContactSupport owner.jsx";
 import OwnerNotifications from "./pages/OwnerNotifications";
+import ResetPassword from "./pages/ResetPassword";
 
 function AppContent() {
   const location = useLocation();
 
   // Paths where Navbar and Footer should be hidden (e.g., login only)
-  const hideLayoutPaths = ["/login","/register"];
+  const hideLayoutPaths = ["/login","/register","/reset-password"];
   const hideLayout = hideLayoutPaths.includes(location.pathname);
 
   // Show owner/tenant navbars for dashboard routes
@@ -94,6 +95,7 @@ function AppContent() {
           <Route path="/contact-support-owner" element={<ContactSupportOwner />} />
           <Route path="/contactsupport" element={<ContactSupport />} />
           <Route path="/owner/notifications" element={<OwnerNotifications />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </main>
 

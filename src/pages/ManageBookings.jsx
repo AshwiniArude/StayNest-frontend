@@ -251,11 +251,6 @@ const ManageBookings = () => {
                 <p><FaClock /> Requested on {request.requestDate}</p>
               </div>
 
-              <div className="message-section">
-                <h5>Message from tenant:</h5>
-                <p>{request.message}</p>
-              </div>
-
               {request.status === 'pending' && (
                 <div className="action-buttons">
                   <button 

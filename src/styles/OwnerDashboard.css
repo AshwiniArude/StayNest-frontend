@@ -821,6 +821,27 @@
   background: #6b46c1;
 }
 
+.delete-btn {
+  background: #FF6B6B;
+  color: #fff;
+  border: 2px solid #FF6B6B;
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border 0.2s;
+}
+.delete-btn:hover {
+  background: #d32f2f;
+  border-color: #d32f2f;
+}
+
 @media (max-width: 1200px) {
   .listings-grid {
     grid-template-columns: repeat(2, 1fr);

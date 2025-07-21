@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/OwnerDashboard.css';
-import { FaHome, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaRegCalendarAlt, FaMapMarkerAlt, FaCreditCard } from "react-icons/fa";
+import { FaHome, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaRegCalendarAlt, FaMapMarkerAlt, FaCreditCard, FaTrash } from "react-icons/fa";
 
 const OwnerDashboard = () => {
   const navigate = useNavigate();
@@ -39,6 +39,26 @@ const OwnerDashboard = () => {
 
   const handleViewBookingDetails = () => {
     navigate('/owner/booking-details');
+  };
+
+  // Add this handler for deleting a listing
+  const handleDeleteListing = async (listingId, idx) => {
+    if (!window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;
+    try {
+      // Remove from backend (API)
+      // If listingId is not available, fallback to idx for local only
+      if (listingId) {
+        const listingService = (await import('../services/ListingService')).default;
+        await listingService.deleteListing(listingId);
+      }
+      // Remove from local state and localStorage
+      const updated = ownerListings.filter((_, i) => i !== idx);
+      setOwnerListings(updated);
+      localStorage.setItem('ownerListings', JSON.stringify(updated));
+      alert('Listing deleted successfully.');
+    } catch (err) {
+      alert('Failed to delete listing.');
+    }
   };
 
   return (
@@ -103,6 +123,7 @@ const OwnerDashboard = () => {
               <div className="listing-actions">
                 <button className="action-btn edit-btn" onClick={() => navigate(`/owner/edit-listing/${idx}`)}>Edit</button>
                 <button className="action-btn bookings-btn" onClick={() => navigate(`/listing-bookings/${listing.pgName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`)}>Bookings</button>
+                <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing(listing._id || listing.id, idx)}><FaTrash /></button>
               </div>
               <div className="listing-toggle">
                 <span className="toggle-label">Listing Status</span>
@@ -131,6 +152,7 @@ const OwnerDashboard = () => {
             <div className="listing-actions">
               <button className="action-btn edit-btn" onClick={() => handleEditListing('sunshine-pg')}>Edit</button>
               <button className="action-btn bookings-btn" onClick={() => navigate('/listing-bookings/sunshine-pg-for-boys-pune')}>Bookings</button>
+              <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing('sunshine-pg', 0)}><FaTrash /></button>
             </div>
             <div className="listing-toggle">
               <span className="toggle-label">Listing Status</span>
@@ -158,6 +180,7 @@ const OwnerDashboard = () => {
             <div className="listing-actions">
               <button className="action-btn edit-btn" onClick={() => handleEditListing('elite-hostel')}>Edit</button>
               <button className="action-btn bookings-btn" onClick={() => navigate('/listing-bookings/elite-girls-hostel')}>Bookings</button>
+              <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing('elite-hostel', 1)}><FaTrash /></button>
             </div>
             <div className="listing-toggle">
               <span className="toggle-label">Listing Status</span>
@@ -184,6 +207,7 @@ const OwnerDashboard = () => {
             <div className="listing-actions">
               <button className="action-btn edit-btn" onClick={() => handleEditListing('metro-coliving')}>Edit</button>
               <button className="action-btn bookings-btn disabled" onClick={() => navigate('/listing-bookings/metro-co-living-space')}>Bookings</button>
+              <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing('metro-coliving', 2)}><FaTrash /></button>
             </div>
             <div className="listing-toggle">
               <span className="toggle-label">Listing Status</span>
