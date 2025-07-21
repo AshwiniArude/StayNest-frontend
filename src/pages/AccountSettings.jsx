@@ -139,7 +139,7 @@ const AccountSettings = () => {
 
   // Tab content
   return (
-    <div className="account-settings-page">
+    <div className={`account-settings-page theme-${theme}`}>
       {toast && <div className="settings-toast">{toast}</div>}
       {themeToast && <div className="settings-toast">{themeToast}</div>}
       {privacyToast && <div className="settings-toast">{privacyToast}</div>}

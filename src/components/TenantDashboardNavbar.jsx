@@ -55,10 +55,10 @@ const TenantDashboardNavbar = () => {
           <Link to="/">StayNest</Link>
         </div>
         <div className="navbar-center-links">
-          <Link to="/">Home</Link>
+          <Link to="/tenant/dashboard">Dashboard</Link>
           <Link to="/listings">Browse PGs</Link>
           <Link to="/about">About</Link>
-          <Link to="/contact">Contact</Link>
+          <Link to="/contact-support">Contact</Link>
         </div>
         <div className="navbar-auth">
           {/* Avatar and Menu Toggle Icon */}

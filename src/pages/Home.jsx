@@ -1,9 +1,10 @@
 import '../styles/Home.css';
 import { Link } from 'react-router-dom';
 import { FaMapMarkerAlt, FaSearch } from 'react-icons/fa';
-import About from './About'; 
+import About from './about'; 
 import WhyChoose from './WhyChoose';
 import Cta from './Cta';
+import ContactSupportHome from './ContactSupportHome';
 
 const Home = () => {
   return (
@@ -26,14 +27,14 @@ const Home = () => {
               className="square-search-input"
               placeholder="Enter city or locality..."
             />
-            <button className="square-search-btn">
+            <Link to="/login" className="square-search-btn" style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,textDecoration:'none'}}>
               <FaSearch className="icon white-icon" />
               <span>Search PGs</span>
-            </button>
+            </Link>
           </div>
 
           <div className="cta-buttons">
-            <Link to="/listings" className="btn lavender">Browse PGs</Link>
+            <Link to="/register" className="btn lavender">Browse PGs</Link>
             <Link to="/register" className="btn outline">List Your PG</Link>
           </div>
 
@@ -55,7 +56,7 @@ const Home = () => {
       </div>
 
       
-      <div className="about-wrapper">
+      <div className="about-wrapper" id="about">
         <About />
       </div>
 
@@ -66,6 +67,9 @@ const Home = () => {
       <div className="Cta-wrapper">
         <Cta />
       </div>
+
+      {/* Contact Support Section (Home Page) */}
+      <ContactSupportHome />
     </>
   );
 };

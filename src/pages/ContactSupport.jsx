@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import { FaSearch, FaBoxOpen, FaComments, FaEnvelope, FaHeadset, FaPhone, FaCheckCircle, FaTimesCircle, FaPaperclip, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
+import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
+import { FaSearch, FaBoxOpen, FaComments, FaEnvelope, FaHeadset, FaPhone, FaCheckCircle, FaTimesCircle, FaPaperclip, FaClock, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 import '../styles/ContactSupport.css';
 
 const ContactSupport = () => {
@@ -78,25 +78,13 @@ const ContactSupport = () => {
 
   return (
     <>
-      <Navbar />
+      <TenantDashboardNavbar />
       <div className="contact-support-page">
         {/* Top Section: Title & Quick Help */}
         <section className="support-hero-section">
           <h1>Need Help? We're here for you!</h1>
           <p>Reach out to our team with any questions or issues.</p>
           <div className="quick-help-grid">
-            <div className="quick-help-card">
-              <FaSearch className="quick-help-icon" color="#7c5ff0" />
-              <span>FAQs</span>
-            </div>
-            <div className="quick-help-card">
-              <FaBoxOpen className="quick-help-icon" color="#7c5ff0" />
-              <span>My Bookings</span>
-            </div>
-            <div className="quick-help-card" ref={chatBtnRef}>
-              <FaHeadset className="quick-help-icon" color="#fff" style={{background:'#1ec28b',borderRadius:'12px',padding:'0.5rem'}} />
-              <span>Chat with Support</span>
-            </div>
             <div className="quick-help-card">
               <FaEnvelope className="quick-help-icon" color="#7c5ff0" />
               <span>Submit a Request</span>
@@ -147,9 +135,9 @@ const ContactSupport = () => {
           <h2>Talk to Us Directly</h2>
           <div className="contact-options-grid">
             <div className="contact-option-card">
-              <div className="option-icon"><FaHeadset color="#fff" style={{background:'#1ec28b',borderRadius:'12px',padding:'0.5rem'}} /></div>
-              <div className="option-label">Chat with an agent</div>
-              <button className="option-btn" style={{background:'#1ec28b',color:'#fff'}}>Start Chat</button>
+              <div className="option-icon"><FaWhatsapp color="#25D366" style={{background:'#e9f7ef',borderRadius:'12px',padding:'0.5rem'}} /></div>
+              <div className="option-label">Chat on WhatsApp</div>
+              <a className="option-btn" style={{background:'#25D366',color:'#fff',textDecoration:'none'}} href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer">Start WhatsApp Chat</a>
             </div>
             <div className="contact-option-card">
               <div className="option-icon"><FaPhone color="#7c5ff0" /></div>
@@ -179,7 +167,7 @@ const ContactSupport = () => {
             <div className="support-location-block">
               <FaMapMarkerAlt className="support-location-icon" color="#7c5ff0" />
               <div>
-                StayNest HQ, 4th Floor, Koramangala, Bangalore - 560034
+                StayNest HQ, 2nd Floor, FC Road, Pune, Maharashtra - 411004
               </div>
             </div>
           </div>

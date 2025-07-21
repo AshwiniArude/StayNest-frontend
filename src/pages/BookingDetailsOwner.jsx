@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
 import { FaArrowLeft, FaUser, FaPhone, FaEnvelope, FaIdBadge, FaBed, FaMapMarkerAlt, FaRegCalendarAlt, FaCreditCard, FaFilePdf, FaLink, FaCheckCircle, FaClock, FaTimesCircle, FaChevronDown, FaChevronUp, FaComments, FaCalendarAlt, FaDownload, FaTimes, FaHeadset, FaGavel } from 'react-icons/fa';
 import '../styles/BookingDetails.css';
 
@@ -94,9 +93,7 @@ const BookingDetailsOwner = () => {
   );
 
   return (
-    <>
-      <OwnerNavbarDashboard />
-      <div className="booking-details-bg">
+    <div className="booking-details-bg">
         {/* Header */}
         <div className="bd-header">
           <button className="bd-back-btn" onClick={() => navigate(-1)}><FaArrowLeft color="#7c5ff0" /> Bookings</button>
@@ -122,10 +119,8 @@ const BookingDetailsOwner = () => {
             <div className="bd-summary-row"><span><FaMapMarkerAlt /> Location</span><span>{pg.location}</span></div>
             <div className="bd-summary-row"><span><FaBed /> Room Type</span><span>{pg.roomType}</span></div>
             <div className="bd-summary-row"><span><FaRegCalendarAlt /> Booking Dates</span><span>{pg.bookingDates}</span></div>
-            <div className="bd-summary-row"><span><FaCreditCard /> Amount Paid</span><span>₹{pg.amountPaid.toLocaleString()}</span></div>
           </div>
           <div className="bd-summary-actions">
-            <a className="bd-btn bd-btn-pdf" href={`/bookpg/${pg.listingId}`} target="_blank" rel="noopener noreferrer"><FaLink /> View Listing</a>
             <button className="bd-btn bd-btn-pdf" onClick={handleDownload}><FaFilePdf /> Download Agreement</button>
             <button className="bd-btn bd-btn-pdf" onClick={handleDownload}><FaDownload /> Download Receipt</button>
           </div>
@@ -207,7 +202,6 @@ const BookingDetailsOwner = () => {
           </div>
         )}
       </div>
-    </>
   );
 };
 

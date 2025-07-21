@@ -15,8 +15,8 @@ const Navbar = () => {
       <div className="navbar-center-links">
         <Link to="/"><FaHome className="nav-icon" /> Home</Link>
         <Link to="/listings"><FaBed className="nav-icon" /> Browse PGs</Link>
-        <Link to="/about"><FaInfoCircle className="nav-icon" /> About</Link>
-        <Link to="/contact"><FaPhoneAlt className="nav-icon" /> Contact</Link>
+        <a href="/#about"><FaInfoCircle className="nav-icon" /> About</a>
+        <a href="/#contact-support-home"><FaPhoneAlt className="nav-icon" /> Contact</a>
       </div>
 
       {/* Right: Login/Register */}

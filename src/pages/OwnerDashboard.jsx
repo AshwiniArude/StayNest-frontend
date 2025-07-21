@@ -33,6 +33,10 @@ const OwnerDashboard = () => {
     navigate('/contact-support');
   };
 
+  const handleContactSupportOwner = () => {
+    navigate('/owner/contact-support');
+  };
+
   const handleViewBookingDetails = () => {
     navigate('/owner/booking-details');
   };
@@ -73,6 +77,7 @@ const OwnerDashboard = () => {
         <div className="listings-header">
           <h2>My PG Listings</h2>
           <button className="add-listing-btn" onClick={handleAddListing}>Add New Listing</button>
+          <button className="contact-support-btn" onClick={handleContactSupportOwner} style={{marginLeft: '1rem', background: '#2AB7CA', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.5rem 1.2rem', fontWeight: 600, cursor: 'pointer'}}>Contact Support</button>
         </div>
         <div className="listings-grid">
           {/* Render dynamic listings from localStorage */}
@@ -238,7 +243,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar green"></div>
             </div>
           </div>
-          <div className="quick-action-card pink">
+          <div className="quick-action-card pink" onClick={() => navigate('/owner/view-reviews')}>
             <div className="icon-bg"><FaHeart /></div>
             <div className="action-content">
               <div className="action-title-row">

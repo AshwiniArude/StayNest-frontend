@@ -521,3 +521,109 @@
     height: 38px;
   }
 } 
+
+/* Theme: Dark */
+.theme-dark {
+  background: linear-gradient(to right, #232323 60%, #5e4b8b 100%) !important;
+  color: #f9f7ff !important;
+}
+.theme-dark .settings-header-section,
+.theme-dark .settings-section,
+.theme-dark .settings-tabs {
+  background: #232232 !important;
+  color: #f9f7ff !important;
+  box-shadow: 0 8px 32px rgba(44, 34, 84, 0.18);
+}
+.theme-dark .settings-header-content h1,
+.theme-dark .settings-header-content p,
+.theme-dark .settings-tab-btn,
+.theme-dark .settings-tab-btn.active,
+.theme-dark .settings-tab-btn.danger,
+.theme-dark .settings-tab-btn.danger.active {
+  color: #f9f7ff !important;
+}
+.theme-dark .settings-tab-btn.active {
+  background: #2AB7CA !important;
+}
+.theme-dark .settings-section label,
+.theme-dark .settings-section input,
+.theme-dark .settings-section select,
+.theme-dark .settings-section textarea {
+  color: #f9f7ff !important;
+  background: #232232 !important;
+}
+.theme-dark .theme-card {
+  background: #232232 !important;
+  color: #f9f7ff !important;
+}
+.theme-dark .theme-card.selected {
+  border-color: #2AB7CA !important;
+}
+.theme-dark .settings-save-btn,
+.theme-dark .export-btn {
+  background: #2AB7CA !important;
+  color: #fff !important;
+}
+.theme-dark .settings-save-btn:not(:disabled):hover,
+.theme-dark .export-btn:hover {
+  background: #1e8fa3 !important;
+}
+
+/* Theme: Light (default, but explicit) */
+.theme-light {
+  background: linear-gradient(to right, #f9f7ff, #fff0e3) !important;
+  color: #232323 !important;
+}
+.theme-light .settings-header-section,
+.theme-light .settings-section,
+.theme-light .settings-tabs {
+  background: #fff !important;
+  color: #232323 !important;
+}
+
+/* Theme: Pastel */
+.theme-pastel {
+  background: linear-gradient(90deg, #ffe3ec 0%, #e0e7ff 100%) !important;
+  color: #5e4b8b !important;
+}
+.theme-pastel .settings-header-section,
+.theme-pastel .settings-section,
+.theme-pastel .settings-tabs {
+  background: #fff0f6 !important;
+  color: #5e4b8b !important;
+}
+.theme-pastel .settings-header-content h1,
+.theme-pastel .settings-header-content p,
+.theme-pastel .settings-tab-btn,
+.theme-pastel .settings-tab-btn.active,
+.theme-pastel .settings-tab-btn.danger,
+.theme-pastel .settings-tab-btn.danger.active {
+  color: #5e4b8b !important;
+}
+.theme-pastel .settings-tab-btn.active {
+  background: #FFC857 !important;
+  color: #232323 !important;
+}
+.theme-pastel .settings-section label,
+.theme-pastel .settings-section input,
+.theme-pastel .settings-section select,
+.theme-pastel .settings-section textarea {
+  color: #5e4b8b !important;
+  background: #fff0f6 !important;
+}
+.theme-pastel .theme-card {
+  background: #fff0f6 !important;
+  color: #5e4b8b !important;
+}
+.theme-pastel .theme-card.selected {
+  border-color: #FFC857 !important;
+}
+.theme-pastel .settings-save-btn,
+.theme-pastel .export-btn {
+  background: #FFC857 !important;
+  color: #232323 !important;
+}
+.theme-pastel .settings-save-btn:not(:disabled):hover,
+.theme-pastel .export-btn:hover {
+  background: #ffb300 !important;
+} 

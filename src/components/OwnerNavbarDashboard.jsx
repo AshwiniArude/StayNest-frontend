@@ -86,7 +86,7 @@ const OwnerNavbarDashboard = () => {
         <div className="menu-card">
           <div className="menu-section">
             <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-comment-dots"></i><span>Messages</span></div>
-            <div className="menu-item" onClick={() => { navigate('/my-profile'); setIsMenuOpen(false); }}><i className="far fa-user"></i><span>Profile</span></div>
+            <div className="menu-item" onClick={() => { navigate('/my-profile-owner'); setIsMenuOpen(false); }}><i className="far fa-user"></i><span>Profile</span></div>
           </div>
           <div className="menu-section">
             <div className="menu-item" onClick={handleNotifications}><i className="far fa-bell"></i><span>Notifications</span><span className="notification-badge">1</span></div>
