@@ -16,7 +16,7 @@ const Navbar = () => {
         <Link to="/"><FaHome className="nav-icon" /> Home</Link>
         <Link to="/listings"><FaBed className="nav-icon" /> Browse PGs</Link>
         <a href="/#about"><FaInfoCircle className="nav-icon" /> About</a>
-        <a href="/#contact-support-home"><FaPhoneAlt className="nav-icon" /> Contact</a>
+        <Link to="/contact-support"><FaPhoneAlt className="nav-icon" /> Contact</Link>
       </div>
 
       {/* Right: Login/Register */}

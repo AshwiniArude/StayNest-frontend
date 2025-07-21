@@ -281,7 +281,7 @@ const TenantDashboard = () => {
               <div className="accent-bar green"></div>
             </div>
           </div>
-          <div className="quick-action-card gray" onClick={handleAccountSettings}>
+          <div className="quick-action-card gray" onClick={handleAccountSettings} style={{cursor:'pointer'}}>
             <div className="icon-bg"><FaCog /></div>
             <div className="action-content">
               <div className="action-title-row">

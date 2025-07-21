@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
 import { FaSearch, FaBoxOpen, FaComments, FaEnvelope, FaHeadset, FaPhone, FaCheckCircle, FaTimesCircle, FaPaperclip, FaClock, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 import '../styles/ContactSupport.css';
@@ -21,6 +22,7 @@ const ContactSupport = () => {
   const [ticketFeedback, setTicketFeedback] = useState('');
   // Chat button animation
   const chatBtnRef = useRef(null);
+  const contactFormRef = useRef(null);
   useEffect(() => {
     const timer = setTimeout(() => {
       if (chatBtnRef.current) {
@@ -30,6 +32,8 @@ const ContactSupport = () => {
     }, 10000);
     return () => clearTimeout(timer);
   }, []);
+
+  const navigate = useNavigate();
 
   // Form handlers
   const handleInput = (e) => {
@@ -85,7 +89,7 @@ const ContactSupport = () => {
           <h1>Need Help? We're here for you!</h1>
           <p>Reach out to our team with any questions or issues.</p>
           <div className="quick-help-grid">
-            <div className="quick-help-card">
+            <div className="quick-help-card" onClick={() => navigate('/contact-support')} style={{ cursor: 'pointer' }}>
               <FaEnvelope className="quick-help-icon" color="#7c5ff0" />
               <span>Submit a Request</span>
             </div>
@@ -93,7 +97,7 @@ const ContactSupport = () => {
         </section>
 
         {/* Contact Form Card */}
-        <section className="contact-form-section">
+        <section className="contact-form-section" ref={contactFormRef}>
           <div className="contact-form-card">
             <h2>Send us a Message</h2>
             <form onSubmit={handleSubmit} autoComplete="off">

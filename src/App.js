@@ -21,6 +21,7 @@ import MyProfileOwner from "./pages/MyProfileOwner";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import OwnerNavbarDashboard from "./components/OwnerNavbarDashboard";
+import TenantDashboardNavbar from "./components/TenantDashboardNavbar";
 import "./styles/global.css";
 
 function AppContent() {
@@ -30,12 +31,13 @@ function AppContent() {
   const hideLayoutPaths = ["/login","/register"];
   const hideLayout = hideLayoutPaths.includes(location.pathname);
 
-  // Show owner navbar for owner dashboard routes
+  // Show owner/tenant navbars for dashboard routes
   const isOwnerDashboard = location.pathname.startsWith("/owner/dashboard") || location.pathname.startsWith("/owner/create-listing") || location.pathname.startsWith("/owner/edit-listing");
+  const isTenantDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/my-profile") || location.pathname.startsWith("/my-reviews");
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!hideLayout && (isOwnerDashboard ? <OwnerNavbarDashboard /> : <Navbar />)}
+      {!hideLayout && (isOwnerDashboard ? <OwnerNavbarDashboard /> : isTenantDashboard ? <TenantDashboardNavbar /> : <Navbar />)}
 
       <main className="flex-grow">
         <Routes>
