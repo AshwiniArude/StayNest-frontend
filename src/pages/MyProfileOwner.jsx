@@ -103,7 +103,6 @@ const MyProfileOwner = () => {
 
   return (
     <>
-      <OwnerNavbarDashboard />
       <div className="profile-container">
         {/* Header */}
         <section className="header-section">

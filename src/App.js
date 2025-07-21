@@ -50,7 +50,8 @@ function AppContent() {
     location.pathname.startsWith("/listing-bookings") ||
     location.pathname.startsWith("/owner/booking-details") ||
     location.pathname.startsWith("/account-settings-owner") ||
-    location.pathname.startsWith("/contact-support-owner");
+    location.pathname.startsWith("/contact-support-owner") ||
+    location.pathname.startsWith("/my-profile-owner");
   const isTenantDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/my-profile") || location.pathname.startsWith("/my-reviews");
 
   return (

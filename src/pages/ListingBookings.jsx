@@ -4,36 +4,36 @@ import { FaCheck, FaTimes, FaUser, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaEnv
 import '../styles/ManageBookings.css';
 
 const mockRequests = [
-  {
-    id: 1,
-    tenantName: "Priya Sharma",
-    tenantEmail: "priya.sharma@email.com",
-    tenantPhone: "+91 98765 43210",
-    tenantRating: 4.8,
+    {
+      id: 1,
+      tenantName: "Priya Sharma",
+      tenantEmail: "priya.sharma@email.com",
+      tenantPhone: "+91 98765 43210",
+      tenantRating: 4.8,
     pgName: "Skyline PG for Girls, Koramangala",
     location: "Koramangala, Bangalore",
-    checkInDate: "15 July 2025",
-    checkOutDate: "15 Dec 2025",
-    requestDate: "10 June 2025",
-    status: "pending",
-    sharing: "Double Sharing",
+      checkInDate: "15 July 2025",
+      checkOutDate: "15 Dec 2025",
+      requestDate: "10 June 2025",
+      status: "pending",
+      sharing: "Double Sharing",
     price: 12500,
-    message: "Hi, I'm interested in your PG. I'm a working professional and looking for a clean, safe accommodation.",
-    tenantImage: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
-  },
-  {
-    id: 2,
+      message: "Hi, I'm interested in your PG. I'm a working professional and looking for a clean, safe accommodation.",
+      tenantImage: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+    },
+    {
+      id: 2,
     tenantName: "Rahul Kumar",
     tenantEmail: "rahul.kumar@email.com",
     tenantPhone: "+91 87654 32109",
-    tenantRating: 4.5,
+      tenantRating: 4.5,
     pgName: "Urban Nest Co-living, Gachibowli",
     location: "Gachibowli, Hyderabad",
-    checkInDate: "20 July 2025",
-    checkOutDate: "20 Dec 2025",
-    requestDate: "12 June 2025",
-    status: "confirmed",
-    sharing: "Single Sharing",
+      checkInDate: "20 July 2025",
+      checkOutDate: "20 Dec 2025",
+      requestDate: "12 June 2025",
+      status: "confirmed",
+      sharing: "Single Sharing",
     price: 9800,
     message: "Looking for a quiet place to stay while working in the IT sector. Your PG seems perfect!",
     tenantImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
@@ -51,11 +51,11 @@ const mockRequests = [
     requestDate: "14 June 2025",
     status: "pending",
     sharing: "Triple Sharing",
-    price: 15000,
+      price: 15000,
     message: "I'm a student and need accommodation near my college. Your PG location is ideal.",
-    tenantImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
-  },
-  {
+      tenantImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+    },
+    {
     id: 4,
     tenantName: "Vikram Singh",
     tenantEmail: "vikram.singh@email.com",
@@ -74,21 +74,21 @@ const mockRequests = [
   },
   {
     id: 5,
-    tenantName: "Meera Reddy",
-    tenantEmail: "meera.reddy@email.com",
-    tenantPhone: "+91 54321 09876",
-    tenantRating: 4.7,
+      tenantName: "Meera Reddy",
+      tenantEmail: "meera.reddy@email.com",
+      tenantPhone: "+91 54321 09876",
+      tenantRating: 4.7,
     pgName: "Elite Girls Hostel, HSR Layout",
     location: "HSR Layout, Bangalore",
-    checkInDate: "5 August 2025",
-    checkOutDate: "5 Jan 2026",
-    requestDate: "18 June 2025",
+      checkInDate: "5 August 2025",
+      checkOutDate: "5 Jan 2026",
+      requestDate: "18 June 2025",
     status: "confirmed",
     sharing: "Single Sharing",
     price: 13500,
-    message: "I'm a working professional looking for a premium accommodation. Your PG looks perfect!",
-    tenantImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
-  }
+      message: "I'm a working professional looking for a premium accommodation. Your PG looks perfect!",
+      tenantImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+    }
 ];
 
 const ListingBookings = () => {
@@ -137,7 +137,7 @@ const ListingBookings = () => {
       <div className="manage-bookings-container">
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <p>Loading booking requests...</p>
+        <p>Loading booking requests...</p>
         </div>
       </div>
     );
@@ -155,58 +155,58 @@ const ListingBookings = () => {
           <div className="stat-card">
             <h3>{filteredRequests.length}</h3>
             <p>Total Requests</p>
-          </div>
+      </div>
           <div className="stat-card">
             <h3>{filteredRequests.filter(r => r.status === 'pending').length}</h3>
             <p>Pending</p>
-          </div>
+        </div>
           <div className="stat-card">
             <h3>{filteredRequests.filter(r => r.status === 'confirmed').length}</h3>
             <p>Confirmed</p>
-          </div>
+        </div>
           <div className="stat-card">
             <h3>{filteredRequests.filter(r => r.status === 'cancelled').length}</h3>
             <p>Cancelled</p>
-          </div>
         </div>
+      </div>
 
         <div className="filter-section">
           <div className="filter-buttons">
-            <button 
+          <button 
               className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-              onClick={() => setFilter('all')}
-            >
+            onClick={() => setFilter('all')}
+          >
               All ({filteredRequests.length})
-            </button>
-            <button 
+          </button>
+          <button 
               className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
-              onClick={() => setFilter('pending')}
-            >
+            onClick={() => setFilter('pending')}
+          >
               Pending ({filteredRequests.filter(r => r.status === 'pending').length})
-            </button>
-            <button 
+          </button>
+          <button 
               className={`filter-btn ${filter === 'confirmed' ? 'active' : ''}`}
-              onClick={() => setFilter('confirmed')}
-            >
+            onClick={() => setFilter('confirmed')}
+          >
               Confirmed ({filteredRequests.filter(r => r.status === 'confirmed').length})
-            </button>
-            <button 
+          </button>
+          <button 
               className={`filter-btn ${filter === 'cancelled' ? 'active' : ''}`}
-              onClick={() => setFilter('cancelled')}
-            >
+            onClick={() => setFilter('cancelled')}
+          >
               Cancelled ({filteredRequests.filter(r => r.status === 'cancelled').length})
-            </button>
-          </div>
+          </button>
         </div>
+      </div>
 
         <div className="requests-grid">
-          {filteredRequests.map((request) => (
+        {filteredRequests.map((request) => (
             <div key={request.id} className={`request-card ${request.status}`}>
               <div className="request-header">
                 <div className="tenant-info">
-                  <img 
-                    src={request.tenantImage} 
-                    alt={request.tenantName} 
+              <img 
+                src={request.tenantImage} 
+                alt={request.tenantName} 
                     className="tenant-avatar"
                   />
                   <div className="tenant-details">
@@ -218,9 +218,9 @@ const ListingBookings = () => {
                   </div>
                 </div>
                 <div className="status-badge" style={{ backgroundColor: getStatusColor(request.status) }}>
-                  {getStatusText(request.status)}
-                </div>
+                {getStatusText(request.status)}
               </div>
+            </div>
 
               <div className="property-info">
                 <h4>{request.pgName}</h4>
@@ -234,55 +234,55 @@ const ListingBookings = () => {
                 <p><FaEnvelope /> {request.tenantEmail}</p>
                 <p><FaPhone /> {request.tenantPhone}</p>
                 <p><FaClock /> Requested on {request.requestDate}</p>
-              </div>
+            </div>
 
               <div className="message-section">
                 <h5>Message from tenant:</h5>
                 <p>{request.message}</p>
-              </div>
+            </div>
 
-              {request.status === 'pending' && (
+            {request.status === 'pending' && (
                 <div className="action-buttons">
-                  <button 
+                <button 
                     className="confirm-btn"
-                    onClick={() => handleConfirmBooking(request.id)}
-                  >
-                    <FaCheck /> Confirm Booking
-                  </button>
-                  <button 
+                  onClick={() => handleConfirmBooking(request.id)}
+                >
+                  <FaCheck /> Confirm Booking
+                </button>
+                <button 
                     className="cancel-btn"
-                    onClick={() => handleCancelBooking(request.id)}
-                  >
-                    <FaTimes /> Cancel Request
-                  </button>
-                </div>
-              )}
+                  onClick={() => handleCancelBooking(request.id)}
+                >
+                  <FaTimes /> Cancel Request
+                </button>
+              </div>
+            )}
 
-              {request.status === 'confirmed' && (
+            {request.status === 'confirmed' && (
                 <div className="confirmed-info">
                   <FaCheck className="confirmed-icon" />
                   <span>Booking confirmed</span>
-                </div>
-              )}
+              </div>
+            )}
 
-              {request.status === 'cancelled' && (
+            {request.status === 'cancelled' && (
                 <div className="cancelled-info">
                   <FaTimes className="cancelled-icon" />
                   <span>Request cancelled</span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
-        {filteredRequests.length === 0 && (
+      {filteredRequests.length === 0 && (
           <div className="no-requests">
             <div className="no-requests-icon">📋</div>
             <h3>No requests found</h3>
             <p>There are no {filter === 'all' ? '' : filter} requests at the moment.</p>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
+    </div>
     </>
   );
 }
