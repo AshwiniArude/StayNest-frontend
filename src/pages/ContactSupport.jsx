@@ -82,7 +82,6 @@ const ContactSupport = () => {
 
   return (
     <>
-      <TenantDashboardNavbar />
       <div className="contact-support-page">
         {/* Top Section: Title & Quick Help */}
         <section className="support-hero-section">

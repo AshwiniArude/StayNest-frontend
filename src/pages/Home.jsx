@@ -69,7 +69,9 @@ const Home = () => {
       </div>
 
       {/* Contact Support Section (Home Page) */}
-      <ContactSupportHome />
+      <div className="contact-support-wrapper" id="contact">
+        <ContactSupportHome />
+      </div>
     </>
   );
 };

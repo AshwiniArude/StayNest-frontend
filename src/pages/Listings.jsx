@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TenantSearchBar from "../components/TenantSearchBar";
+import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
 import "../styles/Listings.css"; // keep using the BrowsePGs styling
 
 const pgData = [
@@ -153,43 +154,45 @@ const Listings = () => {
   };
 
   return (
-    <div className="browsepgs-container">
-      <div className="search-section">
-        <h2 className="search-title">Find Your Perfect PG</h2>
-        <TenantSearchBar onSearch={handleSearch} />
-      </div>
-      <h1>Available PGs</h1>
-      <p>{filteredPgData.length} properties found</p>
-      <div className="pg-grid">
-        {filteredPgData.map((pg, index) => (
-          <div className="pg-card" key={index}>
-            <div className="pg-tags">
-              {pg.tags.map((tag, i) => (
-                <span
-                  className={`tag ${tag.toLowerCase().replace(/ /g, "-")}`}
-                  key={i}
-                >
-                  {tag}
-                </span>
-              ))}
+    <>
+      <div className="browsepgs-container">
+        <div className="search-section">
+          <h2 className="search-title">Find Your Perfect PG</h2>
+          <TenantSearchBar onSearch={handleSearch} />
+        </div>
+        <h1>Available PGs</h1>
+        <p>{filteredPgData.length} properties found</p>
+        <div className="pg-grid">
+          {filteredPgData.map((pg, index) => (
+            <div className="pg-card" key={index}>
+              <div className="pg-tags">
+                {pg.tags.map((tag, i) => (
+                  <span
+                    className={`tag ${tag.toLowerCase().replace(/ /g, "-")}`}
+                    key={i}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <h2>{pg.name}</h2>
+              <p className="location">{pg.location}</p>
+              <p className="rating">⭐ {pg.rating}</p>
+              <p className="price">₹{pg.price.toLocaleString()}/month</p>
+              <p>{pg.sharing}</p>
+              <p>Occupancy: {pg.occupancy}</p>
+              <p className="availability">Availability: {pg.availability}</p>
+              <button 
+                className="details-btn"
+                onClick={() => handleViewDetails(pg.id)}
+              >
+                View Details
+              </button>
             </div>
-            <h2>{pg.name}</h2>
-            <p className="location">{pg.location}</p>
-            <p className="rating">⭐ {pg.rating}</p>
-            <p className="price">₹{pg.price.toLocaleString()}/month</p>
-            <p>{pg.sharing}</p>
-            <p>Occupancy: {pg.occupancy}</p>
-            <p className="availability">Availability: {pg.availability}</p>
-            <button 
-              className="details-btn"
-              onClick={() => handleViewDetails(pg.id)}
-            >
-              View Details
-            </button>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

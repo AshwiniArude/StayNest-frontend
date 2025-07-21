@@ -57,8 +57,8 @@ const TenantDashboardNavbar = () => {
         <div className="navbar-center-links">
           <Link to="/tenant/dashboard">Dashboard</Link>
           <Link to="/listings">Browse PGs</Link>
-          <Link to="/about">About</Link>
-          <Link to="/contact-support">Contact</Link>
+          <Link to="/my-reviews">Review</Link>
+          <Link to="/contactsupport">Contact</Link>
         </div>
         <div className="navbar-auth">
           {/* Avatar and Menu Toggle Icon */}

@@ -99,7 +99,6 @@ const BookingDetails = () => {
 
   return (
     <>
-      <TenantDashboardNavbar />
       <div className="booking-details-bg">
         {/* Header */}
         <div className="bd-header">

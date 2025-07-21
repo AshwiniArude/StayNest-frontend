@@ -269,7 +269,7 @@ const TenantDashboard = () => {
               <div className="accent-bar yellow"></div>
             </div>
           </div>
-          <div className="quick-action-card green" onClick={handleContactSupport}>
+          <div className="quick-action-card green" onClick={() => navigate('/contactsupport')}>
             <div className="icon-bg"><FaRegCommentDots /></div>
             <div className="action-content">
               <div className="action-title-row">

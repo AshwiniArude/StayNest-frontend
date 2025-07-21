@@ -32,6 +32,7 @@ import BookingDetails from "./pages/BookingDetails";
 import "./styles/global.css";
 import AccountSettingsOwner from "./pages/AccountSettings owner.jsx";
 import ContactSupportOwner from "./pages/ContactSupport owner.jsx";
+import OwnerNotifications from "./pages/OwnerNotifications";
 
 function AppContent() {
   const location = useLocation();
@@ -51,8 +52,17 @@ function AppContent() {
     location.pathname.startsWith("/owner/booking-details") ||
     location.pathname.startsWith("/account-settings-owner") ||
     location.pathname.startsWith("/contact-support-owner") ||
-    location.pathname.startsWith("/my-profile-owner");
-  const isTenantDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/my-profile") || location.pathname.startsWith("/my-reviews");
+    location.pathname.startsWith("/my-profile-owner") ||
+    location.pathname.startsWith("/owner/notifications");
+  const isTenantDashboard =
+    location.pathname.startsWith("/tenant/dashboard") ||
+    location.pathname.startsWith("/my-profile") ||
+    location.pathname.startsWith("/my-reviews") ||
+    location.pathname.startsWith("/listings") ||
+    location.pathname.startsWith("/book-pg") ||
+    location.pathname.startsWith("/contactsupport") ||
+    location.pathname.startsWith("/booking-details") ||
+    location.pathname.startsWith("/account-settings");
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -82,6 +92,8 @@ function AppContent() {
           <Route path="/booking-details" element={<BookingDetails />} />
           <Route path="/account-settings-owner" element={<AccountSettingsOwner />} />
           <Route path="/contact-support-owner" element={<ContactSupportOwner />} />
+          <Route path="/contactsupport" element={<ContactSupport />} />
+          <Route path="/owner/notifications" element={<OwnerNotifications />} />
         </Routes>
       </main>
 

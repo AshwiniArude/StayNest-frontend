@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import '../styles/NavBar.css';
 import { FaHome, FaInfoCircle, FaPhoneAlt, FaBed, FaSignInAlt, FaUserPlus } from 'react-icons/fa'; // ✅ Added icons
 
@@ -14,9 +15,9 @@ const Navbar = () => {
       {/* Center: Main navigation */}
       <div className="navbar-center-links">
         <Link to="/"><FaHome className="nav-icon" /> Home</Link>
-        <Link to="/listings"><FaBed className="nav-icon" /> Browse PGs</Link>
+        <Link to="/login"><FaBed className="nav-icon" /> Browse PGs</Link>
         <a href="/#about"><FaInfoCircle className="nav-icon" /> About</a>
-        <Link to="/contact-support"><FaPhoneAlt className="nav-icon" /> Contact</Link>
+        <HashLink smooth to="/#contact"><FaPhoneAlt className="nav-icon" /> Contact</HashLink>
       </div>
 
       {/* Right: Login/Register */}
