@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/TenantDashboard.css";
 import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaHome, FaStar, FaChevronDown } from "react-icons/fa";
-import TenantSearchBar from '../components/TenantSearchBar';
 
 const genderOptions = [
   { label: 'Girls', value: 'girls' },
@@ -216,9 +215,9 @@ const TenantDashboard = () => {
           </div>
         </div>
         {/* Restore previous search bar below the purple hero box */}
-        <div className="search-wrapper">
+        {/* <div className="search-wrapper">
           <TenantSearchBar onSearch={handleSearch} />
-        </div>
+        </div> */}
       </section>
 
       <section className="section" style={{ marginTop: '3.5rem' }}>

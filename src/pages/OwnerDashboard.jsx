@@ -231,7 +231,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar yellow"></div>
             </div>
           </div>
-          <div className="quick-action-card green" onClick={() => navigate('/owner/contact-support')}>
+          <div className="quick-action-card green" onClick={() => navigate('/contact-support-owner')}>
             <div className="icon-bg"><FaRegCommentDots /></div>
             <div className="action-content">
               <div className="action-title-row">
@@ -253,7 +253,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar pink"></div>
             </div>
           </div>
-          <div className="quick-action-card gray" onClick={() => navigate('/account-settings')}>
+          <div className="quick-action-card gray" onClick={() => navigate('/account-settings-owner')}>
             <div className="icon-bg"><FaCog /></div>
             <div className="action-content">
               <div className="action-title-row">

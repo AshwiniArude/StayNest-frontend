@@ -28,7 +28,10 @@ import AccountSettings from "./pages/AccountSettings";
 import ContactSupport from "./pages/ContactSupport";
 import ListingBookings from "./pages/ListingBookings";
 import BookingDetailsOwner from "./pages/BookingDetailsOwner";
+import BookingDetails from "./pages/BookingDetails";
 import "./styles/global.css";
+import AccountSettingsOwner from "./pages/AccountSettings owner.jsx";
+import ContactSupportOwner from "./pages/ContactSupport owner.jsx";
 
 function AppContent() {
   const location = useLocation();
@@ -45,7 +48,9 @@ function AppContent() {
     location.pathname.startsWith("/owner/view-reviews") ||
     location.pathname.startsWith("/manage-bookings") ||
     location.pathname.startsWith("/listing-bookings") ||
-    location.pathname.startsWith("/owner/booking-details");
+    location.pathname.startsWith("/owner/booking-details") ||
+    location.pathname.startsWith("/account-settings-owner") ||
+    location.pathname.startsWith("/contact-support-owner");
   const isTenantDashboard = location.pathname.startsWith("/tenant/dashboard") || location.pathname.startsWith("/my-profile") || location.pathname.startsWith("/my-reviews");
 
   return (
@@ -73,6 +78,9 @@ function AppContent() {
           <Route path="/owner/contact-support" element={<ContactSupport />} />
           <Route path="/listing-bookings/:pgId" element={<ListingBookings />} />
           <Route path="/owner/booking-details" element={<BookingDetailsOwner />} />
+          <Route path="/booking-details" element={<BookingDetails />} />
+          <Route path="/account-settings-owner" element={<AccountSettingsOwner />} />
+          <Route path="/contact-support-owner" element={<ContactSupportOwner />} />
         </Routes>
       </main>
 
