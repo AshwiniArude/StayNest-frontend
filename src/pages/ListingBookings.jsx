@@ -125,11 +125,10 @@ const ListingBookings = () => {
     );
   };
 
-  // Only show requests for this PG
+  // Show all requests regardless of PG for easier testing
   const filteredRequests = requests.filter(request => {
-    const matchesPG = request.pgName.toLowerCase().replace(/[^a-z0-9]/g, '-') === pgId;
-    if (filter === 'all') return matchesPG;
-    return matchesPG && request.status === filter;
+    if (filter === 'all') return true;
+    return request.status === filter;
   });
 
   if (loading) {
@@ -147,8 +146,8 @@ const ListingBookings = () => {
     <>
       <div className="manage-bookings-container">
         <div className="header-section">
-          <h1>Booking Requests for this PG</h1>
-          <p>Review and manage booking requests for this property</p>
+          <h1>All Booking Requests (Demo Mode)</h1>
+          <p>Showing all tenant requests for easier testing. In production, this will filter by PG.</p>
         </div>
 
         <div className="stats-section">
