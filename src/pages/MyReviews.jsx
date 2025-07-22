@@ -21,8 +21,8 @@ const MyReviews = () => {
   const [pendingReviews, setPendingReviews] = useState([]); // Stays without reviews
 
 useEffect(() => {
-  const tenantId = 1; // Replace with actual logged-in tenant ID
-
+  const tenantId = localStorage.getItem('id'); // Assuming tenant ID is stored in localStorage
+  console.log("Tenant ID from localStorage:", tenantId); // Debug log
   const fetchData = async () => {
     try {
       const [reviewRes, bookingRes] = await Promise.all([
@@ -137,15 +137,20 @@ useEffect(() => {
   };
 
   const handleSubmitReview = async () => {
-    if (rating === 0 || !reviewText.trim() || !checkInDate || !checkOutDate || !selectedPG) {
+    if (rating === 0 || !reviewText.trim() || checkInDate==null || !checkOutDate || !selectedPG) {
       alert('Please provide rating, review text, check-in, check-out dates, and select a PG.');
       return;
     }
+     console.log("Submitting review for listing ID:", selectedPG?.listingId, selectedPG);
+const isEdit = editingReviewId !== null && editingReviewId !== undefined;
 
     const reviewData = {
-      listingId: selectedPG.listingId, // Use the listingId from the selected PG
+      id: Date.now(),
+      listing:{
+        id:selectedPG.listingId
+      }, 
       rating: rating,
-      reviewText: reviewText,
+      feedback: reviewText,
       checkInDate: checkInDate,
       checkOutDate: checkOutDate,
       // tenantId will be handled by the backend from the authenticated user
@@ -154,7 +159,8 @@ useEffect(() => {
     try {
       if (isEditing) {
         // Update existing review
-        const updatedReview = await updateReview(editingReviewId, reviewData);
+        reviewData.id = editingReviewId; // Ensure we send the correct ID
+        const updatedReview = await updateReview(reviewData);
         setReviews(prevReviews =>
           prevReviews.map(review =>
             review.id === editingReviewId
@@ -178,7 +184,7 @@ useEffect(() => {
           thumbnail: selectedPG.thumbnail,
           checkInDate: newReview.checkInDate,
           checkOutDate: newReview.checkOutDate,
-          listingId: selectedPG.listingId,
+          listingId: Number(selectedPG?.listingId),
         }]);
 
         // Remove from pending reviews based on listingId
@@ -358,7 +364,7 @@ useEffect(() => {
               <div className="form-group">
                 <label>Select PG</label>
                 <select
-  value={selectedPG?.listingId || ''}
+  value={selectedPG?.listingId }
   onChange={(e) => {
     const listingId = parseInt(e.target.value, 10);
     const pg = listings.find(p => p.id === listingId);
@@ -425,7 +431,7 @@ useEffect(() => {
                   maxLength="1000"
                 />
                 <div className="char-count">
-                  {reviewText.length}/1000 characters
+                  {reviewText}/1000 characters
                 </div>
               </div>
 
@@ -451,8 +457,8 @@ useEffect(() => {
       {/* Reviews List */}
       <section className="reviews-section">
         <div className="reviews-grid">
-          {filteredReviews.length > 0 ? (
-            filteredReviews.map((review) => (
+          {Array.isArray(reviews) && reviews ? (
+            reviews.map((review) => (
               <div key={review.id} className="review-card">
                 <div className="review-header">
                   <div className="pg-info">

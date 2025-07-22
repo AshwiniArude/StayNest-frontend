@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fa';
 import '../styles/MyProfile.css';
 import userService from '../services/UserService';
+import authService from '../services/AuthService';
 
 const MyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -144,8 +145,8 @@ const MyProfile = () => {
       alert('Password must be at least 6 characters long!');
       return;
     }
-
-    console.log('Password updated:', passwordData);
+    const res =  authService.updatePassword({password :passwordData.newPassword});
+    console.log('Password updated:', res);
     setShowPasswordForm(false);
     setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
     setShowSuccessMessage(true);

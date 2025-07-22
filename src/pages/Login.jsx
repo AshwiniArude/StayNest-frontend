@@ -23,8 +23,13 @@ const Login = () => {
   try {
     const result = await authService.login(formData);
     localStorage.setItem('token', result.jwtToken);
+    alert("Login successful");
+    localStorage.setItem('id', result.userId); // Store tenant ID if needed
     console.log(result.jwtToken);
+    console.log(result.userId);
     console.log(formData.role);
+    console.log(localStorage.getItem('id'));
+    console.log("Login successful, redirecting...");
     if (formData.role === 'TENANT') {
       navigate('/tenant/dashboard');
     } else if (formData.role === 'OWNER') {

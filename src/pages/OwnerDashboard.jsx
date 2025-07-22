@@ -125,12 +125,7 @@ const OwnerDashboard = () => {
                 <button className="action-btn bookings-btn" onClick={() => navigate(`/listing-bookings/${listing.pgName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`)}>Bookings</button>
                 <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing(listing._id || listing.id, idx)}><FaTrash /></button>
               </div>
-              <div className="listing-toggle">
-                <span className="toggle-label">Listing Status</span>
-                <div className="toggle-switch active">
-                  <div className="toggle-slider"></div>
-                </div>
-              </div>
+              
             </div>
           ))}
 

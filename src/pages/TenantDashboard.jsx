@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "../styles/TenantDashboard.css";
 import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaHome, FaStar, FaChevronDown } from "react-icons/fa";
 import bookingService from "../services/BookingService";
+import userService from "../services/UserService";
+import {getReviewsByTenant} from "../services/ReviewService";
 const genderOptions = [
   { label: 'Girls', value: 'girls' },
   { label: 'Boys', value: 'boys' },
@@ -14,14 +16,13 @@ const budgetOptions = [
   { label: '₹10,000 - ₹20,000', value: [10000, 20000] },
   { label: 'Above ₹20,000', value: [20000, 50000] },
 ];
-
 function TenantDashboardSearchBar({ onSearch }) {
   const [location, setLocation] = useState('');
   const [gender, setGender] = useState('');
   const [budget, setBudget] = useState('');
   const [showGenderDropdown, setShowGenderDropdown] = useState(false);
   const [showBudgetDropdown, setShowBudgetDropdown] = useState(false);
-
+  
   const handleSearch = () => {
     if (onSearch) onSearch({ location, gender, budget });
   };
@@ -95,10 +96,15 @@ function TenantDashboardSearchBar({ onSearch }) {
 const TenantDashboard = () => {
   const navigate = useNavigate();
 const [bookings, setBookings] = useState([]);
-
+  const [userName, setUserName] = useState(''); 
+  const [reviews, setReviews] = useState([]);
 useEffect(() => {
+ // Set name from user data
   const fetchBookings = async () => {
     try {
+        const user = await userService.getCurrentUser();
+      setUserName(user.name || 'User'); // Set name from user data
+      console.log("Current user data:", user); // for verification
       const data = await bookingService.getMyBookings();
       console.log("Raw bookings data:", data); // for verification
 
@@ -113,6 +119,10 @@ useEffect(() => {
 
       setBookings(mapped);
       console.log("Mapped bookings:", mapped);
+
+      const reviewData = await getReviewsByTenant(localStorage.getItem('id'));
+      setReviews(reviewData);
+      console.log("Reviews data:", reviewData);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);
     }
@@ -183,13 +193,14 @@ useEffect(() => {
   // Calculate active bookings count
   const activeBookingsCount = bookings.filter(booking => booking.status === 'Booked').length;
 
+  
   return (
     <div className="dashboard-container">
       <section className="hero-section">
         <div className="hero-card-gradient">
           <div className="hero-card-header">
             <div>
-              <h1 className="hero-welcome hero-welcome-dark">Hi Shreya, welcome back to StayNest!</h1>
+              <h1 className="hero-welcome hero-welcome-dark">Hi {userName}, welcome back to StayNest!</h1>
               <p className="hero-subtitle hero-subtitle-orange">Here's a quick look at your upcoming stays and reviews.</p>
             </div>
             <div className="hero-icon-box">
@@ -302,23 +313,39 @@ useEffect(() => {
         </div>
       </section>
 
-      <section className="section">
-        <h2>My Reviews & Ratings</h2>
-        <div className="card-grid">
-          <div className="card">
-            <h3>Skyline PG for Girls, Koramangala</h3>
-            <p>⭐ 5 - Amazing experience! Clean, safe, and very responsive owner.</p>
-          </div>
-          <div className="card">
-            <h3>Urban Nest Co-living, Gachibowli</h3>
-            <p>⭐ 4 - Good facilities. Friendly community and well-maintained.</p>
-          </div>
-          <div className="card">
-            <h3>Student Haven, Sector 18</h3>
-            <p>⭐ 3 - Could improve on cleanliness and Wi-Fi. Okay for budget.</p>
-          </div>
-        </div>
-      </section>
+     <section className="section">
+  <h2>My Reviews & Ratings</h2>
+  <div className="card-grid">
+    {reviews.map((review, index) => (
+      <div className="card" key={index}>
+        <h3>{review.listing.title}</h3>
+ <p>
+  Stayed From {new Date(review.createdAt).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  })} to {
+    (() => {
+      const startDate = new Date(review.createdAt);
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + review.duration); // 👈 add months
+      return endDate.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+    })()
+  }
+</p>
+
+
+        <p>⭐ {review.rating} - {review.feedback}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+
 
       <div className="footer-spacing"></div>
     </div>

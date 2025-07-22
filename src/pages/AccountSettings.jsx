@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { FaUserCog, FaMoon, FaSun, FaPalette, FaLock, FaDownload, FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
 import '../styles/AccountSettings.css';
+import authService from '../services/AuthService';
+import userService from '../services/UserService';
+import { useNavigate } from 'react-router-dom';
 
 const TABS = [
   { label: 'UI Theme Preferences', value: 'theme' },
@@ -11,6 +14,7 @@ const TABS = [
 ];
 
 const AccountSettings = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('theme');
   // Theme Preferences
   const [theme, setTheme] = useState('light');
@@ -100,6 +104,8 @@ const AccountSettings = () => {
       alert('Password must be at least 6 characters long!');
       return;
     }
+    const res =  authService.updatePassword({password :passwordData.newPassword});
+        console.log('Password updated:', res);
     // Here you would typically send to backend
     setShowPasswordForm(false);
     setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
@@ -115,7 +121,9 @@ const AccountSettings = () => {
   // Delete
   const handleDelete = () => {
     setShowDeleteConfirm(false);
-    setToast('❌ Account deleted (mock)');
+    const res = userService.deleteUser();
+    console.log('Account deleted:', res);
+    navigate('/'); // Redirect to home after deletion
     setTimeout(() => setToast(''), 1800);
   };
 
