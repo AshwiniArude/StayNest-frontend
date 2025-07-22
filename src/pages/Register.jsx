@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Register.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus, faUser, faEnvelope, faPhone, faLock } from "@fortawesome/free-solid-svg-icons";
+import authService from '../services/AuthService';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -50,16 +51,30 @@ const Register = () => {
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      setSuccessMsg("Account created successfully! Please login.");
-      setTimeout(() => {
-        navigate('/login');
-      }, 1500);
-    }
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
 
+  try {
+    // Pick correct API based on role
+    let res;
+    if (formData.role === "OWNER") {
+      res = await authService.registerOwner(formData);
+    } else {
+      res = await authService.registerUser(formData);
+    }
+    setSuccessMsg("Account created successfully! Please login.");
+    setTimeout(() => {
+      navigate('/login');
+    }, 1500);
+  } catch (err) {
+    // Show error from backend:
+    setErrors(prev => ({
+      ...prev,
+      server: err?.response?.data?.message || "Registration failed. Try again!"
+    }));
+  }
+ }
   return (
     <>
       {successMsg && (

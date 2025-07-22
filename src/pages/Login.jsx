@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Login.css'; // Make sure path is correct
+import authService from '../services/AuthService';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'TENANT'
+    role:'TENANT'
   });
 
   const handleChange = (e) => {
@@ -16,16 +17,24 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const userRole = formData.role;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (userRole === 'TENANT') {
+  try {
+    const result = await authService.login(formData);
+    localStorage.setItem('token', result.jwtToken);
+    console.log(result.jwtToken);
+    console.log(formData.role);
+    if (formData.role === 'TENANT') {
       navigate('/tenant/dashboard');
-    } else if (userRole === 'OWNER') {
+    } else if (formData.role === 'OWNER') {
       navigate('/owner/dashboard');
     }
-  };
+  } catch (err) {
+    // Show login error
+    console.error(err?.response?.data?.message || "Login failed. Please try again.");
+  }
+};
 
   const handleForgotPassword = () => {
     navigate('/forgot-password');

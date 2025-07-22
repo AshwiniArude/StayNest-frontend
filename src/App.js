@@ -90,12 +90,13 @@ function AppContent() {
           <Route path="/owner/contact-support" element={<ContactSupport />} />
           <Route path="/listing-bookings/:pgId" element={<ListingBookings />} />
           <Route path="/owner/booking-details" element={<BookingDetailsOwner />} />
-          <Route path="/booking-details" element={<BookingDetails />} />
           <Route path="/account-settings-owner" element={<AccountSettingsOwner />} />
           <Route path="/contact-support-owner" element={<ContactSupportOwner />} />
           <Route path="/contactsupport" element={<ContactSupport />} />
           <Route path="/owner/notifications" element={<OwnerNotifications />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/booking-details/:bookingId" element={<BookingDetails />} />
+
         </Routes>
       </main>
 

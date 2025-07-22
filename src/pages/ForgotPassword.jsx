@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/ForgotPassword.css';
+import authService from '../services/AuthService';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -9,27 +10,33 @@ const ForgotPassword = () => {
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!email) {
-      setError('Please enter your email address');
-      return;
-    }
+  e.preventDefault();
 
-    if (!email.includes('@')) {
-      setError('Please enter a valid email address');
-      return;
-    }
+  if (!email) {
+    setError('Please enter your email address');
+    return;
+  }
+  if (!email.includes('@')) {
+    setError('Please enter a valid email address');
+    return;
+  }
 
-    setIsLoading(true);
-    setError('');
+  setIsLoading(true);
+  setError('');
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSuccess(true);
-    }, 2000);
-  };
+  try {
+    await authService.forgotPassword(email);
+    setIsSuccess(true);
+  } catch (err) {
+    setError(
+      err?.response?.data?.message ||
+      "Password reset failed. Please try again."
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleBackToLogin = () => {
     // Navigate back to login page

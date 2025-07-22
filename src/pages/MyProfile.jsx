@@ -1,33 +1,105 @@
-import React, { useState } from 'react';
-import { FaEdit, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEye, FaEyeSlash, FaBell, FaGlobe, FaShieldAlt, FaCheck, FaTimes } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import {
+  FaEdit,
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaEye,
+  FaEyeSlash,
+  FaBell,
+  FaGlobe,
+  FaShieldAlt,
+  FaCheck,
+  FaTimes
+} from 'react-icons/fa';
 import '../styles/MyProfile.css';
+import userService from '../services/UserService';
 
 const MyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // User profile data
-  const [profileData, setProfileData] = useState({
-    fullName: 'Shreya ',
-    email: 'shreyaa@email.com',
-    phone: '+91 98765 43210',
-    dateOfBirth: '1998-05-15',
-    gender: 'Female',
-    preferredCity: 'Pune',
-    preferredLocality: 'Alandi',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150'
-  });
+  const [profileData, setProfileData] = useState(null);
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Form data for editing
-  const [formData, setFormData] = useState({ ...profileData });
+  useEffect(() => {
+    async function fetchProfile() {
+      setLoading(true);
+      try {
+        const user = await userService.getCurrentUser();
+        setProfileData({
+          fullName: user.name,
+          email: user.email,
+          phone: user.phoneNumber,
+          dateOfBirth: user.dateOfBirth || '',
+          gender: capitalize(user.gender),
+          preferredCity: user.preferredCity || '',
+          preferredLocality: user.preferredLocality || ''
+        });
+        setFormData({
+          fullName: user.name,
+          email: user.email,
+          phone: user.phoneNumber,
+          dateOfBirth: user.dateOfBirth || '',
+          gender: capitalize(user.gender),
+          preferredCity: user.preferredCity || '',
+          preferredLocality: user.preferredLocality || ''
+        });
+        setError('');
+      } catch {
+        setError('Failed to load profile.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProfile();
+  }, []);
 
-  // Account preferences
+  function capitalize(str) {
+    if (!str) return "";
+    return str[0].toUpperCase() + str.slice(1).toLowerCase();
+  }
+
+  const handleSaveProfile = async () => {
+    try {
+      setLoading(true);
+      const updateData = {
+        name: formData.fullName,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        preferredCity: formData.preferredCity,
+        preferredLocality: formData.preferredLocality
+      };
+      const updated = await userService.updateUser(updateData);
+      setProfileData({
+        fullName: updated.name,
+        email: updated.email,
+        phone: updated.phoneNumber,
+        dateOfBirth: updated.dateOfBirth,
+        gender: capitalize(updated.gender),
+        preferredCity: updated.preferredCity,
+        preferredLocality: updated.preferredLocality
+      });
+      setIsEditing(false);
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 3000);
+    } catch (err) {
+      setError("Failed to update profile.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
     smsNotifications: false,
@@ -35,7 +107,6 @@ const MyProfile = () => {
     defaultCity: 'Bangalore'
   });
 
-  // Password change form
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
     newPassword: '',
@@ -45,13 +116,6 @@ const MyProfile = () => {
   const handleEditProfile = () => {
     setFormData({ ...profileData });
     setIsEditing(true);
-  };
-
-  const handleSaveProfile = () => {
-    setProfileData(formData);
-    setIsEditing(false);
-    setShowSuccessMessage(true);
-    setTimeout(() => setShowSuccessMessage(false), 3000);
   };
 
   const handleCancelEdit = () => {
@@ -80,8 +144,7 @@ const MyProfile = () => {
       alert('Password must be at least 6 characters long!');
       return;
     }
-    
-    // Here you would typically send to backend
+
     console.log('Password updated:', passwordData);
     setShowPasswordForm(false);
     setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
@@ -89,21 +152,8 @@ const MyProfile = () => {
     setTimeout(() => setShowSuccessMessage(false), 3000);
   };
 
-  const handleAvatarChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileData(prev => ({ ...prev, avatar: e.target.result }));
-      };
-      reader.readAsDataURL(file);
-    }
-    setShowAvatarModal(false);
-  };
-
   return (
     <div className="profile-container">
-      {/* Header */}
       <section className="header-section">
         <div className="header-content">
           <h1>My Profile</h1>
@@ -111,40 +161,26 @@ const MyProfile = () => {
         </div>
       </section>
 
-      {/* Profile Overview Card */}
       <section className="profile-overview-section">
         <div className="profile-card">
           <div className="profile-info">
-            <div className="avatar-section">
-              <div className="avatar-container">
-                <img 
-                  src={profileData.avatar} 
-                  alt={profileData.fullName}
-                  className="avatar"
-                />
-                <div className="avatar-edit-overlay" onClick={() => setShowAvatarModal(true)}>
-                  <FaEdit />
-                </div>
-              </div>
-            </div>
-            
             <div className="profile-details">
-              <h2>{profileData.fullName}</h2>
+              <h2>{profileData?.fullName}</h2>
               <div className="detail-item">
                 <FaEnvelope />
-                <span>{profileData.email}</span>
+                <span>{profileData?.email}</span>
               </div>
               <div className="detail-item">
                 <FaPhone />
-                <span>{profileData.phone}</span>
+                <span>{profileData?.phone}</span>
               </div>
               <div className="detail-item">
                 <FaMapMarkerAlt />
-                <span>{profileData.preferredCity}, {profileData.preferredLocality}</span>
+                <span>{profileData?.preferredCity}, {profileData?.preferredLocality}</span>
               </div>
             </div>
           </div>
-          
+
           {!isEditing && (
             <button className="edit-profile-btn" onClick={handleEditProfile}>
               <FaEdit />
@@ -154,24 +190,23 @@ const MyProfile = () => {
         </div>
       </section>
 
-      {/* Tabs */}
       <section className="tabs-section">
         <div className="tabs-container">
-          <button 
+          <button
             className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
             onClick={() => setActiveTab('profile')}
           >
             <FaUser />
             Profile Details
           </button>
-          <button 
+          <button
             className={`tab-btn ${activeTab === 'preferences' ? 'active' : ''}`}
             onClick={() => setActiveTab('preferences')}
           >
             <FaBell />
             Preferences
           </button>
-          <button 
+          <button
             className={`tab-btn ${activeTab === 'security' ? 'active' : ''}`}
             onClick={() => setActiveTab('security')}
           >
@@ -181,18 +216,17 @@ const MyProfile = () => {
         </div>
       </section>
 
-      {/* Profile Details Form */}
       {activeTab === 'profile' && (
         <section className="form-section">
           <div className="form-card">
             <h3>Personal Information</h3>
-            
+
             <div className="form-grid">
               <div className="form-group">
                 <label>Full Name</label>
                 <input
                   type="text"
-                  value={formData.fullName}
+                  value={formData?.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -202,7 +236,7 @@ const MyProfile = () => {
                 <label>Email Address</label>
                 <input
                   type="email"
-                  value={formData.email}
+                  value={formData?.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -212,7 +246,7 @@ const MyProfile = () => {
                 <label>Phone Number</label>
                 <input
                   type="tel"
-                  value={formData.phone}
+                  value={formData?.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -222,7 +256,7 @@ const MyProfile = () => {
                 <label>Date of Birth</label>
                 <input
                   type="date"
-                  value={formData.dateOfBirth}
+                  value={formData?.dateOfBirth}
                   onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -231,7 +265,7 @@ const MyProfile = () => {
               <div className="form-group">
                 <label>Gender</label>
                 <select
-                  value={formData.gender}
+                  value={formData?.gender}
                   onChange={(e) => handleInputChange('gender', e.target.value)}
                   disabled={!isEditing}
                 >
@@ -245,7 +279,7 @@ const MyProfile = () => {
                 <label>Preferred City</label>
                 <input
                   type="text"
-                  value={formData.preferredCity}
+                  value={formData?.preferredCity}
                   onChange={(e) => handleInputChange('preferredCity', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -255,7 +289,7 @@ const MyProfile = () => {
                 <label>Preferred Locality</label>
                 <input
                   type="text"
-                  value={formData.preferredLocality}
+                  value={formData?.preferredLocality}
                   onChange={(e) => handleInputChange('preferredLocality', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -276,12 +310,11 @@ const MyProfile = () => {
         </section>
       )}
 
-      {/* Account Preferences */}
       {activeTab === 'preferences' && (
         <section className="form-section">
           <div className="form-card">
             <h3>Account Preferences</h3>
-            
+
             <div className="preferences-grid">
               <div className="preference-item">
                 <div className="preference-header">
@@ -445,19 +478,18 @@ const MyProfile = () => {
         </section>
       )}
 
-      {/* Security Settings */}
       {activeTab === 'security' && (
         <section className="form-section">
           <div className="form-card">
             <h3>Security Settings</h3>
-            
+
             <div className="security-section">
               <div className="security-item">
                 <div className="security-info">
                   <h4>Change Password</h4>
                   <p>Update your password to keep your account secure</p>
                 </div>
-                <button 
+                <button
                   className="change-password-btn"
                   onClick={() => setShowPasswordForm(true)}
                 >
@@ -469,49 +501,19 @@ const MyProfile = () => {
         </section>
       )}
 
-      {/* Avatar Change Modal */}
-      {showAvatarModal && (
-        <div className="modal-overlay">
-          <div className="avatar-modal">
-            <div className="modal-header">
-              <h3>Change Profile Picture</h3>
-              <button 
-                className="close-btn"
-                onClick={() => setShowAvatarModal(false)}
-              >
-                <FaTimes />
-              </button>
-            </div>
-            <div className="modal-content">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                id="avatar-input"
-                style={{ display: 'none' }}
-              />
-              <label htmlFor="avatar-input" className="upload-btn">
-                Choose Photo
-              </label>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Password Change Modal */}
       {showPasswordForm && (
         <div className="modal-overlay">
           <div className="password-modal">
             <div className="modal-header">
               <h3>Change Password</h3>
-              <button 
+              <button
                 className="close-btn"
                 onClick={() => setShowPasswordForm(false)}
               >
                 <FaTimes />
               </button>
             </div>
-            
+
             <div className="password-form">
               <div className="form-group">
                 <label>Current Password</label>
@@ -522,7 +524,7 @@ const MyProfile = () => {
                     onChange={(e) => handlePasswordChange('oldPassword', e.target.value)}
                     placeholder="Enter current password"
                   />
-                  <button 
+                  <button
                     className="password-toggle"
                     onClick={() => setShowOldPassword(!showOldPassword)}
                   >
@@ -540,7 +542,7 @@ const MyProfile = () => {
                     onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
                     placeholder="Enter new password"
                   />
-                  <button 
+                  <button
                     className="password-toggle"
                     onClick={() => setShowNewPassword(!showNewPassword)}
                   >
@@ -558,7 +560,7 @@ const MyProfile = () => {
                     onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
                     placeholder="Confirm new password"
                   />
-                  <button 
+                  <button
                     className="password-toggle"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
@@ -568,13 +570,13 @@ const MyProfile = () => {
               </div>
 
               <div className="form-actions">
-                <button 
+                <button
                   className="cancel-btn"
                   onClick={() => setShowPasswordForm(false)}
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   className="update-btn"
                   onClick={handleUpdatePassword}
                 >
@@ -586,7 +588,6 @@ const MyProfile = () => {
         </div>
       )}
 
-      {/* Success Message */}
       {showSuccessMessage && (
         <div className="success-message">
           <FaCheck />
@@ -597,4 +598,4 @@ const MyProfile = () => {
   );
 };
 
-export default MyProfile; 
+export default MyProfile;

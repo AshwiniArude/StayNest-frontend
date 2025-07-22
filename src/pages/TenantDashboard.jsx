@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/TenantDashboard.css";
 import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaHome, FaStar, FaChevronDown } from "react-icons/fa";
-
+import bookingService from "../services/BookingService";
 const genderOptions = [
   { label: 'Girls', value: 'girls' },
   { label: 'Boys', value: 'boys' },
@@ -94,34 +94,32 @@ function TenantDashboardSearchBar({ onSearch }) {
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
-  
-  // Convert bookings to state so it can be updated
-  const [bookings, setBookings] = useState([
-    {
-      id: 1,
-      name: "Skyline PG for Girls, Koramangala",
-      location: "Koramangala, Bangalore",
-      checkIn: "15 July 2025",
-      checkOut: "15 Dec 2025",
-      status: "Booked",
-    },
-    {
-      id: 2,
-      name: "Urban Nest Co-living, Gachibowli",
-      location: "Gachibowli, Hyderabad",
-      checkIn: "10 Jan 2025",
-      checkOut: "10 June 2025",
-      status: "Completed",
-    },
-    {
-      id: 3,
-      name: "Student Haven, Sector 18",
-      location: "Sector 18, Noida",
-      checkIn: "20 Aug 2024",
-      checkOut: "20 Dec 2024",
-      status: "Cancelled",
-    },
-  ]);
+const [bookings, setBookings] = useState([]);
+
+useEffect(() => {
+  const fetchBookings = async () => {
+    try {
+      const data = await bookingService.getMyBookings();
+      console.log("Raw bookings data:", data); // for verification
+
+      const mapped = data.map((b) => ({
+        id: b.id,
+        name: b.listing?.title || "N/A",
+        location: b.listing?.address || "N/A",
+        checkIn: b.startDate ? new Date(b.startDate).toLocaleDateString() : "N/A",
+        checkOut: b.endDate ? new Date(b.endDate).toLocaleDateString() : "N/A",
+        status: b.status || "N/A",
+      }));
+
+      setBookings(mapped);
+      console.log("Mapped bookings:", mapped);
+    } catch (err) {
+      console.error("Failed to fetch bookings:", err);
+    }
+  };
+
+  fetchBookings();
+}, []);
 
   // Function to add new booking
   const addNewBooking = (newBooking) => {
@@ -163,9 +161,8 @@ const TenantDashboard = () => {
   };
 
   const handleViewDetails = (bookingId) => {
-    // Navigate to booking details page (for now, always go to /booking-details)
-    navigate('/booking-details');
-  };
+  navigate(`/booking-details/${bookingId}`);
+};
 
   const handleUpdateProfile = () => {
     navigate('/my-profile');

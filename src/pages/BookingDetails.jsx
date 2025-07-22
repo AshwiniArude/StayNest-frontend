@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
 import { FaArrowLeft, FaMapMarkerAlt, FaStar, FaRegCalendarAlt, FaBed, FaHashtag, FaCalendarCheck, FaCreditCard, FaFilePdf, FaEnvelope, FaComments, FaCheckCircle, FaClock, FaTimesCircle, FaChevronDown, FaChevronUp, FaHeadset } from 'react-icons/fa';
 import '../styles/BookingDetails.css';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import bookingService from '../services/BookingService'; // or use axios directly
 
 const BookingDetails = () => {
+  const { bookingId } = useParams();
   const navigate = useNavigate();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
@@ -16,42 +20,65 @@ const BookingDetails = () => {
   });
 
   // Responsive handler
-  React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 700);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+useEffect(() => {
+  const fetchBooking = async () => {
+    try {
+      const res = await bookingService.getBookingById(bookingId);
+      const data = res.data || res;
+      console.log('Fetched Booking Data:', data); // ✅ Check if booking data is loaded correctly
+     const transformed = {
+  pg: {
+    name: data.listing?.title || 'N/A',                    // ✅ title instead of pgName
+    location: data.listing?.address || 'N/A',              // ✅ address instead of location
+    rating: 4.0,                                           // 🚧 hardcoded if not available
+    reviews: 0,                                            // 🚧 hardcoded if not available
+    // image: data.listing?.url || 'https://via.placeholder.com/150', // optional
+  },
+  status: data.status || 'Pending',
+  checkIn: data.startDate ? new Date(data.startDate).toLocaleDateString('en-IN') : 'N/A',
+  checkOut: data.endDate ? new Date(data.endDate).toLocaleDateString('en-IN') : 'N/A',
+  roomType: data.listing?.roomType || 'Not Provided',
+  bookingId: `#SN-${data.id}`,
+  bookingDate: data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-IN') : 'N/A',
+  amountPaid: data.totalRent || 0,
+  owner: {
+    name: data.listing?.owner?.name || 'N/A',
+    email: data.listing?.owner?.email || 'N/A',
+  },
+};
 
-  // Mock data
-  const booking = {
-    pg: {
-      name: 'Skyline PG for Girls, Koramangala',
-      location: 'Koramangala, Bangalore',
-      rating: 4.5,
-      reviews: 120,
-      image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
-    },
-    status: 'Booked', // Booked | Pending | Cancelled
-    checkIn: '15 July 2025',
-    checkOut: '15 Dec 2025',
-    roomType: 'Twin Sharing',
-    bookingId: '#SN-2025-09182',
-    bookingDate: '10 July 2025',
-    amountPaid: 25000,
-    owner: {
-      name: 'Mrs. Sunita Patel',
-      email: 'owner@skylinepg.com',
-    },
+      console.log('Booking Details:', transformed); // ✅ Check if booking data is loaded correctly
+      setBooking(transformed);
+    } catch (err) {
+      console.error('Failed to load booking:', err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  fetchBooking();
+}, [bookingId]);
+
+//const { bookingId } = useParams();
+const [booking, setBooking] = useState(null);
+const [loading, setLoading] = useState(true);
 
   // Collapsible card handler
   const toggleCollapse = (key) => {
     setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // Status color
-  const statusColor = booking.status === 'Booked' ? '#1ec28b' : booking.status === 'Pending' ? '#ff9f59' : '#FF6B6B';
-  const statusIcon = booking.status === 'Booked' ? <FaCheckCircle color={statusColor} /> : booking.status === 'Pending' ? <FaClock color={statusColor} /> : <FaTimesCircle color={statusColor} />;
+const statusColor = booking?.status === 'Booked'
+  ? '#1ec28b'
+  : booking?.status === 'Pending'
+  ? '#ff9f59'
+  : '#FF6B6B';
+
+const statusIcon = booking?.status === 'Booked'
+  ? <FaCheckCircle color={statusColor} />
+  : booking?.status === 'Pending'
+  ? <FaClock color={statusColor} />
+  : <FaTimesCircle color={statusColor} />;
 
   // Actions
   const handleDownloadReceipt = () => {
@@ -96,9 +123,13 @@ const BookingDetails = () => {
       {(!isMobile || !collapsed[sectionKey]) && <div className="bd-card-content">{children}</div>}
     </div>
   );
+if (!booking) {
+  return <p>Loading...</p>;
+}
 
   return (
     <>
+    
       <div className="booking-details-bg">
         {/* Header */}
         <div className="bd-header">
@@ -110,9 +141,9 @@ const BookingDetails = () => {
         {/* PG Info Card */}
         <Card title="PG/Hostel Information" icon={<FaBed color="#7c5ff0" />} sectionKey="pg">
           <div className="bd-pg-info">
-            <div className="bd-pg-img">
+            {/* <div className="bd-pg-img">
               <img src={booking.pg.image} alt={booking.pg.name} />
-            </div>
+            </div> */}
             <div className="bd-pg-meta">
               <h2>{booking.pg.name}</h2>
               <div className="bd-pg-location"><FaMapMarkerAlt color="#7c5ff0" /> {booking.pg.location}</div>
@@ -126,7 +157,7 @@ const BookingDetails = () => {
           <div className="bd-summary-grid">
             <div className="bd-summary-row">
               <span>Status</span>
-              <span className="bd-status" style={{color:statusColor, fontWeight:600}}>{statusIcon} {booking.status}</span>
+              <span className="bd-status" style={{color:statusColor, fontWeight:600}}>{statusIcon} {booking?.status}</span>
             </div>
             <div className="bd-summary-row"><span>Check-In Date</span><span><FaRegCalendarAlt color="#7c5ff0" /> {booking.checkIn}</span></div>
             <div className="bd-summary-row"><span>Check-Out Date</span><span><FaRegCalendarAlt color="#7c5ff0" /> {booking.checkOut}</span></div>

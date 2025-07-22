@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/review'; // Adjust if hosted elsewhere
+const API_BASE_URL = 'http://localhost:8086/review'; // Adjust if hosted elsewhere
 
 // Get JWT from localStorage or wherever you store it
 const getToken = () => localStorage.getItem('token');

@@ -1,250 +1,152 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaStar, FaMapMarkerAlt, FaPhone, FaWifi, FaUtensils, FaSnowflake, FaTshirt, FaCar, FaLock, FaBroom, FaDumbbell, FaFemale, FaMale, FaUsers, FaArrowLeft, FaCheck, FaTimes } from 'react-icons/fa';
+import {
+  FaStar, FaMapMarkerAlt, FaPhone, FaWifi, FaUtensils, FaSnowflake, FaTshirt,
+  FaCar, FaLock, FaBroom, FaDumbbell, FaFemale, FaMale, FaUsers,
+  FaArrowLeft, FaCheck, FaTimes
+} from 'react-icons/fa';
+import axios from 'axios';
 import '../styles/BookPG.css';
 import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
+import bookingService from '../services/BookingService';
 
 const BookPG = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // Mock PG data for different listings
-  const pgDataMap = {
-    'sunshine-pg': {
-      id: 'sunshine-pg',
-      name: "Sunshine PG for Girls, Koramangala",
-      location: "Koramangala, Bangalore",
-      rating: 4.5,
-      totalReviews: 127,
-      rent: 8500,
-      securityDeposit: 5000,
-      bookingFee: 1000,
-      gender: "Girls",
-      verified: true,
-      availability: "Available",
-      description: "A comfortable and well-maintained PG for girls in the heart of Koramangala. Clean rooms, nutritious food, and a friendly environment. Perfect for students and working professionals.",
-      amenities: [
-        { id: 'wifi', name: 'Wi-Fi', icon: <FaWifi />, available: true },
-        { id: 'food', name: 'Meals', icon: <FaUtensils />, available: true },
-        { id: 'ac', name: 'AC', icon: <FaSnowflake />, available: true },
-        { id: 'laundry', name: 'Laundry', icon: <FaTshirt />, available: true },
-        { id: 'parking', name: 'Parking', icon: <FaCar />, available: true },
-        { id: 'security', name: 'CCTV', icon: <FaLock />, available: true },
-        { id: 'cleaning', name: 'Cleaning', icon: <FaBroom />, available: true },
-        { id: 'gym', name: 'Gym', icon: <FaDumbbell />, available: false }
-      ],
-      roomOptions: [
-        { type: 'Shared', rent: 8500, availability: 'Available', beds: 2 },
-        { type: 'Private', rent: 12000, availability: 'Available', beds: 1 }
-      ],
-      owner: {
-        name: "Mrs. Priya Sharma",
-        verified: true,
-        phone: "+91 98765 43210",
-        icon: <FaFemale />
-      },
-      nearby: ["Metro Station", "Shopping Mall", "Colleges", "Hospitals"],
-      images: [
-        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
-        "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800",
-        "https://images.unsplash.com/photo-1560448204-5c9a0c9a0c9a?w=800"
-      ],
-      reviews: [
-        {
-          id: 1,
-          name: "Anjali K.",
-          avatar: <FaFemale />,
-          rating: 5,
-          date: "2 weeks ago",
-          comment: "Amazing experience! Clean rooms, good food, and very helpful staff. Highly recommended!"
-        },
-        {
-          id: 2,
-          name: "Priya M.",
-          avatar: <FaFemale />,
-          rating: 4,
-          date: "1 month ago",
-          comment: "Great location and facilities. The food is really good and the rooms are well-maintained."
-        },
-        {
-          id: 3,
-          name: "Riya S.",
-          avatar: <FaFemale />,
-          rating: 5,
-          date: "2 months ago",
-          comment: "Best PG I've stayed in! Very safe and comfortable environment."
-        }
-      ]
-    },
-    'skyline-pg': {
-      id: 'skyline-pg',
-      name: "Skyline PG for Girls, Koramangala",
-      location: "Koramangala, Bangalore",
-      rating: 4.8,
-      totalReviews: 89,
-      rent: 12500,
-      securityDeposit: 8000,
-      bookingFee: 1500,
-      gender: "Girls",
-      verified: true,
-      availability: "Available",
-      description: "Premium PG accommodation with modern amenities and excellent location. Perfect for working professionals and students.",
-      amenities: [
-        { id: 'wifi', name: 'Wi-Fi', icon: <FaWifi />, available: true },
-        { id: 'food', name: 'Meals', icon: <FaUtensils />, available: true },
-        { id: 'ac', name: 'AC', icon: <FaSnowflake />, available: true },
-        { id: 'laundry', name: 'Laundry', icon: <FaTshirt />, available: true },
-        { id: 'parking', name: 'Parking', icon: <FaCar />, available: true },
-        { id: 'security', name: 'CCTV', icon: <FaLock />, available: true },
-        { id: 'cleaning', name: 'Cleaning', icon: <FaBroom />, available: true },
-        { id: 'gym', name: 'Gym', icon: <FaDumbbell />, available: true }
-      ],
-      roomOptions: [
-        { type: 'Shared', rent: 12500, availability: 'Available', beds: 2 },
-        { type: 'Private', rent: 18000, availability: 'Available', beds: 1 }
-      ],
-      owner: {
-        name: "Mrs. Sunita Patel",
-        verified: true,
-        phone: "+91 98765 43211",
-        icon: <FaFemale />
-      },
-      nearby: ["Metro Station", "Shopping Mall", "IT Parks", "Restaurants"],
-      images: [
-        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
-        "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800",
-        "https://images.unsplash.com/photo-1560448204-5c9a0c9a0c9a?w=800"
-      ],
-      reviews: [
-        {
-          id: 1,
-          name: "Meera R.",
-          avatar: <FaFemale />,
-          rating: 5,
-          date: "1 week ago",
-          comment: "Excellent facilities and very clean environment. Highly recommended!"
-        },
-        {
-          id: 2,
-          name: "Divya K.",
-          avatar: <FaFemale />,
-          rating: 4,
-          date: "3 weeks ago",
-          comment: "Great location and very safe. The food quality is excellent."
-        }
-      ]
-    },
-    'urban-nest': {
-      id: 'urban-nest',
-      name: "Urban Nest Co-living, Gachibowli",
-      location: "Gachibowli, Hyderabad",
-      rating: 4.6,
-      totalReviews: 156,
-      rent: 9800,
-      securityDeposit: 6000,
-      bookingFee: 1200,
-      gender: "Co-ed",
-      verified: true,
-      availability: "Available",
-      description: "Modern co-living space with community living experience. Perfect for young professionals and students.",
-      amenities: [
-        { id: 'wifi', name: 'Wi-Fi', icon: <FaWifi />, available: true },
-        { id: 'food', name: 'Meals', icon: <FaUtensils />, available: true },
-        { id: 'ac', name: 'AC', icon: <FaSnowflake />, available: true },
-        { id: 'laundry', name: 'Laundry', icon: <FaTshirt />, available: true },
-        { id: 'parking', name: 'Parking', icon: <FaCar />, available: true },
-        { id: 'security', name: 'CCTV', icon: <FaLock />, available: true },
-        { id: 'cleaning', name: 'Cleaning', icon: <FaBroom />, available: true },
-        { id: 'gym', name: 'Gym', icon: <FaDumbbell />, available: true }
-      ],
-      roomOptions: [
-        { type: 'Shared', rent: 9800, availability: 'Available', beds: 2 },
-        { type: 'Private', rent: 15000, availability: 'Available', beds: 1 }
-      ],
-      owner: {
-        name: "Shreya",
-        verified: true,
-        phone: "+91 98765 43212",
-        icon: <FaMale />
-      },
-      nearby: ["Tech Parks", "Universities", "Shopping Centers", "Hospitals"],
-      images: [
-        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
-        "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800",
-        "https://images.unsplash.com/photo-1560448204-5c9a0c9a0c9a?w=800"
-      ],
-      reviews: [
-        {
-          id: 1,
-          name: "Arjun S.",
-          avatar: <FaMale />,
-          rating: 4,
-          date: "2 weeks ago",
-          comment: "Great community living experience. Very modern facilities."
-        },
-        {
-          id: 2,
-          name: "Priya L.",
-          avatar: <FaFemale />,
-          rating: 5,
-          date: "1 month ago",
-          comment: "Excellent location and very friendly community."
-        }
-      ]
-    }
-  };
 
-  // Get PG data based on ID, fallback to first one if not found
-  const pgData = pgDataMap[id] || pgDataMap['sunshine-pg'];
-
-  const [selectedRoom, setSelectedRoom] = useState(pgData.roomOptions[0]);
+  const [pgData, setPgData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [checkInDate, setCheckInDate] = useState('');
   const [duration, setDuration] = useState('3');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showBookingModal, setShowBookingModal] = useState(false);
+ const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+// Sample images for testing
+const images = [
+  "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1HRqMW.img?w=768&h=432&m=6", // Replace with your backend image URL
+  "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1HRqMW.img?w=768&h=432&m=6",
+  "https://www.google.com/imgres?q=hostel%20image&imgurl=https%3A%2F%2Fcf.bstatic.com%2Fxdata%2Fimages%2Fhotel%2Fmax1024x768%2F323221867.jpg%3Fk%3D45e7c7a3c5d4b64a8c99b495c05530eb9887e04d1a8c62021f216f6d6615fa54%26o%3D%26hp%3D1&imgrefurl=https%3A%2F%2Fwww.booking.com%2Fhotel%2Fin%2Feness-hostels-pondicherry.html&docid=UF3WnTEv2YdvaM&tbnid=4-OEopFGH77ouM&vet=12ahUKEwjs5NSx3s2OAxXtTmwGHdWVGFIQM3oECH0QAA..i&w=1024&h=768&hcb=2&ved=2ahUKEwjs5NSx3s2OAxXtTmwGHdWVGFIQM3oECH0QAA"
+];
+
+// Next and Previous Image Handlers
+const nextImage = () => {
+  setCurrentImageIndex((prev) => (prev + 1) % images.length);
+};
+
+const prevImage = () => {
+  setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+};
+  useEffect(() => {
+    const fetchPGData = async () => {
+  try {
+    const res = await axios.get(`http://localhost:8086/listing/${id}`);
+    const data = res.data;
+
+    const mappedAmenities = [
+      { id: 'ac', name: 'AC', icon: <FaSnowflake />, available: data.isAcAvilable },
+      { id: 'meals', name: 'Meals', icon: <FaUtensils />, available: data.isMealsAvilable },
+      { id: 'laundry', name: 'Laundry', icon: <FaTshirt />, available: data.isLaudryAvilable },
+      { id: 'cctv', name: 'CCTV', icon: <FaLock />, available: data.isCctvAvilable },
+      { id: 'parking', name: 'Parking', icon: <FaCar />, available: data.isParkingAvilable },
+      { id: 'common', name: 'Common Areas', icon: <FaBroom />, available: data.isCommonAreasAvilable },
+      { id: 'study', name: 'Study Desk', icon: <FaWifi />, available: data.isStudyDeskAvilable }
+    ];
+
+    const mappedRoomOptions = [
+      {
+        type: data.roomType,
+        rent: data.rent,
+        availability: "Available"
+      }
+    ];
+
+    // Use placeholder image if data.url is null
+    const mappedImages = [data.url || 'https://feeds.abplive.com/onecms/images/uploaded-images/2022/02/27/6e0333158bad98f5a39917a646828a0b_original.jpg'];
+
+    const mappedNearby = ["Metro Station", "Mall", "Hospital"];
+
+    const mappedReviews = [];
+
+    setPgData({
+      ...data,
+      amenities: mappedAmenities,
+      roomOptions: mappedRoomOptions,
+      images: mappedImages,
+      nearby: mappedNearby,
+      reviews: mappedReviews,
+      owner: {
+        name: data.owner?.name || 'Owner',
+        phone: data.owner?.phoneNumber || 'N/A',
+        icon: null,
+        verified: true
+      },
+      name: data.title,
+      location: data.address,
+      rating: 4.2,
+      totalReviews: 18,
+      availability: "Available",
+      securityDeposit: data.deposite || 0,
+      bookingFee: data.discount || 0
+    });
+
+    setSelectedRoom({ type: data.roomType, rent: data.rent });
+  } catch (err) {
+    console.error('Failed to fetch PG:', err);
+    navigate('/404');
+  } finally {
+    setLoading(false);
+  }
+};
+
+    fetchPGData();
+  }, [id, navigate]);
+
+  if (loading) return <div>Loading PG details...</div>;
+  if (!pgData) return <div>No PG found.</div>;
+
+  const amenities = [
+    { id: 'ac', name: 'AC', icon: <FaSnowflake />, available: pgData.isAcAvilable },
+    { id: 'meals', name: 'Meals', icon: <FaUtensils />, available: pgData.isMealsAvilable },
+    { id: 'laundry', name: 'Laundry', icon: <FaTshirt />, available: pgData.isLaudryAvilable },
+    { id: 'cctv', name: 'CCTV', icon: <FaLock />, available: pgData.isCctvAvilable },
+    { id: 'parking', name: 'Parking', icon: <FaCar />, available: pgData.isParkingAvilable },
+    { id: 'common', name: 'Common Areas', icon: <FaBroom />, available: pgData.isCommonAreasAvilable },
+    { id: 'study', name: 'Study Desk', icon: <FaWifi />, available: pgData.isStudyDeskAvilable },
+  ];
+
+  const totalAmount = (selectedRoom?.rent || 0) + (pgData.deposite || 0) - (pgData.discount || 0);
 
   const handleBookNow = () => {
     if (!termsAccepted) {
-      alert('Please accept the terms and conditions');
+      alert('Please accept terms & conditions');
       return;
     }
     setShowBookingModal(true);
   };
 
-  const handleConfirmBooking = () => {
-    // Create booking data
+const handleConfirmBooking = async () => {
+  try {
     const bookingData = {
-      pgName: pgData.name,
-      location: pgData.location,
-      checkInDate: checkInDate,
-      checkOutDate: checkInDate, // Assuming check-out is the same as check-in for simplicity in mock data
-      roomType: selectedRoom.type,
-      rent: selectedRoom.rent,
-      totalAmount: totalAmount,
-      bookingDate: new Date().toISOString().split('T')[0]
+      listing: { id },
+      id: Date.now(),
+      startDate: checkInDate,
+      endDate: new Date(
+        new Date(checkInDate).setMonth(new Date(checkInDate).getMonth() + parseInt(duration))
+      ).toISOString().split('T')[0]
     };
 
-    // Save to localStorage for Tenant Dashboard to pick up
-    const existingBookings = JSON.parse(localStorage.getItem('newBookings') || '[]');
-    existingBookings.push(bookingData);
-    localStorage.setItem('newBookings', JSON.stringify(existingBookings));
+    // Send the booking to backend
+    const response = await bookingService.createBooking(bookingData);
 
-    // Here you would typically send booking data to backend
-    alert('Booking confirmed successfully!');
-    setShowBookingModal(false);
+    alert('Booking Confirmed!');
     navigate('/tenant/dashboard');
-  };
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % pgData.images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + pgData.images.length) % pgData.images.length);
-  };
-
-  const totalAmount = selectedRoom.rent + pgData.securityDeposit + pgData.bookingFee;
+  } catch (err) {
+    console.error('Booking failed:', err);
+    alert('Failed to book PG. Please try again later.');
+  }
+};
 
   return (
     <>
@@ -445,8 +347,9 @@ const BookPG = () => {
                 <div className="price-breakdown">
                   <h4>Price Breakdown</h4>
                   <div className="price-item">
-                    <span>Monthly Rent</span>
-                    <span>₹{selectedRoom.rent}</span>
+                    //change here
+                    <span>Rent</span>
+                    <span>₹{selectedRoom.Totalrent}</span>
                   </div>
                   <div className="price-item">
                     <span>Security Deposit</span>
@@ -455,6 +358,12 @@ const BookPG = () => {
                   <div className="price-item">
                     <span>Booking Fee</span>
                     <span>₹{pgData.bookingFee}</span>
+                  
+                  </div>
+                  <div className="price-item">
+                    <span>Discount</span>
+                    <span>₹{pgData.Discount}</span>
+                  
                   </div>
                   <div className="price-item total">
                     <span>Total Amount</span>
@@ -485,31 +394,31 @@ const BookPG = () => {
           </div>
         </div>
 
-        {/* Booking Modal */}
-        {showBookingModal && (
-          <div className="modal-overlay">
-            <div className="booking-modal">
-              <h2>Confirm Your Booking</h2>
-              <div className="booking-summary">
-                <p><strong>PG:</strong> {pgData.name}</p>
-                <p><strong>Room Type:</strong> {selectedRoom.type}</p>
-                <p><strong>Check-in:</strong> {checkInDate}</p>
-                <p><strong>Duration:</strong> {duration} months</p>
-                <p><strong>Total Amount:</strong> ₹{totalAmount}</p>
-              </div>
-              <div className="modal-actions">
-                <button className="cancel-btn" onClick={() => setShowBookingModal(false)}>
-                  Cancel
-                </button>
-                <button className="confirm-btn" onClick={handleConfirmBooking}>
-                  Confirm Booking
-                </button>
-              </div>
+      {/* Booking Modal */}
+      {showBookingModal && (
+        <div className="modal-overlay">
+          <div className="booking-modal">
+            <h2>Confirm Your Booking</h2>
+            <div className="booking-summary">
+              <p><strong>PG:</strong> {pgData.name}</p>
+              <p><strong>Room Type:</strong> {selectedRoom.type}</p>
+              <p><strong>Check-in:</strong> {checkInDate}</p>
+              <p><strong>Duration:</strong> {duration} months</p>
+              <p><strong>Total Amount:</strong> ₹{totalAmount}</p>
+            </div>
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={() => setShowBookingModal(false)}>
+                Cancel
+              </button>
+              <button className="confirm-btn" onClick={handleConfirmBooking}>
+                Confirm Booking
+              </button>
             </div>
           </div>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </div>
+</>
   );
 };
 

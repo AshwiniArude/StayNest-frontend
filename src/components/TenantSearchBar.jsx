@@ -3,8 +3,8 @@ import { FaMapMarkerAlt, FaSearch, FaSoap, FaChevronDown } from 'react-icons/fa'
 import './TenantSearchBar.css';
 
 const tenantTypes = [
-  { label: 'Girls', value: 'girls', emoji: '🚺', desc: 'Only for girls' },
-  { label: 'Boys', value: 'boys', emoji: '🚹', desc: 'Only for boys' },
+  { label: 'Girls', value: 'female', emoji: '🚺', desc: 'Only for girls' },
+  { label: 'Boys', value: 'male', emoji: '🚹', desc: 'Only for boys' },
   { label: 'Unisex', value: 'unisex', emoji: '⚧️', desc: 'Open to all' },
 ];
 
@@ -127,6 +127,7 @@ const TenantSearchBar = ({ onSearch }) => {
       setRecentSearches([location, ...recentSearches.slice(0, 2)]);
     }
     if (onSearch) {
+      console.log('Search triggered with:', { location, tenantType, budget });
       onSearch({ location, tenantType, budget });
     }
   };

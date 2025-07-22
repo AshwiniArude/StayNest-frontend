@@ -4,150 +4,115 @@ import { useNavigate } from "react-router-dom";
 import TenantSearchBar from "../components/TenantSearchBar";
 import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
 import "../styles/Listings.css"; // keep using the BrowsePGs styling
+import listingService from "../services/ListingService"; // Adjust the import path as needed
+import { useEffect } from "react";
 
-const pgData = [
-  {
-    id: "skyline-pg",
-    name: "Skyline PG for Girls, Koramangala",
-    location: "Koramangala, Bangalore",
-    rating: 4.8,
-    price: 12500,
-    tags: ["Verified", "Top Rated"],
-    availability: "3 beds available",
-    sharing: "Double Sharing",
-    occupancy: "12/15 occupied"
-  },
-  {
-    id: "urban-nest",
-    name: "Urban Nest Co-living, Gachibowli",
-    location: "Gachibowli, Hyderabad",
-    rating: 4.6,
-    price: 9800,
-    tags: ["Verified", "New"],
-    availability: "7 beds available",
-    sharing: "Single Sharing",
-    occupancy: "13/20 occupied"
-  },
-  {
-    id: "comfort-zone",
-    name: "Comfort Zone PG, Andheri West",
-    location: "Andheri West, Mumbai",
-    rating: 4.9,
-    price: 15000,
-    tags: ["Premium", "Verified"],
-    availability: "2 beds available",
-    sharing: "Triple Sharing",
-    occupancy: "10/12 occupied"
-  },
-  {
-    id: "student-haven",
-    name: "Student Haven, Sector 18",
-    location: "Sector 18, Noida",
+
+function buildTags(pg) {
+  const tags = [];
+  if (pg.isWifiAvilable) tags.push("Wi-Fi");
+  if (pg.isAcAvilable) tags.push("A/C");
+  if (pg.isMealsAvilable) tags.push("Meals");
+  if (pg.isLaudryAvilable) tags.push("Laundry");
+  if (pg.isCctvAvilable) tags.push("CCTV");
+  if (pg.isParkingAvilable) tags.push("Parking");
+  if (pg.isCommonAreasAvilable) tags.push("Common Area");
+  if (pg.isStudyDeskAvilable) tags.push("Study Desk");
+  return tags;
+}
+
+function mapBackendToUI(pg) {
+  return {
+    id: pg.id,
+    name: pg.title,
+    location: pg.address,
+    price: pg.rent,
+    tags: buildTags(pg),
+    sharing: pg.roomType,
+    // rating, availability, occupancy: backend has no info, so set demo/static
     rating: 4.5,
-    price: 8500,
-    tags: ["Budget Friendly"],
-    availability: "5 beds available",
-    sharing: "Double Sharing",
-    occupancy: "13/18 occupied"
-  },
-  {
-    id: "elite-girls",
-    name: "Elite Girls Hostel, HSR Layout",
-    location: "HSR Layout, Bangalore",
-    rating: 4.7,
-    price: 13500,
-    tags: ["Top Rated", "Verified"],
-    availability: "1 bed available",
-    sharing: "Single Sharing",
-    occupancy: "9/10 occupied"
-  },
-  {
-    id: "tech-hub",
-    name: "Tech Hub PG, Whitefield",
-    location: "Whitefield, Bangalore",
-    rating: 4.4,
-    price: 11000,
-    tags: ["New", "Verified"],
-    availability: "8 beds available",
-    sharing: "Double Sharing",
-    occupancy: "17/25 occupied"
-  },
-  {
-    id: "pearl-pg",
-    name: "Pearl PG for Girls, Kothrud",
-    location: "Kothrud, Pune",
-    rating: 4.3,
-    price: 10000,
-    tags: ["Verified", "Budget Friendly"],
-    availability: "4 beds available",
-    sharing: "Double Sharing",
-    occupancy: "8/12 occupied"
-  },
-  {
-    id: "sunshine-pg",
-    name: "Sunshine PG, Salt Lake",
-    location: "Salt Lake, Kolkata",
-    rating: 4.2,
-    price: 9000,
-    tags: ["New"],
-    availability: "6 beds available",
-    sharing: "Triple Sharing",
-    occupancy: "9/15 occupied"
-  },
-  {
-    id: "green-nest",
-    name: "Green Nest Hostel, Anna Nagar",
-    location: "Anna Nagar, Chennai",
-    rating: 4.6,
-    price: 11200,
-    tags: ["Verified", "Top Rated"],
-    availability: "2 beds available",
-    sharing: "Double Sharing",
-    occupancy: "14/16 occupied"
-  },
-  {
-    id: "bliss-coliving",
-    name: "Bliss Co-Living, Hinjewadi",
-    location: "Hinjewadi, Pune",
-    rating: 4.5,
-    price: 10500,
-    tags: ["Verified", "Premium"],
-    availability: "5 beds available",
-    sharing: "Single Sharing",
-    occupancy: "10/14 occupied"
-  }
-];
+    availability: "Available",
+    occupancy: "N/A",
+    gender:pg.gender,
+  };
+}
 
 const Listings = () => {
   const navigate = useNavigate();
-  const [filteredPgData, setFilteredPgData] = useState(pgData);
 
-  const handleSearch = (searchParams) => {
-    let filtered = [...pgData];
-    
-    // Filter by location
-    if (searchParams.location) {
-      filtered = filtered.filter(pg => 
-        pg.location.toLowerCase().includes(searchParams.location.toLowerCase())
-      );
+  const [pgData, setPgData] = useState([]);
+  const [filteredPgData, setFilteredPgData] = useState([]);
+
+  useEffect(() => {
+    listingService.getAllListings().then(data => {
+      console.log("Raw Listings Data:", data); // ✅ Check if data is being fetched correctly
+      const mapped = data.map(mapBackendToUI);
+      console.log("Mapped Listings:", mapped); // ✅ Check if gender is showing here
+  
+      setPgData(mapped);
+      setFilteredPgData(mapped);
+    });
+  }, []);
+
+const handleSearch = (searchParams) => {
+  let filtered = [...pgData];
+
+  console.log('Search params:', searchParams);
+  console.log('Original PG data:', pgData);
+
+  // Location filter
+  if (searchParams.location) {
+    filtered = filtered.filter(pg =>
+      pg.location?.toLowerCase().includes(searchParams.location.toLowerCase())
+    );
+    console.log('After location filter:', filtered);
+  }
+
+  // Gender filter
+  if (searchParams.tenantType) {
+    const genderInput = searchParams.tenantType.toLowerCase();
+
+    const mappedGenders = {
+      male: ['male'],
+      female: ['female'],
+      coed: ['coed', 'co-ed', 'others', 'unisex']
+    };
+
+    const acceptableGenders = mappedGenders[genderInput];
+    console.log("Gender filter input:", genderInput);
+    console.log("Acceptable genders:", acceptableGenders);
+
+    if (acceptableGenders) {
+      filtered = filtered.filter(pg => {
+        const pgGender = pg.gender?.toLowerCase();
+        const isMatch = pgGender && acceptableGenders.includes(pgGender);
+        console.log(`Checking PG ID ${pg.id} - PG Gender: ${pgGender} - Match: ${isMatch}`);
+        return isMatch;
+      });
+      console.log('After gender filter:', filtered);
     }
-    
-    // Filter by tenant type (if implemented in pgData)
-    if (searchParams.tenantType) {
-      // You can add tenant type filtering logic here
-      // For now, we'll just pass through
-    }
-    
-    // Filter by budget
-    if (searchParams.budget && searchParams.budget.length === 2) {
-      const [minBudget, maxBudget] = searchParams.budget;
-      filtered = filtered.filter(pg => 
-        pg.price >= minBudget && pg.price <= maxBudget
-      );
-    }
-    
-    setFilteredPgData(filtered);
-  };
+  }
+
+  if (searchParams.minBudget || searchParams.maxBudget) {
+  // Log values
+  console.log('Filtering budget from', searchParams.minBudget, 'to', searchParams.maxBudget);
+
+  filtered = filtered.filter(pg => {
+    console.log(`Checking ${pg.price}`);
+    return (
+      (!searchParams.minBudget || pg.price >= parseInt(searchParams.minBudget)) &&
+      (!searchParams.maxBudget || pg.price <= parseInt(searchParams.maxBudget))
+    );
+  });
+
+  console.log('After budget filter:', filtered);
+}
+
+
+  console.log('Final filtered PGs:', filtered);
+  setFilteredPgData(filtered);
+};
+
 
   const handleViewDetails = (pgId) => {
     navigate(`/book-pg/${pgId}`);

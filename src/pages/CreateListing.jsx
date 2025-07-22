@@ -5,8 +5,11 @@ import {
   FaUsers, FaGraduationCap, FaUpload, FaCheck
 } from 'react-icons/fa';
 import api from '../services/ApiService';
+import { useNavigate } from 'react-router-dom';
 
 const CreateListing = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     pgName: '',
     monthlyRent: '',
@@ -19,7 +22,7 @@ const CreateListing = () => {
     bedsPerRoom: '',
     roomType: 'shared',
     amenities: [],
-    securityDeposit: '',
+    deposite: '',
     bookingFee: '',
     discount: ''
   });
@@ -61,23 +64,42 @@ const CreateListing = () => {
     setPhotoPreviews(previews);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const newListing = {
-      ...formData,
-      id: Date.now() // You can remove this if backend handles ID
-    };
-
-    try {
-      await api.post('/listing/add', newListing);
-      alert('Listing published successfully!');
-      // Optionally: navigate('/owner/dashboard');
-    } catch (err) {
-      console.error('Error saving listing:', err);
-      alert('Failed to publish listing. Please try again.');
-    }
+  // Convert frontend formData to backend-compatible payload
+  const newListing = {
+    id: formData.id || Date.now(), // fallback if backend doesn't auto-generate
+    title: formData.pgName,
+    address: formData.address,
+    gender: formData.gender,
+    isWifiAvilable: formData.amenities.includes('wifi'),
+    isAcAvilable: formData.amenities.includes('ac'),
+    isMealsAvilable: formData.amenities.includes('meals'),
+    isLaudryAvilable: formData.amenities.includes('laundry'),
+    isCctvAvilable: formData.amenities.includes('cctv'),
+    isParkingAvilable: formData.amenities.includes('parking'),
+    isCommonAreasAvilable: formData.amenities.includes('commonArea'),
+    isStudyDeskAvilable: formData.amenities.includes('studyDesk'),
+    rent: parseFloat(formData.monthlyRent),
+    deposite: parseFloat(formData.deposite),
+    discount: parseFloat(formData.discount),
+    url: formData.url || '', // use actual image URL if available
+    description: formData.description,
+    roomType: formData.roomType,
+    startDate: formData.startDate || new Date().toISOString().slice(0, 10),
+    endDate: formData.endDate || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().slice(0, 10),
   };
+
+  try {
+    await api.post('/listing/add', newListing);
+    alert('Listing published successfully!');
+     navigate('/owner/dashboard');
+  } catch (err) {
+    console.error('Error saving listing:', err);
+    alert('Failed to publish listing. Please try again.');
+  }
+};
 
   const handleUploadClick = () => {
     if (fileInputRef.current) fileInputRef.current.click();
@@ -208,7 +230,7 @@ const CreateListing = () => {
             <div className="form-grid">
               <div className="form-group">
                 <label>Security Deposit (₹)</label>
-                <input type="number" name="securityDeposit" value={formData.securityDeposit} onChange={handleInputChange} />
+                <input type="number" name="deposite" value={formData.deposite} onChange={handleInputChange} />
               </div>
               <div className="form-group">
                 <label>Booking Fee (₹)</label>
