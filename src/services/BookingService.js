@@ -36,6 +36,18 @@ const getBookingsByStatus = async (status) => {
   return res.data;
 };
 
+const getBookingsByOWner = async() =>{
+  const res = await api.get('/api/bookings/owner');
+  return res.data;
+}
+
+const bookingAction = async (bookingId, action) => {
+  const res = await api.post(
+    `/api/bookings/listing/booking/action?bookingId=${bookingId}&action=${action}`
+  );
+  return res.data;
+};
+
 // ✅ Export all functions
 const bookingService = {
   createBooking,
@@ -44,6 +56,8 @@ const bookingService = {
   cancelBooking,
   getBookingById,
   getBookingsByStatus,
+  getBookingsByOWner,
+  bookingAction
 };
 
 export default bookingService;

@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/ForgotPassword.css';
+import authService from '../services/AuthService';
+import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const ResetPassword = () => {
-  const [email, setEmail] = useState('');
+ // const { email } = useParams();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
-  const validateEmail = (email) => {
-    return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
+ 
+  // const validateEmail = (email) => {
+  //   return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  // };
+const location = useLocation();
+const queryParams = new URLSearchParams(location.search);
+const email = queryParams.get('email');
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    if (!email) {
-      setError('Please enter your email address.');
-      return;
-    }
-    if (!validateEmail(email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
+    
+    console.log('Resetting password for:', email);
+    
     if (!newPassword || !confirmPassword) {
       setError('Please fill in all fields.');
       return;
@@ -37,6 +37,10 @@ const ResetPassword = () => {
       setError('Passwords do not match.');
       return;
     }
+    // Simulate API call
+    const res = authService.resetPassword({ email, password:newPassword });
+    console.log(res);
+    setError('');
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
@@ -81,7 +85,7 @@ const ResetPassword = () => {
             <p>Enter your new password below.</p>
           </div>
           <form onSubmit={handleSubmit} className="forgot-form">
-            <div className="form-group">
+            {/* <div className="form-group">
               <label htmlFor="email">Email Address</label>
               <input
                 type="email"
@@ -92,7 +96,7 @@ const ResetPassword = () => {
                 className={error && (!email || error.toLowerCase().includes('email')) ? 'error' : ''}
                 autoComplete="email"
               />
-            </div>
+            </div> */}
             <div className="form-group">
               <label htmlFor="newPassword">New Password</label>
               <input

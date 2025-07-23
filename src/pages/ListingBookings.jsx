@@ -2,110 +2,122 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaCheck, FaTimes, FaUser, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock, FaStar } from 'react-icons/fa';
 import '../styles/ManageBookings.css';
+import bookingService from '../services/BookingService';
 
-const mockRequests = [
-    {
-      id: 1,
-      tenantName: "Priya Sharma",
-      tenantEmail: "priya.sharma@email.com",
-      tenantPhone: "+91 98765 43210",
-      tenantRating: 4.8,
-    pgName: "Skyline PG for Girls, Koramangala",
-    location: "Koramangala, Bangalore",
-      checkInDate: "15 July 2025",
-      checkOutDate: "15 Dec 2025",
-      requestDate: "10 June 2025",
-      status: "pending",
-      sharing: "Double Sharing",
-    price: 12500,
-      message: "Hi, I'm interested in your PG. I'm a working professional and looking for a clean, safe accommodation.",
-      tenantImage: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-      id: 2,
-    tenantName: "Rahul Kumar",
-    tenantEmail: "rahul.kumar@email.com",
-    tenantPhone: "+91 87654 32109",
-      tenantRating: 4.5,
-    pgName: "Urban Nest Co-living, Gachibowli",
-    location: "Gachibowli, Hyderabad",
-      checkInDate: "20 July 2025",
-      checkOutDate: "20 Dec 2025",
-      requestDate: "12 June 2025",
-      status: "confirmed",
-      sharing: "Single Sharing",
-    price: 9800,
-    message: "Looking for a quiet place to stay while working in the IT sector. Your PG seems perfect!",
-    tenantImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-  },
-  {
-    id: 3,
-    tenantName: "Anjali Patel",
-    tenantEmail: "anjali.patel@email.com",
-    tenantPhone: "+91 76543 21098",
-    tenantRating: 4.9,
-    pgName: "Comfort Zone PG, Andheri West",
-    location: "Andheri West, Mumbai",
-    checkInDate: "25 July 2025",
-    checkOutDate: "25 Dec 2025",
-    requestDate: "14 June 2025",
-    status: "pending",
-    sharing: "Triple Sharing",
-      price: 15000,
-    message: "I'm a student and need accommodation near my college. Your PG location is ideal.",
-      tenantImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-    id: 4,
-    tenantName: "Vikram Singh",
-    tenantEmail: "vikram.singh@email.com",
-    tenantPhone: "+91 65432 10987",
-    tenantRating: 4.2,
-    pgName: "Student Haven, Sector 18",
-    location: "Sector 18, Noida",
-    checkInDate: "30 July 2025",
-    checkOutDate: "30 Dec 2025",
-    requestDate: "16 June 2025",
-    status: "cancelled",
-    sharing: "Double Sharing",
-    price: 8500,
-    message: "Interested in your PG. Can you provide more details about the facilities?",
-    tenantImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-  },
-  {
-    id: 5,
-      tenantName: "Meera Reddy",
-      tenantEmail: "meera.reddy@email.com",
-      tenantPhone: "+91 54321 09876",
-      tenantRating: 4.7,
-    pgName: "Elite Girls Hostel, HSR Layout",
-    location: "HSR Layout, Bangalore",
-      checkInDate: "5 August 2025",
-      checkOutDate: "5 Jan 2026",
-      requestDate: "18 June 2025",
-    status: "confirmed",
-    sharing: "Single Sharing",
-    price: 13500,
-      message: "I'm a working professional looking for a premium accommodation. Your PG looks perfect!",
-      tenantImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
-    }
-];
 
 const ListingBookings = () => {
-  const { pgId } = useParams();
+  console.log('Params:', useParams());
+
+  //const { pgId } = useParams();
+ // console.log('PG ID:', pgId);
+//option1
+const { pgId } = useParams();
+
+console.log("Params:", { pgId });
+console.log("PG ID:", pgId);
+
+  //option2
+  const params = useParams();
+console.log("Params:", params);
+console.log("PG ID:", params.pgId);
+
+ const formatDate = (dateStr) => {
+  if (!dateStr) return 'N/A';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
 
+  const statusAliasMap = {
+  Pending: 'PENDING',
+  Booked: 'ACCEPT',
+  Confirmed: 'ACCEPT',
+  Cancelled: 'REJECT',
+  CancelledByTenant: 'REJECT',
+  CancelledByOwner: 'REJECT',
+  Rejected: 'REJECT'
+};
+
+// Map backend values to UI-friendly names ✅ THIS ONE IS USED IN YOUR JSX
+const backendToUiStatusMap = {
+  PENDING: 'Pending',
+  ACCEPTED: 'Booked',
+  CONFIRMED: 'Booked',
+  'NOT BOOKED': 'Cancelled'
+};
   useEffect(() => {
-    setTimeout(() => {
-      setRequests(mockRequests);
+    if(!pgId){
+      return;
+    }
+  const fetchRequests = async () => {
+    try {
+      console.log("Fetching booking requests for PG ID:", pgId);
+      const res =await bookingService.getBookingsByListingId(pgId);
+      console.log("Fetched booking requests:", res);
+      const mapped = res.map(req => {
+  // Normalize status properly
+  let uiStatus = 'unknown';
+  switch (req.status) {
+    case 'PENDING':
+      uiStatus = 'pending';
+      break;
+    case 'ACCEPTED':
+    case 'CONFIRMED':
+      uiStatus = 'confirmed';
+      break;
+    case 'NOT BOOKED':
+      uiStatus = 'cancelled';
+      break;
+    default:
+      uiStatus = 'unknown';
+  }
+
+  return {
+    ...req,
+    status: uiStatus,
+    tenantName: req.tenant?.name,
+    tenantEmail: req.tenant?.email,
+    tenantPhone: req.tenant?.phoneNumber,
+    tenantRating: '4.5',
+    tenantImage: '/default-avatar.png',
+    pgName: req.listing?.title,
+    location: req.listing?.address,
+    sharing: req.listing?.roomType,
+    checkInDate: formatDate(req.startDate),
+    checkOutDate: formatDate(req.endDate),
+    requestDate: formatDate(req.createdAt),
+    rent: req.listing?.rent
+  };
+});
+
+
+setRequests(mapped);
+      
+    } catch (error) {
+      console.error("Failed to fetch bookings:", error);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
+
+  fetchRequests();
+}, [pgId]);
 
   const handleConfirmBooking = (requestId) => {
+    try{
+      const res = bookingService.bookingAction(requestId, 'ACCEPT');
+      alert("Booking confirmed successfully");
+      console.log("Booking confirmed:", res);
+    }catch (error) {
+      console.error("Failed to confirm booking:", error);}
     setRequests(prevRequests =>
       prevRequests.map(request =>
         request.id === requestId
@@ -113,9 +125,16 @@ const ListingBookings = () => {
           : request
       )
     );
+
   };
 
   const handleCancelBooking = (requestId) => {
+    try{
+      const res = bookingService.bookingAction(requestId, 'REJECT');
+      alert("Booking confirmed successfully");
+      console.log("Booking confirmed:", res);
+    }catch (error) {
+      console.error("Failed to confirm booking:", error);}
     setRequests(prevRequests =>
       prevRequests.map(request =>
         request.id === requestId
@@ -126,10 +145,11 @@ const ListingBookings = () => {
   };
 
   // Show all requests regardless of PG for easier testing
-  const filteredRequests = requests.filter(request => {
-    if (filter === 'all') return true;
-    return request.status === filter;
-  });
+const filteredRequests = requests.filter(request => {
+  if (filter === 'all') return true;
+  return request.status === filter;
+});
+
 
   if (loading) {
     return (
@@ -142,11 +162,12 @@ const ListingBookings = () => {
     );
   }
 
+
   return (
     <>
       <div className="manage-bookings-container">
         <div className="header-section">
-          <h1>All Booking Requests (Demo Mode)</h1>
+          <h1>All Booking Requests </h1>
           <p>Showing all tenant requests for easier testing. In production, this will filter by PG.</p>
         </div>
 
@@ -226,7 +247,11 @@ const ListingBookings = () => {
                 <p><FaMapMarkerAlt /> {request.location}</p>
                 <p><FaCalendarAlt /> {request.checkInDate} - {request.checkOutDate}</p>
                 <p className="sharing-info">{request.sharing}</p>
-                <p className="price-info">₹{request.price.toLocaleString()}/month</p>
+               <p><FaCalendarAlt /> {formatDate(request.startDate)} - {formatDate(request.endDate)}</p>
+<p className="price-info">
+  ₹{request.rent.toLocaleString() ?? 'N/A'}/month
+</p>
+
               </div>
 
               <div className="contact-info">
@@ -237,7 +262,7 @@ const ListingBookings = () => {
 
               {/* Removed message-section here */}
 
-            {request.status === 'pending' && (
+            {request.status === ('pending' || 'PENDING')&& (
                 <div className="action-buttons">
                 <button 
                     className="confirm-btn"

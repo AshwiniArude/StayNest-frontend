@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaUserCog, FaMoon, FaSun, FaPalette, FaLock, FaDownload, FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
 import '../styles/AccountSettings.css';
 import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
-
+import {updateOwner} from '../services/OwnerService';
 const TABS = [
   { label: 'UI Theme Preferences', value: 'theme' },
   { label: 'Password & Security', value: 'security' },
@@ -101,6 +101,8 @@ const AccountSettings = () => {
       alert('Password must be at least 6 characters long!');
       return;
     }
+     const res =  updateOwner({password :passwordData.newPassword});
+      console.log('Password updated:', res);
     // Here you would typically send to backend
     setShowPasswordForm(false);
     setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });

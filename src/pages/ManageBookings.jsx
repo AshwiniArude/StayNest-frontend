@@ -2,109 +2,174 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCheck, FaTimes, FaUser, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock, FaStar } from 'react-icons/fa';
 import '../styles/ManageBookings.css';
+import bookingService from '../services/BookingService';
 
 const ManageBookings = () => {
+  const id = localStorage.getItem('id');
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [filter, setFilter] = useState('all'); // all, pending, confirmed, cancelled
   const [loading, setLoading] = useState(true);
 
   // Mock data for booking requests
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setRequests([
-        {
-          id: 1,
-          tenantName: "Priya Sharma",
-          tenantEmail: "priya.sharma@email.com",
-          tenantPhone: "+91 98765 43210",
-          tenantRating: 4.8,
-          pgName: "Skyline PG for Girls, Koramangala",
-          location: "Koramangala, Bangalore",
-          checkInDate: "15 July 2025",
-          checkOutDate: "15 Dec 2025",
-          requestDate: "10 June 2025",
-          status: "pending",
-          sharing: "Double Sharing",
-          price: 12500,
-          message: "Hi, I'm interested in your PG. I'm a working professional and looking for a clean, safe accommodation.",
-          tenantImage: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
-        },
-        {
-          id: 2,
-          tenantName: "Rahul Kumar",
-          tenantEmail: "rahul.kumar@email.com",
-          tenantPhone: "+91 87654 32109",
-          tenantRating: 4.5,
-          pgName: "Urban Nest Co-living, Gachibowli",
-          location: "Gachibowli, Hyderabad",
-          checkInDate: "20 July 2025",
-          checkOutDate: "20 Dec 2025",
-          requestDate: "12 June 2025",
-          status: "confirmed",
-          sharing: "Single Sharing",
-          price: 9800,
-          message: "Looking for a quiet place to stay while working in the IT sector. Your PG seems perfect!",
-          tenantImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-        },
-        {
-          id: 3,
-          tenantName: "Anjali Patel",
-          tenantEmail: "anjali.patel@email.com",
-          tenantPhone: "+91 76543 21098",
-          tenantRating: 4.9,
-          pgName: "Comfort Zone PG, Andheri West",
-          location: "Andheri West, Mumbai",
-          checkInDate: "25 July 2025",
-          checkOutDate: "25 Dec 2025",
-          requestDate: "14 June 2025",
-          status: "pending",
-          sharing: "Triple Sharing",
-          price: 15000,
-          message: "I'm a student and need accommodation near my college. Your PG location is ideal.",
-          tenantImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
-        },
-        {
-          id: 4,
-          tenantName: "Vikram Singh",
-          tenantEmail: "vikram.singh@email.com",
-          tenantPhone: "+91 65432 10987",
-          tenantRating: 4.2,
-          pgName: "Student Haven, Sector 18",
-          location: "Sector 18, Noida",
-          checkInDate: "30 July 2025",
-          checkOutDate: "30 Dec 2025",
-          requestDate: "16 June 2025",
-          status: "cancelled",
-          sharing: "Double Sharing",
-          price: 8500,
-          message: "Interested in your PG. Can you provide more details about the facilities?",
-          tenantImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-        },
-        {
-          id: 5,
-          tenantName: "Meera Reddy",
-          tenantEmail: "meera.reddy@email.com",
-          tenantPhone: "+91 54321 09876",
-          tenantRating: 4.7,
-          pgName: "Elite Girls Hostel, HSR Layout",
-          location: "HSR Layout, Bangalore",
-          checkInDate: "5 August 2025",
-          checkOutDate: "5 Jan 2026",
-          requestDate: "18 June 2025",
-          status: "confirmed",
-          sharing: "Single Sharing",
-          price: 13500,
-          message: "I'm a working professional looking for a premium accommodation. Your PG looks perfect!",
-          tenantImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  // useEffect(() => {
+  //   // Simulate API call
+  //   setTimeout(() => {
+  //     // setRequests([
+  //     //   {
+  //     //     id: 1,
+  //     //     tenantName: "Priya Sharma",
+  //     //     tenantEmail: "priya.sharma@email.com",
+  //     //     tenantPhone: "+91 98765 43210",
+  //     //     tenantRating: 4.8,
+  //     //     pgName: "Skyline PG for Girls, Koramangala",
+  //     //     location: "Koramangala, Bangalore",
+  //     //     checkInDate: "15 July 2025",
+  //     //     checkOutDate: "15 Dec 2025",
+  //     //     requestDate: "10 June 2025",
+  //     //     status: "pending",
+  //     //     sharing: "Double Sharing",
+  //     //     price: 12500,
+  //     //     message: "Hi, I'm interested in your PG. I'm a working professional and looking for a clean, safe accommodation.",
+  //     //     tenantImage: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+  //     //   },
+  //     //   {
+  //     //     id: 2,
+  //     //     tenantName: "Rahul Kumar",
+  //     //     tenantEmail: "rahul.kumar@email.com",
+  //     //     tenantPhone: "+91 87654 32109",
+  //     //     tenantRating: 4.5,
+  //     //     pgName: "Urban Nest Co-living, Gachibowli",
+  //     //     location: "Gachibowli, Hyderabad",
+  //     //     checkInDate: "20 July 2025",
+  //     //     checkOutDate: "20 Dec 2025",
+  //     //     requestDate: "12 June 2025",
+  //     //     status: "confirmed",
+  //     //     sharing: "Single Sharing",
+  //     //     price: 9800,
+  //     //     message: "Looking for a quiet place to stay while working in the IT sector. Your PG seems perfect!",
+  //     //     tenantImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+  //     //   },
+  //     //   {
+  //     //     id: 3,
+  //     //     tenantName: "Anjali Patel",
+  //     //     tenantEmail: "anjali.patel@email.com",
+  //     //     tenantPhone: "+91 76543 21098",
+  //     //     tenantRating: 4.9,
+  //     //     pgName: "Comfort Zone PG, Andheri West",
+  //     //     location: "Andheri West, Mumbai",
+  //     //     checkInDate: "25 July 2025",
+  //     //     checkOutDate: "25 Dec 2025",
+  //     //     requestDate: "14 June 2025",
+  //     //     status: "pending",
+  //     //     sharing: "Triple Sharing",
+  //     //     price: 15000,
+  //     //     message: "I'm a student and need accommodation near my college. Your PG location is ideal.",
+  //     //     tenantImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+  //     //   },
+  //     //   {
+  //     //     id: 4,
+  //     //     tenantName: "Vikram Singh",
+  //     //     tenantEmail: "vikram.singh@email.com",
+  //     //     tenantPhone: "+91 65432 10987",
+  //     //     tenantRating: 4.2,
+  //     //     pgName: "Student Haven, Sector 18",
+  //     //     location: "Sector 18, Noida",
+  //     //     checkInDate: "30 July 2025",
+  //     //     checkOutDate: "30 Dec 2025",
+  //     //     requestDate: "16 June 2025",
+  //     //     status: "cancelled",
+  //     //     sharing: "Double Sharing",
+  //     //     price: 8500,
+  //     //     message: "Interested in your PG. Can you provide more details about the facilities?",
+  //     //     tenantImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+  //     //   },
+  //     //   {
+  //     //     id: 5,
+  //     //     tenantName: "Meera Reddy",
+  //     //     tenantEmail: "meera.reddy@email.com",
+  //     //     tenantPhone: "+91 54321 09876",
+  //     //     tenantRating: 4.7,
+  //     //     pgName: "Elite Girls Hostel, HSR Layout",
+  //     //     location: "HSR Layout, Bangalore",
+  //     //     checkInDate: "5 August 2025",
+  //     //     checkOutDate: "5 Jan 2026",
+  //     //     requestDate: "18 June 2025",
+  //     //     status: "confirmed",
+  //     //     sharing: "Single Sharing",
+  //     //     price: 13500,
+  //     //     message: "I'm a working professional looking for a premium accommodation. Your PG looks perfect!",
+  //     //     tenantImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+  //     //   }
+  //     // ]);
+  //     console.log("Fetching booking requests for owner ID:", id);
+  //     const res = await bookingService.getBookingsByOWner();
+  //     console.log("Fetched booking requests:", res.data);
+  //     setRequests(res.data);
+  //     setLoading(false);
+  //   }, 1000);
+  // }, []);
 
-  const handleConfirmBooking = (requestId) => {
+ const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return `${date.getDate().toString().padStart(2, '0')}/${
+    (date.getMonth() + 1).toString().padStart(2, '0')
+  }/${date.getFullYear()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+};
+
+
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      console.log("Fetching booking requests for owner");
+      const res = await bookingService.getBookingsByOWner();
+      console.log("Fetched booking requests:", res);
+
+      const mapped = res.map(req => {
+        let uiStatus = 'unknown';
+        switch (req.status) {
+          case 'PENDING': uiStatus = 'pending'; break;
+          case 'ACCEPTED':
+          case 'CONFIRMED': uiStatus = 'confirmed'; break;
+          case 'NOT BOOKED': uiStatus = 'cancelled'; break;
+        }
+
+        return {
+          id: req.id,
+          tenantName: req.tenant?.name,
+          tenantEmail: req.tenant?.email,
+          tenantPhone: req.tenant?.phoneNumber,
+          tenantRating: '4.5',
+          tenantImage: '/default-avatar.png',
+          pgName: req.listing?.title,
+          location: req.listing?.address,
+          sharing: req.listing?.roomType,
+          checkInDate: formatDate(req.startDate),
+          checkOutDate: formatDate(req.endDate),
+          requestDate: formatDate(req.createdAt),
+          price: req.listing?.rent,
+          status: uiStatus
+        };
+      });
+
+      setRequests(mapped);
+    } catch (err) {
+      console.error("Failed to fetch bookings:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData(); // <- Don't forget to call the async function!
+}, []);
+
+   const handleConfirmBooking = (requestId) => {
+    try{
+      const res = bookingService.bookingAction(requestId, 'ACCEPT');
+      alert("Booking confirmed successfully");
+      console.log("Booking confirmed:", res);
+    }catch (error) {
+      console.error("Failed to confirm booking:", error);}
     setRequests(prevRequests =>
       prevRequests.map(request =>
         request.id === requestId
@@ -112,9 +177,16 @@ const ManageBookings = () => {
           : request
       )
     );
+
   };
 
   const handleCancelBooking = (requestId) => {
+    try{
+      const res = bookingService.bookingAction(requestId, 'REJECT');
+      alert("Booking cancelled successfully");
+      console.log("Booking cancelled:", res);
+    }catch (error) {
+      console.error("Failed to confirm booking:", error);}
     setRequests(prevRequests =>
       prevRequests.map(request =>
         request.id === requestId
@@ -123,7 +195,6 @@ const ManageBookings = () => {
       )
     );
   };
-
   const filteredRequests = requests.filter(request => {
     if (filter === 'all') return true;
     return request.status === filter;

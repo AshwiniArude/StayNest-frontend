@@ -1,39 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
-import { FaEdit, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEye, FaEyeSlash, FaBell, FaGlobe, FaShieldAlt, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaEdit, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEye, FaEyeSlash, FaBell, FaGlobe, FaShieldAlt, FaCheck, FaTimes, FaSpinner } from 'react-icons/fa'; // Added FaSpinner for loading
 import '../styles/MyProfile.css';
+import { getCurrentOwner, updateOwner } from '../services/OwnerService'; // Import the service functions
 
 const MyProfileOwner = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false); // New state for error messages
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(true); // New loading state
 
   // User profile data
   const [profileData, setProfileData] = useState({
-    fullName: 'Shreya ',
-    email: 'shreyaa@email.com',
-    phone: '+91 98765 43210',
-    dateOfBirth: '1998-05-15',
-    gender: 'Female',
-    preferredCity: 'Pune',
-    preferredLocality: 'Alandi',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150'
+    fullName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    gender: '',
+    preferredCity: '',
+    preferredLocality: '',
+    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150' // Default avatar
   });
 
   // Form data for editing
   const [formData, setFormData] = useState({ ...profileData });
 
-  // Account preferences
+  // Account preferences (assuming these are part of the owner's profile or fetched separately)
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
     smsNotifications: false,
     language: 'English',
-    defaultCity: 'Bangalore'
+    defaultCity: 'Pune' // Set a default city here or fetch from backend
   });
 
   // Password change form
@@ -43,16 +46,82 @@ const MyProfileOwner = () => {
     confirmPassword: ''
   });
 
+  // --- Fetch Owner Profile on Component Mount ---
+ useEffect(() => {
+    const fetchOwnerProfile = async () => {
+      try {
+        setLoading(true);
+        setShowErrorMessage(false); // Clear previous errors
+        const data = await getCurrentOwner();
+        console.log("Fetched owner data:", data); // Good for debugging!
+
+        setProfileData({
+          fullName: data.name || '', // Changed from data.fullName to data.name
+          email: data.email || '',
+          phone: data.phoneNumber || '', // Changed from data.phone to data.phoneNumber
+          dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split('T')[0] : '',
+          gender: data.gender || '',
+          preferredCity: data.preferredCity || '',
+          preferredLocality: data.preferredLocality || '',
+          avatar: data.avatar || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150'
+        });
+        setFormData({
+          fullName: data.name || '', // Changed from data.fullName to data.name
+          email: data.email || '',
+          phone: data.phoneNumber || '', // Changed from data.phone to data.phoneNumber
+          dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split('T')[0] : '',
+          gender: data.gender || '',
+          preferredCity: data.preferredCity || '',
+          preferredLocality: data.preferredLocality || '',
+          avatar: data.avatar || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150'
+        });
+
+        // If preferences are part of the owner object, set them here too
+        if (data.preferences) { // This assumes 'preferences' is a field in the backend response
+          setPreferences(data.preferences);
+        }
+      } catch (error) {
+        console.error('Error fetching owner profile:', error);
+        setShowErrorMessage(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOwnerProfile();
+  }, []); // Empty dependency array means this runs once on mount
   const handleEditProfile = () => {
     setFormData({ ...profileData });
     setIsEditing(true);
   };
 
-  const handleSaveProfile = () => {
-    setProfileData(formData);
-    setIsEditing(false);
-    setShowSuccessMessage(true);
-    setTimeout(() => setShowSuccessMessage(false), 3000);
+  // --- Handle Save Profile (Update Backend) ---
+  const handleSaveProfile = async () => {
+    try {
+      setShowSuccessMessage(false);
+      setShowErrorMessage(false);
+      // Construct the data to send to the backend. Only send fields that can be updated.
+      const dataToUpdate = {
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        preferredCity: formData.preferredCity,
+        preferredLocality: formData.preferredLocality,
+        avatar: formData.avatar, // Make sure your backend supports avatar updates this way
+        preferences: preferences // Send preferences if they are part of the update
+      };
+      await updateOwner(dataToUpdate);
+      setProfileData(formData);
+      setIsEditing(false);
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 3000);
+    } catch (error) {
+      console.error('Error updating owner profile:', error);
+      setShowErrorMessage(true);
+      setTimeout(() => setShowErrorMessage(false), 5000);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -64,15 +133,26 @@ const MyProfileOwner = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handlePreferenceChange = (field, value) => {
+  const handlePreferenceChange = async (field, value) => {
+    // Optimistically update UI
     setPreferences(prev => ({ ...prev, [field]: value }));
+    try {
+      // If preferences are part of the main owner object, update the whole profile
+      const dataToUpdate = { ...profileData, preferences: { ...preferences, [field]: value } };
+      await updateOwner(dataToUpdate);
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 3000);
+    } catch (error) {
+      console.error('Error updating preferences:', error);
+      setShowErrorMessage(true);
+      setTimeout(() => setShowErrorMessage(false), 5000);
+      // Revert UI on error if necessary
+      setPreferences(prev => ({ ...prev, [field]: !value })); // Revert to previous state
+    }
   };
 
-  const handlePasswordChange = (field, value) => {
-    setPasswordData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleUpdatePassword = () => {
+  // --- Handle Update Password (Backend Integration Needed) ---
+  const handleUpdatePassword = async () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       alert('New passwords do not match!');
       return;
@@ -81,28 +161,71 @@ const MyProfileOwner = () => {
       alert('Password must be at least 6 characters long!');
       return;
     }
-    // Here you would typically send to backend
-    console.log('Password updated:', passwordData);
-    setShowPasswordForm(false);
-    setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
-    setShowSuccessMessage(true);
-    setTimeout(() => setShowSuccessMessage(false), 3000);
+    try {
+      setShowSuccessMessage(false);
+      setShowErrorMessage(false);
+      // You'll need a specific backend endpoint for changing passwords, e.g., `/owner/change-password`
+      // This is a placeholder; adjust based on your actual backend API for password changes.
+      // Assuming your backend expects { oldPassword, newPassword }
+      // await axios.post(`${API_BASE_URL}/users/change-password`, {
+      //   oldPassword: passwordData.oldPassword,
+      //   newPassword: passwordData.newPassword
+      // }, getAuthHeaders());
+      console.log('Password updated (simulated backend call):', passwordData); // Replace with actual API call
+
+      setShowPasswordForm(false);
+      setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 3000);
+    } catch (error) {
+      console.error('Error updating password:', error);
+      setShowErrorMessage(true);
+      setTimeout(() => setShowErrorMessage(false), 5000);
+    }
   };
 
-  const handleAvatarChange = (event) => {
+  const handlePasswordChange = (field, value) => {
+    setPasswordData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvatarChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileData(prev => ({ ...prev, avatar: e.target.result }));
+      reader.onload = async (e) => {
+        const newAvatarUrl = e.target.result;
+        try {
+          // Send the new avatar URL or file to the backend
+          // You might need a separate API for avatar upload that returns the new URL
+          // For now, we'll assume directly updating the profileData with the base64 string or a direct URL
+          await updateOwner({ ...profileData, avatar: newAvatarUrl });
+          setProfileData(prev => ({ ...prev, avatar: newAvatarUrl }));
+          setFormData(prev => ({ ...prev, avatar: newAvatarUrl }));
+          setShowSuccessMessage(true);
+          setTimeout(() => setShowSuccessMessage(false), 3000);
+        } catch (error) {
+          console.error('Error updating avatar:', error);
+          setShowErrorMessage(true);
+          setTimeout(() => setShowErrorMessage(false), 5000);
+        }
       };
       reader.readAsDataURL(file);
     }
     setShowAvatarModal(false);
   };
 
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <FaSpinner className="spinner" />
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
+
   return (
     <>
+      {/* Assuming this is part of your layout */}
       <div className="profile-container">
         {/* Header */}
         <section className="header-section">
@@ -117,8 +240,8 @@ const MyProfileOwner = () => {
             <div className="profile-info">
               <div className="avatar-section">
                 <div className="avatar-container">
-                  <img 
-                    src={profileData.avatar} 
+                  <img
+                    src={profileData.avatar}
                     alt={profileData.fullName}
                     className="avatar"
                   />
@@ -127,7 +250,7 @@ const MyProfileOwner = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="profile-details">
                 <h2>{profileData.fullName}</h2>
                 <div className="detail-item">
@@ -144,7 +267,7 @@ const MyProfileOwner = () => {
                 </div>
               </div>
             </div>
-            
+
             {!isEditing && (
               <button className="edit-profile-btn" onClick={handleEditProfile}>
                 <FaEdit />
@@ -156,21 +279,21 @@ const MyProfileOwner = () => {
         {/* Tabs */}
         <section className="tabs-section">
           <div className="tabs-container">
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
               onClick={() => setActiveTab('profile')}
             >
               <FaUser />
               Profile Details
             </button>
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'preferences' ? 'active' : ''}`}
               onClick={() => setActiveTab('preferences')}
             >
               <FaBell />
               Preferences
             </button>
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'security' ? 'active' : ''}`}
               onClick={() => setActiveTab('security')}
             >
@@ -184,7 +307,7 @@ const MyProfileOwner = () => {
           <section className="form-section">
             <div className="form-card">
               <h3>Personal Information</h3>
-              
+
               <div className="form-grid">
                 <div className="form-group">
                   <label>Full Name</label>
@@ -216,7 +339,7 @@ const MyProfileOwner = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label>Date of Birth</label>
                   <input
                     type="date"
@@ -224,7 +347,7 @@ const MyProfileOwner = () => {
                     onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                     disabled={!isEditing}
                   />
-                </div>
+                </div> */}
 
                 <div className="form-group">
                   <label>Gender</label>
@@ -233,6 +356,7 @@ const MyProfileOwner = () => {
                     onChange={(e) => handleInputChange('gender', e.target.value)}
                     disabled={!isEditing}
                   >
+                    <option value="">Select Gender</option>
                     <option value="Female">Female</option>
                     <option value="Male">Male</option>
                     <option value="Other">Other</option>
@@ -278,7 +402,7 @@ const MyProfileOwner = () => {
           <section className="form-section">
             <div className="form-card">
               <h3>Account Preferences</h3>
-              
+
               <div className="preferences-grid">
                 <div className="preference-item">
                   <div className="preference-header">
@@ -447,14 +571,14 @@ const MyProfileOwner = () => {
           <section className="form-section">
             <div className="form-card">
               <h3>Security Settings</h3>
-              
+
               <div className="security-section">
                 <div className="security-item">
                   <div className="security-info">
                     <h4>Change Password</h4>
                     <p>Update your password to keep your account secure</p>
                   </div>
-                  <button 
+                  <button
                     className="change-password-btn"
                     onClick={() => setShowPasswordForm(true)}
                   >
@@ -471,7 +595,7 @@ const MyProfileOwner = () => {
             <div className="avatar-modal">
               <div className="modal-header">
                 <h3>Change Profile Picture</h3>
-                <button 
+                <button
                   className="close-btn"
                   onClick={() => setShowAvatarModal(false)}
                 >
@@ -499,14 +623,14 @@ const MyProfileOwner = () => {
             <div className="password-modal">
               <div className="modal-header">
                 <h3>Change Password</h3>
-                <button 
+                <button
                   className="close-btn"
                   onClick={() => setShowPasswordForm(false)}
                 >
                   <FaTimes />
                 </button>
               </div>
-              
+
               <div className="password-form">
                 <div className="form-group">
                   <label>Current Password</label>
@@ -517,7 +641,7 @@ const MyProfileOwner = () => {
                       onChange={(e) => handlePasswordChange('oldPassword', e.target.value)}
                       placeholder="Enter current password"
                     />
-                    <button 
+                    <button
                       className="password-toggle"
                       onClick={() => setShowOldPassword(!showOldPassword)}
                     >
@@ -535,7 +659,7 @@ const MyProfileOwner = () => {
                       onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
                       placeholder="Enter new password"
                     />
-                    <button 
+                    <button
                       className="password-toggle"
                       onClick={() => setShowNewPassword(!showNewPassword)}
                     >
@@ -553,7 +677,7 @@ const MyProfileOwner = () => {
                       onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
                       placeholder="Confirm new password"
                     />
-                    <button 
+                    <button
                       className="password-toggle"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
@@ -563,13 +687,13 @@ const MyProfileOwner = () => {
                 </div>
 
                 <div className="form-actions">
-                  <button 
+                  <button
                     className="cancel-btn"
                     onClick={() => setShowPasswordForm(false)}
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     className="update-btn"
                     onClick={handleUpdatePassword}
                   >
@@ -587,9 +711,16 @@ const MyProfileOwner = () => {
             Your profile has been updated successfully!
           </div>
         )}
+        {/* Error Message */}
+        {showErrorMessage && (
+          <div className="error-message">
+            <FaTimes />
+            Failed to update profile. Please try again.
+          </div>
+        )}
       </div>
     </>
   );
 };
 
-export default MyProfileOwner; 
+export default MyProfileOwner;

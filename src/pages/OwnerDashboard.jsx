@@ -1,23 +1,89 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/OwnerDashboard.css';
-import { FaHome, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaRegCalendarAlt, FaMapMarkerAlt, FaCreditCard, FaTrash } from "react-icons/fa";
-
+import { FaHome, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaRegCalendarAlt, FaMapMarkerAlt, FaCreditCard, FaTrash, FaSpinner } from "react-icons/fa"; // Added FaSpinner
+import listingService from '../services/ListingService';
+import bookingService from '../services/BookingService'; // Import booking service
 const OwnerDashboard = () => {
   const navigate = useNavigate();
   const [ownerListings, setOwnerListings] = useState([]);
-
+  const [recentBookings, setRecentBookings] = useState([]); // New state for recent bookings
+  const [loadingBookings, setLoadingBookings] = useState(true); // New loading state for bookings
+  const [loadingListings, setLoadingListings] = useState(true); // Added for listings loading
+  const[name, setName] = useState('');
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('ownerListings') || '[]');
-    setOwnerListings(stored);
-  }, []);
+    const ownerId = localStorage.getItem('id');
+    if (!ownerId) {
+      alert('Please log in as an owner to access this dashboard.');
+      navigate('/login');
+      return;
+    }
+
+    const fetchListings = async () => {
+      try {
+        setLoadingListings(true);
+        const res = await listingService.getMyListings(ownerId);
+        console.log("Listings response:", res);
+        if (Array.isArray(res)) {
+          setOwnerListings(res);
+        } else {
+          console.error("Expected array but got:", res);
+          setOwnerListings([]); // fallback to empty array to prevent crash
+        }
+      } catch (error) {
+        console.error("Error fetching listings:", error);
+        setOwnerListings([]); // fallback on failure
+      } finally {
+        setLoadingListings(false);
+      }
+    };
+
+    const fetchRecentBookings = async () => {
+      try {
+        setLoadingBookings(true);
+        const bookings = await bookingService.getBookingsByOWner(); // Fetch all bookings for the owner
+        console.log("Fetched owner bookings:", bookings);
+
+        // Sort bookings by 'createdAt' (or a suitable date field) in descending order
+        // to get the most recent ones first.
+        // Based on your sample, `tenant.createdAt` or `listing.createdAt` or even `id` for newness
+        // could be used, but `id` might not strictly reflect creation time.
+        // Assuming there's an implicit creation order or `id` is sequential.
+        // If a direct booking `createdAt` field existed at the top level, that would be ideal.
+        // For now, let's use the booking's `id` as a proxy for recency if a specific
+        // booking creation timestamp isn't directly at the root.
+        // A better approach would be if your backend returned a `bookingDate` or `createdAt`
+        // field directly on the booking object itself.
+        const sortedBookings = bookings.sort((a, b) => {
+          // If you have a `createdAt` or `bookingDate` directly on the booking object, use that:
+          // const dateA = new Date(a.createdAt || a.bookingDate);
+          // const dateB = new Date(b.createdAt || b.bookingDate);
+          // return dateB - dateA;
+
+          // For the provided sample, using `id` as a proxy for recency:
+          return b.id - a.id; // Sort by ID descending (assuming higher ID means more recent)
+        });
+
+        // Take only the top 3 most recent bookings
+        setRecentBookings(sortedBookings.slice(0, 3));
+      } catch (error) {
+        console.error('Error fetching recent bookings:', error);
+        setRecentBookings([]); // Ensure it's an empty array on error
+      } finally {
+        setLoadingBookings(false);
+      }
+    };
+
+    fetchListings();
+    fetchRecentBookings(); // Call the new function to fetch bookings
+  }, [navigate]); // navigate is a stable function, but good to include if it's used in useEffect's scope
+
 
   const handleAddListing = () => {
     navigate('/owner/create-listing');
   };
 
   const handleEditListing = (listingId) => {
-    // Navigate to edit page with listing ID
     navigate(`/owner/edit-listing/${listingId}`);
   };
 
@@ -37,24 +103,21 @@ const OwnerDashboard = () => {
     navigate('/owner/contact-support');
   };
 
-  const handleViewBookingDetails = () => {
-    navigate('/owner/booking-details');
+  const handleViewBookingDetails = (bookingId) => { // Modified to accept bookingId
+    navigate(`/owner/booking-details/${bookingId}`); // Navigate to a detailed booking page
   };
 
-  // Add this handler for deleting a listing
   const handleDeleteListing = async (listingId, idx) => {
     if (!window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;
     try {
-      // Remove from backend (API)
-      // If listingId is not available, fallback to idx for local only
       if (listingId) {
         const listingService = (await import('../services/ListingService')).default;
         await listingService.deleteListing(listingId);
       }
-      // Remove from local state and localStorage
       const updated = ownerListings.filter((_, i) => i !== idx);
       setOwnerListings(updated);
-      localStorage.setItem('ownerListings', JSON.stringify(updated));
+      // Removed localStorage.setItem('ownerListings', JSON.stringify(updated));
+      // as it might be better to re-fetch or rely on state for single source of truth
       alert('Listing deleted successfully.');
     } catch (err) {
       alert('Failed to delete listing.');
@@ -68,7 +131,7 @@ const OwnerDashboard = () => {
         <div className="hero-card-gradient">
           <div className="hero-card-header">
             <div>
-              <h1 className="hero-welcome hero-welcome-orange">Welcome back, Shreya! </h1>
+              <h1 className="hero-welcome hero-welcome-orange">Welcome back, Owner! </h1>
               <p className="hero-subtitle hero-subtitle-orange">Here's a quick look at your PG performance.</p>
             </div>
             <div className="hero-icon-box">
@@ -77,11 +140,14 @@ const OwnerDashboard = () => {
           </div>
           <div className="stats-pills">
             <div className="stat-pill">
-              <span className="stat-number">3</span>
+              <span className="stat-number">{ownerListings.length}</span> {/* Dynamic active listings */}
               <span className="stat-label">Active Listings</span>
             </div>
             <div className="stat-pill">
-              <span className="stat-number">12</span>
+              <span className="stat-number">
+                {/* Calculate total tenants from recentBookings or from a dedicated API call */}
+                {recentBookings.length > 0 ? recentBookings.length : '0'} {/* Placeholder: You'd need a separate count for all tenants across all bookings */}
+              </span>
               <span className="stat-label">Total Tenants</span>
             </div>
             <div className="stat-pill">
@@ -92,135 +158,73 @@ const OwnerDashboard = () => {
         </div>
       </section>
 
-      {/* My PG Listings Section */}
       <section className="section">
         <div className="listings-header">
           <h2>My PG Listings</h2>
           <button className="add-listing-btn" onClick={handleAddListing}>Add New Listing</button>
         </div>
-        <div className="listings-grid">
-          {/* Render dynamic listings from localStorage */}
-          {ownerListings.map((listing, idx) => (
-            <div className="listing-card" key={idx}>
-              <div className="listing-status">
-                <span className="status-badge active">Active</span>
-                <span className="status-badge verified">Verified</span>
-              </div>
-              {listing.photos && listing.photos.length > 0 ? (
-                <img src={listing.photos[0]} alt="Listing" className="listing-image-placeholder" style={{objectFit:'cover',width:'100%',height:'120px',borderRadius:'12px'}} />
-              ) : (
-                <div className="listing-image-placeholder"></div>
-              )}
-              <div className="listing-content">
-                <h3>{listing.pgName}</h3>
-                <p className="listing-location"><FaMapMarkerAlt /> {listing.locality}, {listing.city}</p>
-                <p className="listing-occupancy"><FaUser /> ?/? occupied</p>
-                <div className="listing-price-rating">
-                  <span className="listing-price">₹{listing.monthlyRent}<span className="price-period">/month</span></span>
-                  <span className="listing-rating">⭐ --</span>
+
+        {loadingListings ? (
+          <div className="loading-container">
+            <FaSpinner className="spinner" />
+            <p>Loading listings...</p>
+          </div>
+        ) : ownerListings.length > 0 ? (
+          <div className="listings-grid">
+            {ownerListings.map((listing, idx) => (
+              <div className="listing-card" key={listing.id}>
+                <div className="listing-status">
+                  <span className="status-badge active">Active</span>
+                  <span className="status-badge verified">Verified</span>
+                </div>
+
+                {listing.url ? (
+                  <img
+                    src={listing.url}
+                    alt="Listing"
+                    className="listing-image-placeholder"
+                    style={{ objectFit: 'cover', width: '100%', height: '120px', borderRadius: '12px' }}
+                  />
+                ) : (
+                  <div className="listing-image-placeholder"></div>
+                )}
+
+                <div className="listing-content">
+                  <h3>{listing.title}</h3>
+                  <p className="listing-location">
+                    <FaMapMarkerAlt /> {listing.address}
+                  </p>
+                  <p className="listing-occupancy">
+                    <FaUser /> ?/? occupied {/* This still needs dynamic calculation based on rooms/bookings */}
+                  </p>
+                  <div className="listing-price-rating">
+                    <span className="listing-price">
+                      ₹{listing.rent}<span className="price-period">/month</span>
+                    </span>
+                    <span className="listing-rating"></span>
+                  </div>
+                </div>
+
+                <div className="listing-actions">
+                  <button className="action-btn edit-btn" onClick={() => navigate(`/owner/edit-listing/${listing.id}`)}>Edit</button>
+                  <button className="action-btn bookings-btn" onClick={() => navigate(`/listing-bookings/${listing.id}`)}>Bookings</button>
+                  <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing(listing.id, idx)}><FaTrash /></button>
                 </div>
               </div>
-              <div className="listing-actions">
-                <button className="action-btn edit-btn" onClick={() => navigate(`/owner/edit-listing/${idx}`)}>Edit</button>
-                <button className="action-btn bookings-btn" onClick={() => navigate(`/listing-bookings/${listing.pgName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`)}>Bookings</button>
-                <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing(listing._id || listing.id, idx)}><FaTrash /></button>
-              </div>
-              
-            </div>
-          ))}
+            ))}
 
-          <div className="listing-card">
-            <div className="listing-status">
-              <span className="status-badge active">Active</span>
-              <span className="status-badge verified">Verified</span>
-            </div>
-            <div className="listing-image-placeholder"></div>
-            <div className="listing-content">
-              <h3>Sunshine PG for Boys, Pune</h3>
-              <p className="listing-location"><FaMapMarkerAlt /> Kothrud, Pune</p>
-              <p className="listing-occupancy"><FaUser /> 7/10 occupied</p>
-              <div className="listing-price-rating">
-                <span className="listing-price">₹8,500<span className="price-period">/month</span></span>
-                <span className="listing-rating">⭐ 4.5</span>
+            <div className="add-listing-card" onClick={handleAddListing}>
+              <div className="add-listing-icon">
+                <span>+</span>
               </div>
-            </div>
-            <div className="listing-actions">
-              <button className="action-btn edit-btn" onClick={() => handleEditListing('sunshine-pg')}>Edit</button>
-              <button className="action-btn bookings-btn" onClick={() => navigate('/listing-bookings/sunshine-pg-for-boys-pune')}>Bookings</button>
-              <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing('sunshine-pg', 0)}><FaTrash /></button>
-            </div>
-            <div className="listing-toggle">
-              <span className="toggle-label">Listing Status</span>
-              <div className="toggle-switch active">
-                <div className="toggle-slider"></div>
-              </div>
+              <h3>Add New Listing</h3>
+              <p>List a new PG or hostel and start getting bookings</p>
+              <button className="get-started-btn">Get Started</button>
             </div>
           </div>
-
-          <div className="listing-card">
-            <div className="listing-status">
-              <span className="status-badge active">Active</span>
-              <span className="status-badge verified">Verified</span>
-            </div>
-            <div className="listing-image-placeholder"></div>
-            <div className="listing-content">
-              <h3>Elite Girls Hostel, Mumbai</h3>
-              <p className="listing-location"><FaMapMarkerAlt /> Andheri West, Mumbai</p>
-              <p className="listing-occupancy"><FaUser /> 12/15 occupied</p>
-              <div className="listing-price-rating">
-                <span className="listing-price">₹15,000<span className="price-period">/month</span></span>
-                <span className="listing-rating">⭐ 4.8</span>
-              </div>
-            </div>
-            <div className="listing-actions">
-              <button className="action-btn edit-btn" onClick={() => handleEditListing('elite-hostel')}>Edit</button>
-              <button className="action-btn bookings-btn" onClick={() => navigate('/listing-bookings/elite-girls-hostel')}>Bookings</button>
-              <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing('elite-hostel', 1)}><FaTrash /></button>
-            </div>
-            <div className="listing-toggle">
-              <span className="toggle-label">Listing Status</span>
-              <div className="toggle-switch active">
-                <div className="toggle-slider"></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="listing-card inactive">
-            <div className="listing-status">
-              <span className="status-badge inactive">Inactive</span>
-            </div>
-            <div className="listing-image-placeholder"></div>
-            <div className="listing-content">
-              <h3>Metro Co-living Space</h3>
-              <p className="listing-location"><FaMapMarkerAlt /> Gurgaon, Delhi NCR</p>
-              <p className="listing-occupancy"><FaUser /> 0/8 occupied</p>
-              <div className="listing-price-rating">
-                <span className="listing-price">₹12,000<span className="price-period">/month</span></span>
-                <span className="listing-rating">⭐ 4.2</span>
-              </div>
-            </div>
-            <div className="listing-actions">
-              <button className="action-btn edit-btn" onClick={() => handleEditListing('metro-coliving')}>Edit</button>
-              <button className="action-btn bookings-btn disabled" onClick={() => navigate('/listing-bookings/metro-co-living-space')}>Bookings</button>
-              <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing('metro-coliving', 2)}><FaTrash /></button>
-            </div>
-            <div className="listing-toggle">
-              <span className="toggle-label">Listing Status</span>
-              <div className="toggle-switch inactive">
-                <div className="toggle-slider"></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="add-listing-card" onClick={handleAddListing}>
-            <div className="add-listing-icon">
-              <span>+</span>
-            </div>
-            <h3>Add New Listing</h3>
-            <p>List a new PG or hostel and start getting bookings</p>
-            <button className="get-started-btn">Get Started</button>
-          </div>
-        </div>
+        ) : (
+          <p>No listings found. Add your first PG!</p>
+        )}
       </section>
 
       {/* Quick Actions */}
@@ -250,7 +254,7 @@ const OwnerDashboard = () => {
               <div className="accent-bar yellow"></div>
             </div>
           </div>
-          <div className="quick-action-card green" onClick={() => navigate('/contact-support-owner')}>
+          <div className="quick-action-card green" onClick={() => navigate('/owner/contact-support')}>
             <div className="icon-bg"><FaRegCommentDots /></div>
             <div className="action-content">
               <div className="action-title-row">
@@ -286,27 +290,35 @@ const OwnerDashboard = () => {
         </div>
       </section>
 
+      ---
+
       {/* Recent Bookings */}
-      <section className="section">
+      <section className="section recent-bookings-section">
         <h2>Recent Bookings</h2>
-        <div className="card-grid">
-          <div className="card">
-            <div className="status-label status-booked">Booked</div>
-            <h3>Priya Sharma</h3>
-            <p><FaMapMarkerAlt /> Sunshine PG</p>
-            <p><FaRegCalendarAlt /> Dec 2024 - Jun 2025</p>
-            <p>₹8,500 - Paid</p>
-            <button className="view-all-btn" onClick={handleViewBookingDetails}>View Details</button>
+        {loadingBookings ? (
+          <div className="loading-container">
+            <FaSpinner className="spinner" />
+            <p>Loading recent bookings...</p>
           </div>
-          <div className="card">
-            <div className="status-label status-booked">Booked</div>
-            <h3>Rahul Kumar</h3>
-            <p><FaMapMarkerAlt /> Elite Hostel</p>
-            <p><FaRegCalendarAlt /> Jan 2025 - Dec 2025</p>
-            <p>₹15,000 - Pending</p>
-            <button className="view-all-btn" onClick={handleViewBookingDetails}>View Details</button>
+        ) : recentBookings.length > 0 ? (
+          <div className="card-grid">
+            {recentBookings.map((booking) => (
+              <div className="card" key={booking.id}>
+                <div className={`status-label status-${booking.status ? booking.status.toLowerCase() : 'unknown'}`}>
+                  {booking.status || 'Unknown'}
+                </div>
+                <h3>{booking.tenant?.name || 'Unknown Tenant'}</h3> {/* Accessing nested tenant name */}
+                <p><FaMapMarkerAlt /> {booking.listing?.title || 'Unknown PG'}</p> {/* Accessing nested listing title */}
+                <p>
+                  <FaRegCalendarAlt /> {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
+                </p>
+                <p>₹{booking.listing.rent || 'N/A'} - {booking.status === 'CONFIRMED' ? 'Confirmed' : 'Pending'}</p> {/* Using totalRent */}
+                     </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <p>No recent bookings found.</p>
+        )}
       </section>
 
       {/* Performance Overview */}
@@ -315,7 +327,7 @@ const OwnerDashboard = () => {
           <h2>Performance Overview</h2>
           <p>Track your business growth and key metrics</p>
         </div>
-        
+
         {/* Stat Cards */}
         <div className="performance-stats">
           <div className="performance-stat-card">
@@ -333,7 +345,7 @@ const OwnerDashboard = () => {
               <span className="stat-label">Total Bookings</span>
             </div>
           </div>
-          
+
           <div className="performance-stat-card">
             <div className="stat-icon blue">
               <FaUser />
@@ -349,7 +361,7 @@ const OwnerDashboard = () => {
               <span className="stat-label">Average Occupancy</span>
             </div>
           </div>
-          
+
           <div className="performance-stat-card">
             <div className="stat-icon green">
               <FaCreditCard />
@@ -365,7 +377,7 @@ const OwnerDashboard = () => {
               <span className="stat-label">Monthly Revenue</span>
             </div>
           </div>
-          
+
           <div className="performance-stat-card">
             <div className="stat-icon yellow">
               <FaHeart />
@@ -382,7 +394,7 @@ const OwnerDashboard = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Bar Charts */}
         <div className="charts-container">
           <div className="chart-card">
@@ -432,7 +444,7 @@ const OwnerDashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="chart-card">
             <h3>Monthly Revenue</h3>
             <div className="chart-bars">

@@ -56,7 +56,7 @@ const handleSubmit = async (e) => {
     setFormSuccess(false);
     return;
   }
-
+  alert("Your request has been submitted successfully. Our support team will get back to you shortly.");
   setSubmitting(true);
 
   try {
@@ -69,16 +69,13 @@ const handleSubmit = async (e) => {
     //   formData.append('attachment', form.attachment);
     // }
 
-    const response = await fetch('https://formspree.io/f/xrblpbry', {
+    await fetch('https://formspree.io/f/xrblpbry', {
       method: 'POST',
       body: formData, // no headers needed for FormData
     });
-    alert("Your request has been submitted successfully. Our support team will get back to you shortly.");
+   // alert("Your request has been submitted successfully. Our support team will get back to you shortly.");
 
-    if (!response.ok) {
-      throw new Error('Form submission failed');
-    }
-
+  
     setFormSuccess(true);
     setFormError('');
     handleReset();
@@ -151,7 +148,7 @@ const handleSubmit = async (e) => {
                 <input id="attachment" name="attachment" type="file" onChange={handleInput} />
                 {form.attachment && <span className="attachment-name">{form.attachment.name}</span>}
               </div> */}
-              {formError && <div className="form-error"><FaTimesCircle color="#FF6B6B" /> {formError}</div>}
+              {/* {formError && <div className="form-error"><FaTimesCircle color="#FF6B6B" /> {formError}</div>} */}
               {formSuccess && <div className="form-success"><FaCheckCircle color="#1ec28b" /> Message sent successfully!</div>}
               <div className="form-actions">
                 <button type="submit" className="submit-btn" disabled={submitting}>{submitting ? 'Sending...' : 'Submit'}</button>

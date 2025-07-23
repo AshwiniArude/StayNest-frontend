@@ -21,6 +21,7 @@ const Login = () => {
   e.preventDefault();
 
   try {
+    if (formData.role === 'TENANT') {
     const result = await authService.login(formData);
     localStorage.setItem('token', result.jwtToken);
     alert("Login successful");
@@ -30,9 +31,18 @@ const Login = () => {
     console.log(formData.role);
     console.log(localStorage.getItem('id'));
     console.log("Login successful, redirecting...");
-    if (formData.role === 'TENANT') {
+    
       navigate('/tenant/dashboard');
     } else if (formData.role === 'OWNER') {
+       const result = await authService.ownerLogin(formData);
+    localStorage.setItem('token', result.jwtToken);
+    alert("Login successful");
+    localStorage.setItem('id', result.userId); // Store tenant ID if needed
+    console.log(result.jwtToken);
+    console.log(result.userId);
+    console.log(formData.role);
+    console.log(localStorage.getItem('id'));
+    console.log("Login successful, redirecting...");
       navigate('/owner/dashboard');
     }
   } catch (err) {

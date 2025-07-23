@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaUpload, FaCheck, FaArrowLeft } from 'react-icons/fa';
 import '../styles/CreateListing.css';
-
+import api from '../services/ApiService';
+import listingService from '../services/ListingService';
 const EditListing = () => {
   const { listingId } = useParams();
+  
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -35,64 +37,48 @@ const EditListing = () => {
     { id: 'cleaning', name: 'Cleaning', icon: '🧹' }
   ];
 
-  useEffect(() => {
-    // Move existingListings inside useEffect
-    const existingListings = {
-      'sunshine-pg': {
-        pgName: 'Sunshine PG for Boys, Pune',
-        monthlyRent: '8500',
-        description: 'A comfortable and well-maintained PG for boys in Kothrud area. Clean rooms, good food, and friendly environment.',
-        address: '123 Sunshine Lane, Kothrud, Pune',
-        city: 'Pune',
-        locality: 'Kothrud',
-        gender: 'boys',
-        totalRooms: '10',
-        bedsPerRoom: '2',
-        roomType: 'shared',
-        amenities: ['wifi', 'ac', 'food', 'laundry', 'parking'],
-        securityDeposit: '5000',
-        bookingFee: '1000',
-        discount: '0'
-      },
-      'elite-hostel': {
-        pgName: 'Elite Girls Hostel, Mumbai',
-        monthlyRent: '15000',
-        description: 'Premium girls hostel with modern amenities and 24/7 security. Located in a safe neighborhood.',
-        address: '456 Elite Street, Andheri West, Mumbai',
-        city: 'Mumbai',
-        locality: 'Andheri West',
-        gender: 'girls',
-        totalRooms: '15',
-        bedsPerRoom: '1',
-        roomType: 'private',
-        amenities: ['wifi', 'ac', 'food', 'laundry', 'parking', 'gym', 'security'],
-        securityDeposit: '10000',
-        bookingFee: '2000',
-        discount: '5'
-      },
-      'metro-coliving': {
-        pgName: 'Metro Co-living Space',
-        monthlyRent: '12000',
-        description: 'Modern co-living space with shared amenities and community living experience.',
-        address: '789 Metro Road, Gurgaon, Delhi NCR',
-        city: 'Gurgaon',
-        locality: 'Delhi NCR',
-        gender: 'co-ed',
-        totalRooms: '8',
-        bedsPerRoom: '2',
-        roomType: 'shared',
-        amenities: ['wifi', 'ac', 'food', 'laundry', 'parking', 'gym'],
-        securityDeposit: '8000',
-        bookingFee: '1500',
-        discount: '0'
-      }
-    };
-    // Load existing listing data
-    const listingData = existingListings[listingId];
-    if (listingData) {
-      setFormData(listingData);
+useEffect(() => {
+  const fetchListing = async () => {
+    try {
+      const res = await api.get(`/listing/${listingId}`);
+      const data = res.data;
+      console.log('Fetched listing data:', data);
+      setFormData({
+        pgName: data.title || '',
+        monthlyRent: data.rent || '',
+        description: data.description || '',
+        address: data.address || '',
+        city: data.city || '',
+        locality: data.locality || '',
+        gender: data.gender || '',
+        totalRooms: data.totalRooms || '',
+        bedsPerRoom: data.bedsPerRoom || '',
+        roomType: data.roomType || '',
+        amenities: [
+          data.isWifiAvilable && 'wifi',
+          data.isAcAvilable && 'ac',
+          data.isMealsAvilable && 'meals',
+          data.isLaudryAvilable && 'laundry',
+          data.isCctvAvilable && 'cctv',
+          data.isParkingAvilable && 'parking',
+          data.isCommonAreasAvilable && 'commonArea',
+          data.isStudyDeskAvilable && 'studyDesk'
+        ].filter(Boolean),
+        securityDeposit: data.deposite || '',
+        bookingFee: data.bookingFee || '',
+        discount: data.discount || '0',
+        url: data.url || '',
+        startDate: data.startDate || '',
+        endDate: data.endDate || '',
+      });
+    } catch (err) {
+      console.error('Error fetching listing:', err);
+      alert('Failed to fetch listing. Please try again.');
     }
-  }, [listingId]);
+  };
+
+  fetchListing();
+}, [listingId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -111,14 +97,46 @@ const EditListing = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Updated listing data:', formData);
-    // Here you would typically send the data to your backend
-    alert('Listing updated successfully!');
-    navigate('/owner/dashboard');
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+console.log('Submitting form with data:', formData);
+  const updatedListing = {
+    id: listingId,
+    title: formData.pgName,
+    address: formData.address,
+    gender: formData.gender,
+    isWifiAvilable: formData.amenities.includes('wifi'),
+    isAcAvilable: formData.amenities.includes('ac'),
+    isMealsAvilable: formData.amenities.includes('meals'),
+    isLaudryAvilable: formData.amenities.includes('laundry'),
+    isCctvAvilable: formData.amenities.includes('cctv'),
+    isParkingAvilable: formData.amenities.includes('parking'),
+    isCommonAreasAvilable: formData.amenities.includes('commonArea'),
+    isStudyDeskAvilable: formData.amenities.includes('studyDesk'),
+    rent: parseFloat(formData.monthlyRent),
+    deposite: parseFloat(formData.securityDeposit),
+    discount: parseFloat(formData.discount),
+    url: formData.url || '',
+    description: formData.description,
+    roomType: formData.roomType,
+    totalRooms: parseInt(formData.totalRooms),
+    bedsPerRoom: parseInt(formData.bedsPerRoom),
+    startDate: formData.startDate,
+    endDate: formData.endDate,
+    bookingFee: parseFloat(formData.bookingFee)
   };
 
+  try {
+    const res = await listingService.updateListing(updatedListing);
+    console.log('Listing updated successfully:', updatedListing);
+    console.log(res);
+    alert('Listing updated successfully!');
+    navigate('/owner/dashboard');
+  } catch (err) {
+    console.error('Error updating listing:', err);
+    alert('Failed to update listing. Please try again.');
+  }
+};
   const handleBack = () => {
     navigate('/owner/dashboard');
   };

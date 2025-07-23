@@ -253,7 +253,7 @@ const MyProfile = () => {
                 />
               </div>
 
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label>Date of Birth</label>
                 <input
                   type="date"
@@ -261,7 +261,7 @@ const MyProfile = () => {
                   onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                   disabled={!isEditing}
                 />
-              </div>
+              </div> */}
 
               <div className="form-group">
                 <label>Gender</label>

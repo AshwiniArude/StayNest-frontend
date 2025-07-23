@@ -347,9 +347,9 @@ const handleConfirmBooking = async () => {
                 <div className="price-breakdown">
                   <h4>Price Breakdown</h4>
                   <div className="price-item">
-                    //change here
-                    <span>Rent</span>
-                    <span>₹{selectedRoom.Totalrent}</span>
+
+                    <span>Total Rent</span>
+                    <span>₹{selectedRoom.rent * duration}</span>
                   </div>
                   <div className="price-item">
                     <span>Security Deposit</span>
@@ -362,12 +362,12 @@ const handleConfirmBooking = async () => {
                   </div>
                   <div className="price-item">
                     <span>Discount</span>
-                    <span>₹{pgData.Discount}</span>
+                    <span>₹{pgData.discount * 0.01 * selectedRoom.rent * duration}</span>
                   
                   </div>
                   <div className="price-item total">
                     <span>Total Amount</span>
-                    <span>₹{totalAmount}</span>
+                    <span>₹{(pgData.bookingFee)+ pgData.securityDeposit + selectedRoom.rent * duration - (pgData.discount * 0.01 * selectedRoom.rent * duration) }</span>
                   </div>
                 </div>
 

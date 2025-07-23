@@ -20,11 +20,33 @@ const BookingDetails = () => {
   });
 
   // Responsive handler
+  // Map frontend-friendly names to backend values (optional, if used elsewhere)
+const statusAliasMap = {
+  Pending: 'PENDING',
+  Booked: 'ACCEPT',
+  Confirmed: 'ACCEPT',
+  Cancelled: 'REJECT',
+  CancelledByTenant: 'REJECT',
+  CancelledByOwner: 'REJECT',
+  Rejected: 'REJECT'
+};
+
+// Map backend values to UI-friendly names ✅ THIS ONE IS USED IN YOUR JSX
+const backendToUiStatusMap = {
+  PENDING: 'Pending',
+  ACCEPTED: 'Booked',
+  CONFIRMED: 'Booked',
+  'NOT BOOKED': 'Cancelled'
+};
+
+
 useEffect(() => {
   const fetchBooking = async () => {
     try {
+      console.log('Fetching booking with ID:', bookingId); // ✅ Check if bookingId is correct
       const res = await bookingService.getBookingById(bookingId);
-      const data = res.data || res;
+      console.log('Booking data fetched:', res); // ✅ Check if booking data is loaded correctly
+      const data = res;
       console.log('Fetched Booking Data:', data); // ✅ Check if booking data is loaded correctly
      const transformed = {
   pg: {
@@ -34,7 +56,7 @@ useEffect(() => {
     reviews: 0,                                            // 🚧 hardcoded if not available
     // image: data.listing?.url || 'https://via.placeholder.com/150', // optional
   },
-  status: data.status || 'Pending',
+  status:  backendToUiStatusMap[data.status]  || 'Pending',
   checkIn: data.startDate ? new Date(data.startDate).toLocaleDateString('en-IN') : 'N/A',
   checkOut: data.endDate ? new Date(data.endDate).toLocaleDateString('en-IN') : 'N/A',
   roomType: data.listing?.roomType || 'Not Provided',

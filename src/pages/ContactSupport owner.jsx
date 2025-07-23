@@ -4,11 +4,12 @@ import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
 import { FaSearch, FaBoxOpen, FaComments, FaEnvelope, FaHeadset, FaPhone, FaCheckCircle, FaTimesCircle, FaPaperclip, FaClock, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 import '../styles/ContactSupport.css';
 
+
 const ContactSupport = () => {
   // Form state
   const [form, setForm] = useState({
-    name: 'Shreya Newaskar',
-    email: 'shreya@email.com',
+    name: '',
+    email: '',
     subject: '',
     message: '',
     attachment: null,
@@ -43,27 +44,52 @@ const ContactSupport = () => {
     setFormError('');
   };
   const handleReset = () => {
-    setForm({ name: 'Shreya Newaskar', email: 'shreya@email.com', subject: '', message: '', attachment: null });
+    setForm({ name: '', email: '', subject: '', message: '', attachment: null });
     setFormTouched(false);
     setFormError('');
     setFormSuccess(false);
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.name || !form.email || !form.subject || !form.message) {
-      setFormError('Please fill all required fields');
-      setFormSuccess(false);
-      return;
-    }
-    setSubmitting(true);
-    setTimeout(() => {
-      setFormSuccess(true);
-      setFormError('');
-      setSubmitting(false);
-      setTimeout(() => setFormSuccess(false), 2500);
-      handleReset();
-    }, 1200);
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!form.name || !form.email || !form.subject || !form.message) {
+    setFormError('Please fill all required fields');
+    setFormSuccess(false);
+    return;
+  }
+
+  setSubmitting(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('email', form.email);
+    formData.append('subject', form.subject);
+    formData.append('message', form.message);
+    // if (form.attachment) {
+    //   formData.append('attachment', form.attachment);
+    // }
+
+    const response = await fetch('https://formspree.io/f/xrblpbry', {
+      method: 'POST',
+      body: formData, // no headers needed for FormData
+    });
+    alert("Your request has been submitted successfully. Our support team will get back to you shortly.");
+
+  
+    setFormSuccess(true);
+    setFormError('');
+    handleReset();
+
+    setTimeout(() => setFormSuccess(false), 2500);
+  } catch (error) {
+    setFormError(error.message || 'Something went wrong');
+    setFormSuccess(false);
+  } finally {
+    setSubmitting(false);
+  }
+};
+
   // Ticket lookup
   const handleTrackTicket = () => {
     if (!ticketId.trim()) {
@@ -87,12 +113,12 @@ const ContactSupport = () => {
         <section className="support-hero-section">
           <h1>Need Help? We're here for you!</h1>
           <p>Reach out to our team with any questions or issues.</p>
-          <div className="quick-help-grid">
+          {/* <div className="quick-help-grid">
             <div className="quick-help-card" onClick={() => navigate('/contact-support')} style={{ cursor: 'pointer' }}>
               <FaEnvelope className="quick-help-icon" color="#7c5ff0" />
               <span>Submit a Request</span>
             </div>
-          </div>
+          </div> */}
         </section>
 
         {/* Contact Form Card */}
@@ -103,11 +129,11 @@ const ContactSupport = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Name</label>
-                  <input name="name" value={form.name} onChange={handleInput} readOnly />
+                  <input name="name" value={form.name} onChange={handleInput}  placeholder="Owner Name"/>
                 </div>
                 <div className="form-group">
                   <label>Email</label>
-                  <input name="email" value={form.email} readOnly />
+                  <input name="email" value={form.email} onChange={handleInput} placeholder="Owner Email"/>
                 </div>
               </div>
               <div className="form-group">
@@ -118,12 +144,12 @@ const ContactSupport = () => {
                 <label>Message</label>
                 <textarea name="message" value={form.message} onChange={handleInput} rows={6} placeholder="How can we help you?" />
               </div>
-              <div className="form-group attachment-group">
+              {/* <div className="form-group attachment-group">
                 <label htmlFor="attachment"><FaPaperclip /> Attachment (optional)</label>
                 <input id="attachment" name="attachment" type="file" onChange={handleInput} />
                 {form.attachment && <span className="attachment-name">{form.attachment.name}</span>}
-              </div>
-              {formError && <div className="form-error"><FaTimesCircle color="#FF6B6B" /> {formError}</div>}
+              </div> */}
+              {/* {formError && <div className="form-error"><FaTimesCircle color="#FF6B6B" /> {formError}</div>} */}
               {formSuccess && <div className="form-success"><FaCheckCircle color="#1ec28b" /> Message sent successfully!</div>}
               <div className="form-actions">
                 <button type="submit" className="submit-btn" disabled={submitting}>{submitting ? 'Sending...' : 'Submit'}</button>
@@ -157,7 +183,7 @@ const ContactSupport = () => {
         </section>
 
         {/* Support Hours & Location */}
-        <section className="support-hours-section">
+        {/* <section className="support-hours-section">
           <h2>Support Hours & Location</h2>
           <div className="support-hours-grid">
             <div className="support-hours-block">
@@ -174,7 +200,7 @@ const ContactSupport = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
       </div>
     </>
   );
