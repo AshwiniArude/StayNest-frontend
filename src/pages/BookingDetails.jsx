@@ -185,13 +185,13 @@ if (!booking) {
             <div className="bd-summary-row"><span>Check-Out Date</span><span><FaRegCalendarAlt color="#7c5ff0" /> {booking.checkOut}</span></div>
             <div className="bd-summary-row"><span>Room Type</span><span><FaBed color="#7c5ff0" /> {booking.roomType}</span></div>
             <div className="bd-summary-row"><span>Booking ID</span><span><FaHashtag color="#7c5ff0" /> {booking.bookingId}</span></div>
-            <div className="bd-summary-row"><span>Booking Date</span><span><FaCalendarCheck color="#7c5ff0" /> {booking.bookingDate}</span></div>
-            <div className="bd-summary-row"><span>Amount Paid</span><span><FaCreditCard color="#1ec28b" /> ₹{booking.amountPaid.toLocaleString()}</span></div>
+           {/*<div className="bd-summary-row"><span>Booking Date</span><span><FaCalendarCheck color="#7c5ff0" /> {booking.bookingDate}</span></div>*/}
+           {/* <div className="bd-summary-row"><span>Amount Paid</span><span><FaCreditCard color="#1ec28b" /> ₹{booking.amountPaid.toLocaleString()}</span></div>*/}
           </div>
-          <div className="bd-summary-actions">
+       { /*  <div className="bd-summary-actions">
             <button className="bd-btn bd-btn-pdf" onClick={handleDownloadReceipt}><FaFilePdf color="#7c5ff0" /> Download Receipt</button>
             <button className="bd-btn bd-btn-contact" onClick={handleContactOwner}><FaEnvelope color="#ff9f59" /> Contact PG Owner</button>
-          </div>
+          </div>*/}
         </Card>
 
         {/* Actions Card (only if active) */}
@@ -209,8 +209,8 @@ if (!booking) {
         <Card title="Need Help?" icon={<FaHeadset color="#7c5ff0" />} sectionKey="support">
           <div className="bd-support">
             <div className="bd-support-actions">
-              <button className="bd-btn bd-btn-support" onClick={handleChatSupport}><FaComments color="#7c5ff0" /> Chat with Support</button>
-              <button className="bd-btn bd-btn-support" onClick={handleRaiseTicket}><FaEnvelope color="#7c5ff0" /> Raise a Ticket</button>
+                {/*<button className="bd-btn bd-btn-support" onClick={handleChatSupport}><FaComments color="#7c5ff0" /> Chat with Support</button>*/}
+             {/* <button className="bd-btn bd-btn-support" onClick={handleRaiseTicket}><FaEnvelope color="#7c5ff0" /> Raise a Ticket</button>*/}
             </div>
             <div className="bd-faqs">
               <h4>FAQs</h4>
