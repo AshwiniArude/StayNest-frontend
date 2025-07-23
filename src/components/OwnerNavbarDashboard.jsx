@@ -85,7 +85,7 @@ const OwnerNavbarDashboard = () => {
         {/* Main User Menu Card */}
         <div className="menu-card">
           <div className="menu-section">
-            <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-comment-dots"></i><span>Messages</span></div>
+           {/* <div className="menu-item" onClick={() => setIsMenuOpen(false)}><i className="far fa-comment-dots"></i><span>Messages</span></div>*/}
             <div className="menu-item" onClick={() => { navigate('/my-profile-owner'); setIsMenuOpen(false); }}><i className="far fa-user"></i><span>Profile</span></div>
           </div>
           <div className="menu-section">

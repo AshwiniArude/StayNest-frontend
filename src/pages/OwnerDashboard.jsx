@@ -312,7 +312,7 @@ const OwnerDashboard = () => {
                 <p>
                   <FaRegCalendarAlt /> {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
                 </p>
-                <p>₹{booking.listing.rent || 'N/A'} - {booking.status === 'CONFIRMED' ? 'Confirmed' : 'Pending'}</p> {/* Using totalRent */}
+                <p>₹{booking.listing.rent || 'N/A'}</p> {/* Using totalRent */}
                      </div>
             ))}
           </div>
@@ -323,12 +323,12 @@ const OwnerDashboard = () => {
 
       {/* Performance Overview */}
       <section className="section">
-        <div className="performance-header">
+        {/*<div className="performance-header">
           <h2>Performance Overview</h2>
           <p>Track your business growth and key metrics</p>
-        </div>
+        </div>*/}
 
-        {/* Stat Cards */}
+        {/* Stat Cards
         <div className="performance-stats">
           <div className="performance-stat-card">
             <div className="stat-icon teal">
@@ -394,8 +394,8 @@ const OwnerDashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* Bar Charts */}
+ */}
+        {/* Bar Charts 
         <div className="charts-container">
           <div className="chart-card">
             <h3>Monthly Bookings</h3>
@@ -492,7 +492,7 @@ const OwnerDashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>*/}
       </section>
 
       <div className="footer-spacing"></div>

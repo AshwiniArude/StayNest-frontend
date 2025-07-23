@@ -6,9 +6,9 @@ import {updateOwner} from '../services/OwnerService';
 const TABS = [
   { label: 'UI Theme Preferences', value: 'theme' },
   { label: 'Password & Security', value: 'security' },
-  { label: 'Notification Preferences', value: 'notifications' },
+
   { label: 'Privacy & Data Settings', value: 'privacy' },
-  { label: 'Delete Account', value: 'delete', isDanger: true },
+  {/*{ label: 'Delete Account', value: 'delete', isDanger: true },*/}
 ];
 
 const AccountSettings = () => {
@@ -302,7 +302,7 @@ const AccountSettings = () => {
                 )}
               </section>
             )}
-            {/* Notification Preferences */}
+            {/* Notification Preferences 
             {activeTab === 'notifications' && (
               <section className="settings-section notifications-section">
                 <h2>Notification Preferences</h2>
@@ -338,7 +338,7 @@ const AccountSettings = () => {
                 </div>
                 <button className="settings-save-btn" onClick={() => setToast('✅ Preferences saved!')}>Save Preferences</button>
               </section>
-            )}
+            )}*/}
             {/* Privacy & Data Settings */}
             {activeTab === 'privacy' && (
               <section className="settings-section privacy-section">
@@ -360,12 +360,12 @@ const AccountSettings = () => {
                   </div>
                   <button className="settings-save-btn" onClick={handlePrivacySave}>Save Privacy Settings</button>
                 </div>
-                <div className="data-export">
+                {/*<div className="data-export">
                   <button className="export-btn" onClick={handleExportData}><FaDownload /> Export My Data</button>
-                </div>
+                </div>*/}
               </section>
             )}
-            {/* Delete Account */}
+            {/* Delete Account 
             {activeTab === 'delete' && (
               <section className="settings-section delete-section">
                 <h2 className="delete-title">Delete My Account</h2>
@@ -386,7 +386,7 @@ const AccountSettings = () => {
                   </div>
                 )}
               </section>
-            )}
+            )}*/}
           </div>
         </div>
         {/* Avatar Modal */}

@@ -182,14 +182,14 @@ const ViewReviewsOwner = () => {
               ))}
             </div>
           </div>
-          {/* Analytics Panel */}
+          {/* Analytics Panel
           <div className="form-card" style={{ flex: 1, minWidth: 280, position: 'sticky', top: 32, alignSelf: 'flex-start', background: '#fff', borderRadius: 20, boxShadow: '0 8px 32px rgba(124, 95, 240, 0.08)', padding: '2rem 1.5rem', marginLeft: 0 }}>
             <div style={{ color: '#7c5ff0', fontWeight: 900, fontSize: 22, marginBottom: 10 }}>Summary Analytics</div>
             <div style={{ color: '#232323', fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Total Reviews: <span style={{ color: '#7c5ff0' }}>{OWNER_ANALYTICS.total}</span></div>
             <div style={{ color: '#232323', fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Average Rating: <span style={{ color: '#ff9f59' }}>{OWNER_ANALYTICS.avg} / 5</span></div>
             <div style={{ color: '#232323', fontWeight: 700, fontSize: 16, marginTop: 18, marginBottom: 6 }}>Monthly Review Trend</div>
             {renderTrend()}
-          </div>
+          </div> */}
         </div>
       </div>
     </>
