@@ -54,7 +54,7 @@ const About = () => {
       <p className="about-cta-text">
         Ready to get started? Join thousands of happy tenants.
       </p>
-      <button className="start-search-btn">Start Your Search</button>
+      <a href="/login" className="start-search-btn">Start Your Search</a>
     </div>
   );
 };

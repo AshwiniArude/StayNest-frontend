@@ -5,7 +5,6 @@ import { FaWhatsapp } from 'react-icons/fa';
 const faqs = [
   { label: 'How to book a PG', link: '#' },
   { label: 'How to list your PG', link: '#' },
-  { label: 'Payment & Refunds', link: '#' },
   { label: 'Safety & Trust', link: '#' },
 ];
 
@@ -231,9 +230,9 @@ const ContactSupportHome = () => {
       </div>
 
       {/* Footer Callout */}
-      <div style={{ textAlign: 'center', marginTop: 32, color: '#5e4b8b', fontSize: 17 }}>
+       {/*  <div style={{ textAlign: 'center', marginTop: 32, color: '#5e4b8b', fontSize: 17 }}>
         <span style={{ fontWeight: 600 }}>🤝 Still need help?</span> Email us at <a href="mailto:support@staynest.com" style={{ color: '#7c5ff0', fontWeight: 700 }}>support@staynest.com</a> or visit the <a href="#" style={{ color: '#ff9f59', fontWeight: 700 }}>Help Center</a>.
-      </div>
+      </div>*/}
       {/* Loader animation keyframes */}
       <style>{`
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }

@@ -4,6 +4,7 @@ import "../styles/Register.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus, faUser, faEnvelope, faPhone, faLock } from "@fortawesome/free-solid-svg-icons";
 import authService from '../services/AuthService';
+import { FaCheckCircle } from 'react-icons/fa';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ const Register = () => {
     setSuccessMsg("Account created successfully! Please login.");
     setTimeout(() => {
       navigate('/login');
-    }, 1500);
+    }, 500);
   } catch (err) {
     // Show error from backend:
     setErrors(prev => ({
@@ -78,7 +79,10 @@ const Register = () => {
   return (
     <>
       {successMsg && (
-        <div className="register-success-popup">{successMsg}</div>
+        <div className="register-success-popup">
+          <FaCheckCircle style={{ marginRight: '8px', verticalAlign: 'middle', color: '#2AB7CA', fontSize: '1.3em' }} />
+          {successMsg}
+        </div>
       )}
       <div className="register-container">
         <div className="role-toggle">
@@ -201,7 +205,7 @@ const Register = () => {
           </div>
         </form>
 
-        <div className="social-login">
+        {/* <div className="social-login">
           <div className="or-divider">
             Or continue with
             <div className="social-buttons">
@@ -209,7 +213,7 @@ const Register = () => {
               <button className="social facebook">Facebook</button>
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
     </>
   );

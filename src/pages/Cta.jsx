@@ -15,11 +15,11 @@ const Cta = () => {
         Join thousands of students and working professionals who have found their perfect stay through StayNest.
       </p>
 
-      <div className="cta-buttons">
+      {/* <div className="cta-buttons">
         <Link to="/listings" className="cta-btn">
           <FaHome /> Browse PGs →
         </Link>
-      </div>
+      </div> */}
 
       <div className="cta-stats">
         <div className="stat-item">
