@@ -140,13 +140,13 @@ const ManageBookings = () => {
           tenantEmail: req.tenant?.email,
           tenantPhone: req.tenant?.phoneNumber,
           tenantRating: '4.5',
-          tenantImage: '/default-avatar.png',
+          tenantImage: 'https://chatgpt.com/backend-api/public_content/enc/eyJpZCI6Im1fNjg4MTI5OThiOTg0ODE5MTkxZGY2YjI0M2RhODkzZGM6ZmlsZV8wMDAwMDAwMDljZTQ2MWY2OGVlZTk2MGNlYjgwOTYyMSIsInRzIjoiNDg3MDI2IiwicCI6InB5aSIsInNpZyI6ImJkNmI4ODIxNzA4ZmZmMWUyM2RmMjU3NzlhYTVlZDdkN2ZhNWJkNmZjMTBhYTk5MTZlYzVkYTEwZmY0NjdhZDAiLCJ2IjoiMCIsImdpem1vX2lkIjpudWxsfQ==',
           pgName: req.listing?.title,
           location: req.listing?.address,
           sharing: req.listing?.roomType,
           checkInDate: formatDate(req.startDate),
           checkOutDate: formatDate(req.endDate),
-          requestDate: formatDate(req.createdAt),
+          requestDate: new Date(req.id).toLocaleString(),
           price: req.listing?.rent,
           status: uiStatus
         };

@@ -62,7 +62,7 @@ const TenantDashboardNavbar = () => {
         </div>
         <div className="navbar-auth">
           {/* Avatar and Menu Toggle Icon */}
-          <div className="header-avatar">S</div>
+          <div className="header-avatar">{localStorage.getItem('userFirstLetter')?.toLocaleUpperCase() }</div>
           <i
             ref={iconRef}
             className="fas fa-bars menu-toggle-icon"
@@ -89,7 +89,7 @@ const TenantDashboardNavbar = () => {
             <div className="menu-item" onClick={() => { navigate('/my-profile'); setIsMenuOpen(false); }}><i className="far fa-user"></i><span>Profile</span></div>
           </div>
           <div className="menu-section">
-            <div className="menu-item" onClick={handleNotifications}><i className="far fa-bell"></i><span>Notifications</span><span className="notification-badge">1</span></div>
+            {/* <div className="menu-item" onClick={handleNotifications}><i className="far fa-bell"></i><span>Notifications</span><span className="notification-badge">1</span></div> */}
             <div className="menu-item" onClick={handleAccountSettings}><i className="fas fa-cog"></i><span>Account settings</span></div>
           </div>
           <div className="menu-section">

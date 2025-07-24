@@ -42,8 +42,8 @@ const Footer = () => {
 
         <div className="footer-section contact">
           <h4>Contact</h4>
-          <p><FaEnvelope /> support@staynest.com</p>
-          <p><FaPhone /> +91 91561 95970</p>
+          <p><FaEnvelope /> staynest06@gmail.com </p>
+          <p><FaPhone /> +91 90962 47010</p>
           <p><FaMapMarkerAlt /> Pune, Maharastra, India</p>
           <div className="social-icons">
             <FaFacebook />

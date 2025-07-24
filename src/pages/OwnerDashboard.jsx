@@ -4,6 +4,8 @@ import '../styles/OwnerDashboard.css';
 import { FaHome, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaRegCalendarAlt, FaMapMarkerAlt, FaCreditCard, FaTrash, FaSpinner } from "react-icons/fa"; // Added FaSpinner
 import listingService from '../services/ListingService';
 import bookingService from '../services/BookingService'; // Import booking service
+import {getCurrentOwner} from '../services/OwnerService'; // Import service to get current owner details
+
 const OwnerDashboard = () => {
   const navigate = useNavigate();
   const [ownerListings, setOwnerListings] = useState([]);
@@ -18,7 +20,24 @@ const OwnerDashboard = () => {
       navigate('/login');
       return;
     }
+        const fetchOwnerData = async () => { // Define an async function
+      try {
+        const owner = await getCurrentOwner(); // Await the Promise to get the actual owner object
+        console.log("Current owner (after await):", owner);
 
+        if (owner && owner.name) { // Always check if owner and owner.name exist
+          setName(owner.name); // Set the owner's name
+          console.log("Owner name:", owner.name);
+          console.log("Owner first letter:", owner.name[0]);
+          localStorage.setItem('ownerFirstLetter', owner.name[0]); // Store the first letter
+        } else {
+          console.warn("Owner data or name not found.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch current owner:", error);
+        // Handle error, e.g., redirect to login or show an error message
+      }
+    };// Store in localStorage if needed
     const fetchListings = async () => {
       try {
         setLoadingListings(true);
@@ -73,7 +92,7 @@ const OwnerDashboard = () => {
         setLoadingBookings(false);
       }
     };
-
+    fetchOwnerData(); // Fetch owner data
     fetchListings();
     fetchRecentBookings(); // Call the new function to fetch bookings
   }, [navigate]); // navigate is a stable function, but good to include if it's used in useEffect's scope
@@ -131,7 +150,7 @@ const OwnerDashboard = () => {
         <div className="hero-card-gradient">
           <div className="hero-card-header">
             <div>
-              <h1 className="hero-welcome hero-welcome-orange">Welcome back, Owner! </h1>
+              <h1 className="hero-welcome hero-welcome-orange">Welcome back, {name.toLocaleUpperCase()}! </h1>
               <p className="hero-subtitle hero-subtitle-orange">Here's a quick look at your PG performance.</p>
             </div>
             <div className="hero-icon-box">
@@ -195,7 +214,7 @@ const OwnerDashboard = () => {
                     <FaMapMarkerAlt /> {listing.address}
                   </p>
                   <p className="listing-occupancy">
-                    <FaUser /> ?/? occupied {/* This still needs dynamic calculation based on rooms/bookings */}
+                    <FaUser />{/* This still needs dynamic calculation based on rooms/bookings */}
                   </p>
                   <div className="listing-price-rating">
                     <span className="listing-price">
@@ -208,7 +227,7 @@ const OwnerDashboard = () => {
                 <div className="listing-actions">
                   <button className="action-btn edit-btn" onClick={() => navigate(`/owner/edit-listing/${listing.id}`)}>Edit</button>
                   <button className="action-btn bookings-btn" onClick={() => navigate(`/listing-bookings/${listing.id}`)}>Bookings</button>
-                  <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing(listing.id, idx)}><FaTrash /></button>
+                  {/* <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing(listing.id, idx)}><FaTrash /></button> */}
                 </div>
               </div>
             ))}

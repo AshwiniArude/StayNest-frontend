@@ -220,3 +220,57 @@ body {
 }
 
 
+/* --- Notification Styles (Add/Verify these in Login.css) --- */
+.notification {
+    position: fixed; /* Makes it float above other content */
+    top: 20px;       /* Distance from the top of the viewport */
+    left: 50%;       /* Centers horizontally */
+    transform: translateX(-50%); /* Ensures perfect centering regardless of width */
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: #000000;
+    font-weight: bold;
+    z-index: 1000;   /* CRITICAL: Ensures it appears on top of other elements */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    min-width: 250px;
+    text-align: center;
+    /* The animation will handle fade in/out if you keep it */
+    animation: fadeInOut 3s forwards;
+    /* Ensure no conflicting styles like display: none or opacity: 0 */
+}
+
+.notification.success {
+    background-color: #4CAF50; /* Green for success */
+}
+
+.notification.error {
+  color: #000000;
+    background-color: #f44336; /* Red for error */
+}
+
+/* Keyframe animation for fade in/out */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    90% { opacity: 1; transform: translateX(-50%) translateY(0); } /* Holds visible */
+    100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
+
+/* You might already have these, but ensure the parent container allows the notification to "float" */
+.login-page {
+    /* If this is position: relative/absolute and has overflow: hidden, it might clip the fixed notification */
+    /* Ensure it's not restricting the notification's display */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+    /* This is usually not needed here, but can cause issues if present */
+    /* overflow: hidden; */
+}
+
+/* Ensure your existing styles don't accidentally hide it */
+/* For example, if you have a rule like * { display: none; } for some reason */

@@ -38,7 +38,7 @@
 
 .pg-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
@@ -132,4 +132,95 @@
 
 .browsepgs-container .tenant-search-bar {
   border: 2.5px solid orange !important;
+}
+
+/* src/styles/Listings.css */
+
+/* General PG Card Styling (adjust if needed) */
+.pg-card {
+  background-color: #fff;
+  border-radius: 12px; /* Soften corners */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+  overflow: hidden; /* Crucial to contain the image corners */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: 1rem; /* Add some padding at the bottom for content */
+  transition: transform 0.2s ease-in-out;
+}
+
+.pg-card:hover {
+  transform: translateY(-5px); /* Lift card on hover */
+}
+
+/* Image Container */
+.pg-card-image-container {
+  width: 100%; /* Take full width of the card */
+  height: 200px; /* Fixed height for consistency, adjust as needed */
+  overflow: hidden; /* Hide any overflow if image is larger */
+  border-top-left-radius: 12px; /* Match card border radius */
+  border-top-right-radius: 12px; /* Match card border radius */
+  margin-bottom: 1rem; /* Space between image and text content */
+}
+
+.pg-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This is key! It covers the container without distorting the image */
+  display: block; /* Remove extra space below image */
+}
+
+/* Adjustments for existing elements to accommodate the image */
+.pg-tags {
+  position: absolute; /* Position tags over the image */
+  top: 10px;
+  left: 10px;
+  z-index: 10; /* Ensure tags are above the image */
+  display: flex;
+  flex-wrap: wrap; /* Allow tags to wrap if many */
+  gap: 5px;
+}
+
+/* General spacing for content below the image */
+.pg-card h2,
+.pg-card .location,
+.pg-card .rating,
+.pg-card .price,
+.pg-card p,
+.pg-card .availability {
+  padding-left: 1rem; /* Add horizontal padding to card content */
+  padding-right: 1rem;
+}
+
+.pg-card h2 {
+    margin-top: 0.5rem; /* Adjust space after image container */
+    margin-bottom: 0.5rem;
+    font-size: 1.4em;
+    color: #333;
+}
+
+.pg-card p {
+    margin-bottom: 0.3em;
+    color: #666;
+    font-size: 0.95em;
+}
+
+
+
+
+/* Responsive adjustments for pg-grid */
+@media (max-width: 992px) {
+  .pg-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pg-grid {
+    grid-template-columns: 1fr; /* Single column on small screens */
+    gap: 1rem;
+    padding: 1rem;
+  }
 }

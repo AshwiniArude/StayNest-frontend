@@ -35,6 +35,7 @@ import ContactSupportOwner from "./pages/ContactSupport owner.jsx";
 import OwnerNotifications from "./pages/OwnerNotifications";
 import ResetPassword from "./pages/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword";
+
 function AppContent() {
   const location = useLocation();
 
@@ -97,6 +98,7 @@ function AppContent() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/booking-details/:bookingId" element={<BookingDetails />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          
         </Routes>
       </main>
 

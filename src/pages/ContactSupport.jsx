@@ -100,7 +100,7 @@ const handleSubmit = async (e) => {
   };
   // Copy email
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText('support@staynest.in');
+    navigator.clipboard.writeText('staynest06@gmail.com');
     setTicketFeedback('Email copied!');
     setTimeout(() => setTicketFeedback(''), 1500);
   };
@@ -165,17 +165,17 @@ const handleSubmit = async (e) => {
             <div className="contact-option-card">
               <div className="option-icon"><FaWhatsapp color="#25D366" style={{background:'#e9f7ef',borderRadius:'12px',padding:'0.5rem'}} /></div>
               <div className="option-label">Chat on WhatsApp</div>
-              <a className="option-btn" style={{background:'#25D366',color:'#fff',textDecoration:'none'}} href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer">Start WhatsApp Chat</a>
+              <a className="option-btn" style={{background:'#25D366',color:'#fff',textDecoration:'none'}} href="https://wa.me/919096247010" target="_blank" rel="noopener noreferrer">Start WhatsApp Chat</a>
             </div>
             <div className="contact-option-card">
               <div className="option-icon"><FaPhone color="#7c5ff0" /></div>
               <div className="option-label">Available 9 AM – 6 PM (Mon–Sat)</div>
-              <div className="option-number">1800-123-STAY</div>
+              <div className="option-number">+91 90962 47010</div>
               <button className="option-btn" style={{background:'#ff9f59',color:'#232323'}}>Call Now</button>
             </div>
             <div className="contact-option-card">
               <div className="option-icon"><FaEnvelope color="#7c5ff0" /></div>
-              <div className="option-label">support@staynest.in</div>
+              <div className="option-label">staynest06@gmail.com</div>
               <button className="option-btn" style={{background:'#7c5ff0',color:'#fff'}} onClick={handleCopyEmail}>Copy Email</button>
             </div>
           </div>

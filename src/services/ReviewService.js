@@ -55,3 +55,8 @@ export const getReviewsByTenant = async (tenantId) => {
   const response = await axios.get(`${API_BASE_URL}/tenant/${tenantId}`);
   return response.data;
 };
+
+export const getReviewByOwnerId = async (ownerId) => {
+  const response = await axios.get(`${API_BASE_URL}/owner/${ownerId}`);
+  return response.data;
+}

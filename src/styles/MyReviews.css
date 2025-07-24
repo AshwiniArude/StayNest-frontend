@@ -110,7 +110,7 @@
 
 .reviews-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(3, 1.5fr); /* This will create two equal columns */
   gap: 2rem;
 }
 
@@ -452,9 +452,12 @@
     flex-direction: column;
   }
   
+  
   .reviews-grid {
-    grid-template-columns: 1fr;
-  }
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* This will create two equal columns */
+  gap: 2rem;
+}
   
   .review-header {
     flex-direction: column;

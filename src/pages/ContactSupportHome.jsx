@@ -12,21 +12,53 @@ const ContactSupportHome = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
+     const [formTouched, setFormTouched] = useState(false);
+     const [formError, setFormError] = useState('');
+     const [formSuccess, setFormSuccess] = useState(false);
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      setSubmitted(true);
-      setForm({ name: '', email: '', subject: '', message: '' });
-      setTimeout(() => setSubmitted(false), 2000);
-    }, 1200);
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!form.name || !form.email || !form.subject || !form.message) {
+    setFormError('Please fill all required fields');
+    setFormSuccess(false);
+    return;
+  }
+  alert("Your request has been submitted successfully. Our support team will get back to you shortly.");
+  setSubmitting(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('email', form.email);
+    formData.append('subject', form.subject);
+    formData.append('message', form.message);
+    // if (form.attachment) {
+    //   formData.append('attachment', form.attachment);
+    // }
+
+    await fetch('https://formspree.io/f/xrblpbry', {
+      method: 'POST',
+      body: formData, // no headers needed for FormData
+    });
+    alert("Your request has been submitted successfully. Our support team will get back to you shortly.");
+
+  
+    setFormSuccess(true);
+    setFormError('');
+    //handleReset();
+
+    setTimeout(() => setFormSuccess(false), 2500);
+  } catch (error) {
+    setFormError(error.message || 'Something went wrong');
+    setFormSuccess(false);
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <section id="contact-support-home" style={{
@@ -170,7 +202,7 @@ const ContactSupportHome = () => {
           <h3 style={{ color: '#25D366', fontWeight: 700, fontSize: 22, marginBottom: 10 }}>WhatsApp Us</h3>
           <div style={{ color: '#5e4b8b', fontSize: 16, marginBottom: 18 }}>Available 10 AM – 6 PM IST</div>
           <a
-            href="https://wa.me/911234567890"
+            href="https://wa.me/919096247010"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -198,8 +230,8 @@ const ContactSupportHome = () => {
             <FaPhone size={32} color="#fff" />
           </div>
           <h3 style={{ color: '#7c5ff0', fontWeight: 700, fontSize: 22, marginBottom: 10 }}>Talk to Our Team</h3>
-          <div style={{ color: '#5e4b8b', fontSize: 16, marginBottom: 18 }}>+91 12345 67890</div>
-          <a href="tel:+911234567890"
+          <div style={{ color: '#5e4b8b', fontSize: 16, marginBottom: 18 }}>+91 90962 47010</div>
+          <a href="tel:+919096247010"
             style={{
               background: '#7c5ff0', color: '#fff', border: 'none', borderRadius: 999, padding: '10px 0', width: '100%', fontWeight: 700, fontSize: 17, cursor: 'pointer',
               boxShadow: '0 2px 8px #7c5ff033', transition: 'background 0.2s, transform 0.2s', textAlign: 'center', textDecoration: 'none',

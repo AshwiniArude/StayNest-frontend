@@ -26,7 +26,7 @@ function mapBackendToUI(pg) {
     id: pg.id,
     name: pg.title,
     location: pg.address,
-    price: pg.rent,
+    price: pg.rent, // Ensure this 'rent' property from backend is a number or can be parsed
     tags: buildTags(pg),
     sharing: pg.roomType,
     // rating, availability, occupancy: backend has no info, so set demo/static
@@ -34,6 +34,7 @@ function mapBackendToUI(pg) {
     availability: "Available",
     occupancy: "N/A",
     gender:pg.gender,
+    imageUrl: pg.url || 'https://via.placeholder.com/300x200?text=No+Image', // Provide a fallback image
   };
 }
 
@@ -45,20 +46,20 @@ const Listings = () => {
 
   useEffect(() => {
     listingService.getAllListings().then(data => {
-      console.log("Raw Listings Data:", data); // ✅ Check if data is being fetched correctly
+      console.log("Raw Listings Data:", data);
       const mapped = data.map(mapBackendToUI);
-      console.log("Mapped Listings:", mapped); // ✅ Check if gender is showing here
-  
-      setPgData(mapped);
-      setFilteredPgData(mapped);
+      console.log("Mapped Listings:", mapped);
+      mapped.reverse();
+            setPgData(mapped);
+      setFilteredPgData(mapped); // Initialize filtered data with all listings
     });
   }, []);
 
 const handleSearch = (searchParams) => {
   let filtered = [...pgData];
 
-  console.log('Search params:', searchParams);
-  console.log('Original PG data:', pgData);
+  console.log('Search params received in Listings:', searchParams); // ✅ NEW: Check what is received here
+  console.log('Original PG data for filtering:', pgData);
 
   // Location filter
   if (searchParams.location) {
@@ -72,19 +73,23 @@ const handleSearch = (searchParams) => {
   if (searchParams.tenantType) {
     const genderInput = searchParams.tenantType.toLowerCase();
 
-    const mappedGenders = {
-      male: ['male'],
-      female: ['female'],
-      coed: ['coed', 'co-ed', 'others', 'unisex']
-    };
+    // Mapping tenantType from SearchBar to what your PG backend might store (e.g., 'male', 'female', 'coed')
+    // Make sure these match your actual backend gender values
+    const acceptableGenders = [];
+    if (genderInput === 'male') {
+      acceptableGenders.push('male');
+    } else if (genderInput === 'female') {
+      acceptableGenders.push('female');
+    } else if (genderInput === 'unisex') { // 'unisex' from TenantSearchBar maps to 'coed' or similar
+      acceptableGenders.push('coed', 'co-ed', 'unisex', 'others'); // Add all relevant co-ed terms
+    }
 
-    const acceptableGenders = mappedGenders[genderInput];
     console.log("Gender filter input:", genderInput);
-    console.log("Acceptable genders:", acceptableGenders);
+    console.log("Acceptable genders for filtering:", acceptableGenders);
 
-    if (acceptableGenders) {
+    if (acceptableGenders.length > 0) { // Only filter if there are acceptable genders
       filtered = filtered.filter(pg => {
-        const pgGender = pg.gender?.toLowerCase();
+        const pgGender = pg.gender?.toLowerCase(); // Make sure pg.gender exists and is lowercased
         const isMatch = pgGender && acceptableGenders.includes(pgGender);
         console.log(`Checking PG ID ${pg.id} - PG Gender: ${pgGender} - Match: ${isMatch}`);
         return isMatch;
@@ -93,20 +98,26 @@ const handleSearch = (searchParams) => {
     }
   }
 
-  if (searchParams.minBudget || searchParams.maxBudget) {
-  // Log values
-  console.log('Filtering budget from', searchParams.minBudget, 'to', searchParams.maxBudget);
+  // Budget filter
+  // ✅ FIX: Access budget from searchParams.budget array
+  if (searchParams.budget && searchParams.budget.length === 2) {
+    const [minBudget, maxBudget] = searchParams.budget; // Destructure the array here!
 
-  filtered = filtered.filter(pg => {
-    console.log(`Checking ${pg.price}`);
-    return (
-      (!searchParams.minBudget || pg.price >= parseInt(searchParams.minBudget)) &&
-      (!searchParams.maxBudget || pg.price <= parseInt(searchParams.maxBudget))
-    );
-  });
+    console.log('Filtering budget from', minBudget, 'to', maxBudget);
 
-  console.log('After budget filter:', filtered);
-}
+    filtered = filtered.filter(pg => {
+      // Ensure pg.price is a number. If it's a string, convert it.
+      const pgPrice = typeof pg.price === 'string' ? parseFloat(pg.price) : pg.price;
+
+      console.log(`Checking PG Price: ${pgPrice}. Min: ${minBudget}, Max: ${maxBudget}`);
+      return (
+        (!minBudget || pgPrice >= minBudget) && // If minBudget is 0 or undefined, it won't filter by min
+        (!maxBudget || pgPrice <= maxBudget)
+      );
+    });
+
+    console.log('After budget filter:', filtered);
+  }
 
 
   console.log('Final filtered PGs:', filtered);
@@ -128,33 +139,43 @@ const handleSearch = (searchParams) => {
         <h1>Available PGs</h1>
         <p>{filteredPgData.length} properties found</p>
         <div className="pg-grid">
-          {filteredPgData.map((pg, index) => (
-            <div className="pg-card" key={index}>
-              <div className="pg-tags">
-                {pg.tags.map((tag, i) => (
-                  <span
-                    className={`tag ${tag.toLowerCase().replace(/ /g, "-")}`}
-                    key={i}
-                  >
-                    {tag}
-                  </span>
-                ))}
+          {filteredPgData.length === 0 && pgData.length > 0 ? (
+            <p>No properties found matching your criteria. Try adjusting your filters.</p>
+          ) : filteredPgData.length === 0 && pgData.length === 0 ? (
+            <p>Loading properties...</p> // Or "No properties available." if initial fetch returns empty
+          ) : (
+            filteredPgData.map((pg, index) => (
+              <div className="pg-card" key={index}>
+                <div className="pg-card-image-container">
+                <img src={pg.imageUrl} alt={pg.name} className="pg-card-image" />
               </div>
-              <h2>{pg.name}</h2>
-              <p className="location">{pg.location}</p>
-              <p className="rating">⭐ {pg.rating}</p>
-              <p className="price">₹{pg.price.toLocaleString()}/month</p>
-              <p>{pg.sharing}</p>
-              <p>Occupancy: {pg.occupancy}</p>
-              <p className="availability">Availability: {pg.availability}</p>
-              <button 
-                className="details-btn"
-                onClick={() => handleViewDetails(pg.id)}
-              >
-                View Details
-              </button>
-            </div>
-          ))}
+
+                <div className="pg-tags">
+                  {pg.tags.map((tag, i) => (
+                    <span
+                      className={`tag ${tag.toLowerCase().replace(/ /g, "-")}`}
+                      key={i}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <h2>{pg.name}</h2>
+                <p className="location">{pg.location}</p>
+                <p className="rating">⭐ {pg.rating}</p>
+                <p className="price">₹{pg.price.toLocaleString()}/month</p>
+                <p>{pg.sharing}</p>
+                {/* <p>Occupancy: {pg.occupancy}</p> */}
+                <p className="availability">Availability: {pg.availability}</p>
+                <button
+                  className="details-btn"
+                  onClick={() => handleViewDetails(pg.id)}
+                >
+                  View Details
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </>
@@ -162,4 +183,3 @@ const handleSearch = (searchParams) => {
 };
 
 export default Listings;
-

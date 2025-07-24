@@ -5,27 +5,31 @@ import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, F
 import bookingService from "../services/BookingService";
 import userService from "../services/UserService";
 import {getReviewsByTenant} from "../services/ReviewService";
+
 const genderOptions = [
   { label: 'Girls', value: 'girls' },
   { label: 'Boys', value: 'boys' },
   { label: 'Unisex', value: 'unisex' },
 ];
+
 const budgetOptions = [
   { label: 'Below ₹5,000', value: [1000, 5000] },
   { label: '₹5,000 - ₹10,000', value: [5000, 10000] },
   { label: '₹10,000 - ₹20,000', value: [10000, 20000] },
   { label: 'Above ₹20,000', value: [20000, 50000] },
 ];
+
 function TenantDashboardSearchBar({ onSearch }) {
   const [location, setLocation] = useState('');
   const [gender, setGender] = useState('');
   const [budget, setBudget] = useState('');
   const [showGenderDropdown, setShowGenderDropdown] = useState(false);
   const [showBudgetDropdown, setShowBudgetDropdown] = useState(false);
-  
+
   const handleSearch = () => {
     if (onSearch) onSearch({ location, gender, budget });
   };
+
   const handleClear = () => {
     setLocation('');
     setGender('');
@@ -95,48 +99,55 @@ function TenantDashboardSearchBar({ onSearch }) {
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
-const [bookings, setBookings] = useState([]);
-  const [userName, setUserName] = useState(''); 
+  const [bookings, setBookings] = useState([]);
+  const [userName, setUserName] = useState('');
   const [reviews, setReviews] = useState([]);
-useEffect(() => {
- // Set name from user data
-  const fetchBookings = async () => {
-    try {
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
         const user = await userService.getCurrentUser();
-      setUserName(user.name || 'User'); // Set name from user data
-      console.log("Current user data:", user); // for verification
-      const data = await bookingService.getMyBookings();
-      console.log("Raw bookings data:", data); // for verification
+        setUserName(user.name || 'User');
+        localStorage.setItem('userFirstLetter', user.name[0]);
 
-      const mapped = data.map((b) => ({
-        id: b.id,
-        name: b.listing?.title || "N/A",
-        location: b.listing?.address || "N/A",
-        checkIn: b.startDate ? new Date(b.startDate).toLocaleDateString() : "N/A",
-        checkOut: b.endDate ? new Date(b.endDate).toLocaleDateString() : "N/A",
-        status: b.status || "N/A",
-      }));
+        const bookingData = await bookingService.getMyBookings();
+        const mappedBookings = bookingData.map((b) => ({
+          id: b.id,
+          name: b.listing?.title || "N/A",
+          location: b.listing?.address || "N/A",
+          checkIn: b.startDate ? new Date(b.startDate).toLocaleDateString() : "N/A",
+          checkOut: b.endDate ? new Date(b.endDate).toLocaleDateString() : "N/A",
+          status: b.status || "N/A",
+        }));
+        
+        console.log(mappedBookings.reverse());
+        setBookings(mappedBookings.reverse());
+        const reviewData = await getReviewsByTenant(localStorage.getItem('id'));
+        setReviews(reviewData);
 
-      setBookings(mapped);
-      console.log("Mapped bookings:", mapped);
+      } catch (err) {
+        console.error("Failed to fetch dashboard data:", err);
+      }
+    };
 
-      const reviewData = await getReviewsByTenant(localStorage.getItem('id'));
-      setReviews(reviewData);
-      console.log("Reviews data:", reviewData);
-    } catch (err) {
-      console.error("Failed to fetch bookings:", err);
-    }
-  };
+    fetchData();
+  }, []);
 
-  fetchBookings();
-}, []);
+  // Calculate active bookings count
+  const activeBookingsCount = bookings.filter(booking => booking.status === 'PENDING').length;
 
-  // Function to add new booking
+  // Calculate average rating and total reviews
+  const totalReviewsCount = reviews.length;
+  const averageRating = totalReviewsCount > 0
+    ? (reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviewsCount).toFixed(1)
+    : '0.0'; // Default to '0.0' if no reviews
+
+  // Function to add new booking (kept for existing functionality)
   const addNewBooking = (newBooking) => {
     setBookings(prevBookings => [newBooking, ...prevBookings]);
   };
 
-  // Listen for new bookings from localStorage or other sources
+  // Listen for new bookings from localStorage or other sources (kept for existing functionality)
   useEffect(() => {
     const checkForNewBookings = () => {
       const newBookings = JSON.parse(localStorage.getItem('newBookings') || '[]');
@@ -151,15 +162,13 @@ useEffect(() => {
             status: "Booked",
           });
         });
-        // Clear the new bookings from localStorage
         localStorage.removeItem('newBookings');
       }
     };
-
     checkForNewBookings();
   }, []);
 
-  // Add search state and handler as in Listings.jsx
+  // Add search state and handler as in Listings.jsx (kept for existing functionality)
   const [searchParams, setSearchParams] = useState({ location: '', tenantType: '', budget: [3000, 20000] });
   const handleSearch = (params) => {
     setSearchParams(params);
@@ -171,8 +180,8 @@ useEffect(() => {
   };
 
   const handleViewDetails = (bookingId) => {
-  navigate(`/booking-details/${bookingId}`);
-};
+    navigate(`/booking-details/${bookingId}`);
+  };
 
   const handleUpdateProfile = () => {
     navigate('/my-profile');
@@ -190,10 +199,6 @@ useEffect(() => {
     navigate('/listings');
   };
 
-  // Calculate active bookings count
-  const activeBookingsCount = bookings.filter(booking => booking.status === 'Booked').length;
-
-  
   return (
     <div className="dashboard-container">
       <section className="hero-section">
@@ -213,41 +218,37 @@ useEffect(() => {
               <span className="stat-label">Active Bookings</span>
             </div>
             <div className="stat-pill">
-              <span className="stat-number">4.8</span>
+              <span className="stat-number">{averageRating}</span>
               <span className="stat-label"><span className="star">★</span> Avg Rating</span>
             </div>
             <div className="stat-pill">
-              <span className="stat-number">8</span>
+              <span className="stat-number">{totalReviewsCount}</span>
               <span className="stat-label">Total Reviews</span>
             </div>
           </div>
         </div>
-        {/* Restore previous search bar below the purple hero box */}
-        {/* <div className="search-wrapper">
-          <TenantSearchBar onSearch={handleSearch} />
-        </div> */}
       </section>
 
       <section className="section" style={{ marginTop: '3.5rem' }}>
         <h2>My Bookings</h2>
         <div className="card-grid">
-        {bookings.map((booking) => (
-        <div className="card" key={booking.id}>
-        <div className={`status-label status-${booking.status.toLowerCase()}`}>
-        {booking.status}
-         </div>
-        <h3>{booking.name}</h3>
-         <p><FaMapMarkerAlt /> {booking.location}</p>
-         <p><FaRegCalendarAlt /> Check-in: {booking.checkIn}</p>
-         <p><FaRegCalendarAlt /> Check-out: {booking.checkOut}</p>
-         <button 
-           className="view-all-btn"
-           onClick={() => handleViewDetails(booking.id)}
-         >
-           View Details
-         </button>
-         </div>
-         ))}
+          {bookings.map((booking) => (
+            <div className="card" key={booking.id}>
+              <div className={`status-label status-${booking.status.toLowerCase()}`}>
+                {booking.status}
+              </div>
+              <h3>{booking.name}</h3>
+              <p><FaMapMarkerAlt /> {booking.location}</p>
+              <p><FaRegCalendarAlt /> Check-in: {booking.checkIn}</p>
+              <p><FaRegCalendarAlt /> Check-out: {booking.checkOut}</p>
+              <button
+                className="view-all-btn"
+                onClick={() => handleViewDetails(booking.id)}
+              >
+                View Details
+              </button>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -313,40 +314,39 @@ useEffect(() => {
         </div>
       </section>
 
-     <section className="section">
-  <h2>My Reviews & Ratings</h2>
-  <div className="card-grid">
-    {reviews.map((review, index) => (
-      <div className="card" key={index}>
-        <h3>{review.listing.title}</h3>
- <p>
-  Stayed From {new Date(review.createdAt).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  })} to {
-    (() => {
-      const startDate = new Date(review.createdAt);
-      const endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + review.duration); // 👈 add months
-      return endDate.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-      });
-    })()
-  }
-</p>
+      <section className="section">
+        <h2>My Reviews & Ratings</h2>
+        <div className="card-grid">
+          {reviews.length === 0 && (
+            <strong> <p className="action-desc">No reviews found. Start exploring and leave your feedback!</p></strong>
+          )}
 
-
-        <p>⭐ {review.rating} - {review.feedback}</p>
-      </div>
-    ))}
-  </div>
-</section>
-
-
-
+          {reviews.map((review, index) => (
+            <div className="card" key={index}>
+              <h3>{review.listing.title}</h3>
+              <p>
+                Stayed From {new Date(review.createdAt).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric'
+                })} to {
+                  (() => {
+                    const startDate = new Date(review.createdAt);
+                    const endDate = new Date(startDate);
+                    endDate.setMonth(endDate.getMonth() + review.duration);
+                    return endDate.toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric'
+                    });
+                  })()
+                }
+              </p>
+              <p>⭐ {review.rating} - {review.feedback}</p>
+            </div>
+          ))}
+        </div>
+      </section>
       <div className="footer-spacing"></div>
     </div>
   );

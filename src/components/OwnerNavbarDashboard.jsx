@@ -62,7 +62,7 @@ const OwnerNavbarDashboard = () => {
         </div>
         <div className="navbar-auth">
           {/* Avatar and Menu Toggle Icon */}
-          <div className="header-avatar">S</div>
+          <div className="header-avatar">{localStorage.getItem('ownerFirstLetter').toLocaleUpperCase()}</div>
           <i
             ref={iconRef}
             className="fas fa-bars menu-toggle-icon"

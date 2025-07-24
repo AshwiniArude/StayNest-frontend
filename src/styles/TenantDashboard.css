@@ -7,6 +7,7 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
+
 .sidebar {
   width: 230px;
   background: #fff;
@@ -373,3 +374,45 @@
     color: #fff;
   }
 }
+/* Add this to your CSS, ideally near the .quick-actions-grid definition
+   or in a general section that applies to all screen sizes. */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Example: 3 columns of equal width */
+    gap: 1.5rem; /* Space between cards */
+    /* Add padding to the grid container if needed to prevent cards from touching edges */
+    padding: 0 1rem; /* Adjust as necessary */
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 1200px) { /* Adjust breakpoint as needed */
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+    }
+}
+
+@media (max-width: 768px) { /* Adjust breakpoint as needed */
+    .quick-actions-grid {
+        grid-template-columns: repeat(1, 1fr); /* 1 column on small screens */
+        padding: 0; /* Remove horizontal padding on very small screens if needed */
+    }
+}
+
+/* If the entire section is being hidden, ensure it's also visible */
+.quick-actions-section {
+    display: block; /* Or flex, depending on its internal layout */
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Review your @media (max-width: 768px) block or any other media queries */
+/* Make sure there isn't a rule like this within those blocks: */
+/*
+@media (max-width: 768px) {
+    .quick-actions-section,
+    .quick-actions-grid {
+        display: none; // <--- REMOVE OR OVERRIDE THIS IF IT EXISTS!
+    }
+}
+*/
+
