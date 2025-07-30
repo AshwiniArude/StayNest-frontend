@@ -76,7 +76,7 @@
 }
 
 .write-review-btn {
-  background: #ff9f59;
+  background: #7c5ff0;
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -94,6 +94,26 @@
   background: #e68a4d;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 159, 89, 0.4);
+}
+.answer-btn {
+  background: #7c5ff0;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 30px;
+}
+.answer-btn:hover {
+  background: #6b46c1;
+  transform: translateY(-2px);
+}
+
+.answer-btn.selected {
+  background: #0d0db4;
+  color: white;
 }
 
 .write-review-btn.small {

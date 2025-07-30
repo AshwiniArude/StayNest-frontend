@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import '../styles/CreateListing.css';
 import {
     FaWifi, FaSnowflake, FaUtensils, FaTshirt, FaVideo, FaCar,
-    FaUsers, FaGraduationCap, FaUpload, FaCheck
+    FaUsers, FaGraduationCap, FaUpload, FaCheck, FaPlus, FaTimes
 } from 'react-icons/fa';
 import api from '../services/ApiService'; // Assuming ApiService is correctly configured
 import { useNavigate } from 'react-router-dom';
@@ -13,26 +13,30 @@ const CreateListing = () => {
 
     const [formData, setFormData] = useState({
         pgName: '',
-        monthlyRent: '',
         description: '',
         address: '',
         city: '',
         locality: '',
         gender: 'co-ed',
-        totalRooms: '',
-        bedsPerRoom: '',
-        roomType: 'shared',
         amenities: [],
         deposite: '',
         bookingFee: '',
         discount: ''
     });
+
+    // New state for handling multiple room details
+    const [roomDetails, setRoomDetails] = useState([]); // Array to store { roomType, bedsPerRoom, roomCount, price } objects
+    const [newRoomType, setNewRoomType] = useState('private'); // 'private' or 'shared'
+    const [newBedsPerRoom, setNewBedsPerRoom] = useState(1); // Default for private, can be more for shared
+    const [newRoomCount, setNewRoomCount] = useState(1);
+    const [newRoomPrice, setNewRoomPrice] = useState(''); // Price for this specific room type
+
     const [photos, setPhotos] = useState([]); // Store actual File objects for upload
     const fileInputRef = useRef(null);
 
     // --- Cloudinary Configuration ---
     const CLOUD_NAME = 'dqzdhaxkv';
-    const UPLOAD_PRESET = 'Staynest'; // Make sure this upload preset is configured in your Cloudinary dashboard
+    const UPLOAD_PRESET = 'Staynest';
 
     const amenitiesList = [
         { id: 'wifi', name: 'WiFi', icon: <FaWifi /> },
@@ -64,16 +68,68 @@ const CreateListing = () => {
 
     const handlePhotoChange = (e) => {
         const files = Array.from(e.target.files);
-        setPhotos(files); // Store the actual files for upload
-        // No longer generating or storing photo previews
+        setPhotos(files);
+    };
+
+    // --- New functions for room details management ---
+    const handleAddNewRoomType = () => {
+        // Validation logic updated to reflect newbedsPerRoom behavior
+        if (!newRoomType || newRoomCount <= 0 || newRoomPrice === '' || newRoomPrice <= 0) {
+            alert('Please fill all room type details correctly.');
+            return;
+        }
+
+        // Validate bedsPerRoom for shared rooms explicitly
+        if (newRoomType === 'shared' && newBedsPerRoom <= 1) {
+            alert('Shared rooms must have at least 2 beds per room.');
+            return;
+        }
+
+        // Check for duplicate "private" room type
+        if (newRoomType === 'private' && roomDetails.some(room => room.roomType === 'private')) {
+            alert('A private room configuration already exists. You can only have one private room entry.');
+            return;
+        }
+        
+        // If the 'shared' room type is being added and a shared room type with the same bedsPerRoom already exists, prevent addition.
+        if (newRoomType === 'shared' && roomDetails.some(room => room.roomType === 'shared' && room.bedsPerRoom === parseInt(newBedsPerRoom))) {
+            alert(`A shared room configuration with ${newBedsPerRoom} beds per room already exists. Please select a different bed count or remove the existing one.`);
+            return;
+        }
+
+        setRoomDetails(prev => [
+            ...prev,
+            {
+                roomType: newRoomType,
+                bedsPerRoom: newRoomType === 'private' ? 1 : parseInt(newBedsPerRoom), // Ensure bedsPerRoom is 1 for private
+                roomCount: parseInt(newRoomCount),
+                price: parseFloat(newRoomPrice)
+            }
+        ]);
+
+        // Reset new room input fields, ensure private default is 1 bed
+        // Set newRoomType to the first available option after adding the current one
+        setNewRoomType(availableRoomTypes.filter(type => !roomDetails.some(room => room.roomType === type))[0] || 'private');
+        setNewBedsPerRoom(1);
+        setNewRoomCount(1);
+        setNewRoomPrice('');
+    };
+
+    const handleRemoveRoomType = (indexToRemove) => {
+        setRoomDetails(prev => prev.filter((_, index) => index !== indexToRemove));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (roomDetails.length === 0) {
+            alert('Please add at least one room type configuration.');
+            return;
+        }
+
         let uploadedImageUrls = [];
 
-        // ✅ 1. Upload images to Cloudinary
+        // 1. Upload images to Cloudinary
         if (photos.length > 0) {
             try {
                 for (const photo of photos) {
@@ -82,10 +138,9 @@ const CreateListing = () => {
                     cloudinaryData.append('upload_preset', UPLOAD_PRESET);
 
                     const res = await axios.post(
-                        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, // Use CLOUD_NAME constant
+                        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
                         cloudinaryData
                     );
-
                     uploadedImageUrls.push(res.data.secure_url);
                 }
             } catch (cloudinaryError) {
@@ -95,52 +150,76 @@ const CreateListing = () => {
             }
         }
 
-        // ✅ 2. Build payload for backend
+        // 2. Build payload for backend
         const newListing = {
-            id:Date.now(), // Use current timestamp as unique ID
+            id: Date.now(), // Use current timestamp as unique ID
             title: formData.pgName,
             address: formData.address,
             city: formData.city,
             locality: formData.locality,
             gender: formData.gender,
-            isWifiAvilable: formData.amenities.includes('wifi'),
-            isAcAvilable: formData.amenities.includes('ac'),
-            isMealsAvilable: formData.amenities.includes('meals'),
-            isLaudryAvilable: formData.amenities.includes('laundry'),
-            isCctvAvilable: formData.amenities.includes('cctv'),
-            isParkingAvilable: formData.amenities.includes('parking'),
-            isCommonAreasAvilable: formData.amenities.includes('commonArea'),
-            isStudyDeskAvilable: formData.amenities.includes('studyDesk'),
-            rent: parseFloat(formData.monthlyRent),
+            acAvilable: formData.amenities.includes('ac'), // Corrected backend names
+            wifiAvilable: formData.amenities.includes('wifi'),
+            mealsAvilable: formData.amenities.includes('meals'),
+            laundryAvilable: formData.amenities.includes('laundry'),
+            cctvAvilable: formData.amenities.includes('cctv'),
+            parkingAvilable: formData.amenities.includes('parking'),
+            commonAreasAvilable: formData.amenities.includes('commonArea'),
+            studyDeskAvilable: formData.amenities.includes('studyDesk'),
             deposite: parseFloat(formData.deposite),
             discount: parseFloat(formData.discount),
-            url: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : '', // Using the first uploaded URL as the main URL
+            urls: uploadedImageUrls,
             description: formData.description,
-            roomType: formData.roomType,
-            startDate: formData.startDate || new Date().toISOString().slice(0, 10),
-            endDate:
-                formData.endDate ||
-                new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().slice(0, 10),
-            totalRooms: parseInt(formData.totalRooms),
-            bedsPerRoom: parseInt(formData.bedsPerRoom),
-            bookingFee: parseFloat(formData.bookingFee)
+            startDate: new Date().toISOString().slice(0, 10), // Default to today
+            endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().slice(0, 10), // Default to 1 year from now
+            bookingFee: parseFloat(formData.bookingFee),
+            roomDetails: roomDetails // <--- IMPORTANT: Send the array of room details
         };
 
-        // ✅ 3. Send listing to backend
+        // Set the general rent field to the lowest price among the defined room types if available.
+        if (roomDetails.length > 0) {
+            newListing.rent = Math.min(...roomDetails.map(room => room.price));
+        } else {
+            newListing.rent = 0; // Or handle this case as an error if no room details are added
+        }
+
+
+        // 3. Send listing to backend
         try {
+            console.log('Submitting new listing:', newListing);
             await api.post('/listing/add', newListing);
             alert('Listing published successfully!');
             navigate('/owner/dashboard');
         } catch (err) {
             console.error('Error saving listing:', err);
-            alert('Failed to publish listing. Please try again.');
+            // Log the error response from the server if available
+            if (err.response) {
+                console.error('Server Error Data:', err.response.data);
+                console.error('Server Error Status:', err.response.status);
+                alert(`Failed to publish listing: ${err.response.data.message || 'Server error'}`);
+            } else {
+                alert('Failed to publish listing. Please try again.');
+            }
         }
     };
 
     const handleUploadClick = () => {
-        // Programmatically click the hidden file input
         if (fileInputRef.current) fileInputRef.current.click();
     };
+
+    // Determine which room types are still available to be added
+    const availableRoomTypes = [];
+    if (!roomDetails.some(room => room.roomType === 'private')) {
+        availableRoomTypes.push('private');
+    }
+    availableRoomTypes.push('shared'); // Always allow shared
+
+    // Special logic for the room type dropdown options
+    const roomTypeOptions = availableRoomTypes.map(type => ({
+        value: type,
+        label: type.charAt(0).toUpperCase() + type.slice(1)
+    }));
+
 
     return (
         <div className="create-listing-container">
@@ -153,10 +232,6 @@ const CreateListing = () => {
                             <div className="form-group">
                                 <label>PG/Hostel Name</label>
                                 <input type="text" name="pgName" value={formData.pgName} onChange={handleInputChange} required />
-                            </div>
-                            <div className="form-group">
-                                <label>Monthly Rent (₹)</label>
-                                <input type="number" name="monthlyRent" value={formData.monthlyRent} onChange={handleInputChange} required />
                             </div>
                             <div className="form-group full-width">
                                 <label>Short Description</label>
@@ -188,31 +263,112 @@ const CreateListing = () => {
                         </div>
                     </section>
 
-                    {/* Room & Amenities */}
+                    {/* Room Details (New Section) */}
                     <section className="form-section">
-                        <div className="section-header"><h2>Room & Amenities</h2></div>
-                        <div className="form-grid">
-                            <div className="form-group">
-                                <label>Total Rooms</label>
-                                <input type="number" name="totalRooms" value={formData.totalRooms} onChange={handleInputChange} required />
+                        <div className="section-header">
+                            <h2>Room Configurations</h2>
+                        </div>
+                        <div className="room-config-adder">
+                            <div className="form-grid room-input-grid">
+                                <div className="form-group">
+                                    <label>Room Type</label>
+                                    <select
+                                        value={newRoomType}
+                                        onChange={(e) => {
+                                            setNewRoomType(e.target.value);
+                                            if (e.target.value === 'private') {
+                                                setNewBedsPerRoom(1);
+                                            } else {
+                                                setNewBedsPerRoom(prev => prev < 2 ? 2 : prev);
+                                            }
+                                        }}
+                                        
+                                    >
+                                        {roomTypeOptions.length === 0 ? (
+                                            <option value="">All room types added</option>
+                                        ) : (
+                                            roomTypeOptions.map(option => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))
+                                        )}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Beds per Room</label>
+                                    <input
+                                        type="number"
+                                        value={newBedsPerRoom}
+                                        onChange={(e) => setNewBedsPerRoom(parseInt(e.target.value) || 0)}
+                                        min={newRoomType === 'private' ? "1" : "2"}
+                                        readOnly={newRoomType === 'private'} // This is the fix for readOnly
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Number of Rooms</label>
+                                    <input
+                                        type="number"
+                                        value={newRoomCount}
+                                        onChange={(e) => setNewRoomCount(parseInt(e.target.value) || 0)}
+                                        min="1"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Price per Bed (₹)</label>
+                                    <input
+                                        type="number"
+                                        value={newRoomPrice}
+                                        onChange={(e) => setNewRoomPrice(e.target.value)}
+                                        min="0"
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>Beds per Room</label>
-                                <input type="number" name="bedsPerRoom" value={formData.bedsPerRoom} onChange={handleInputChange} required />
-                            </div>
-                            <div className="form-group full-width">
-                                <label>Room Type</label>
-                                <div className="radio-group">
-                                    {['private', 'shared'].map(type => (
-                                        <label key={type} className="radio-option">
-                                            <input type="radio" name="roomType" value={type} checked={formData.roomType === type} onChange={handleInputChange} />
-                                            <span className="radio-custom"></span>{type.charAt(0).toUpperCase() + type.slice(1)}
-                                        </label>
+                            <button type="button" className="add-room-btn" onClick={handleAddNewRoomType}
+                                disabled={false}> {/* Replaced with disabled={false} as per instructions */}
+                                <FaPlus /> Add Room Type
+                            </button>
+                        </div>
+
+                        {roomDetails.length > 0 && (
+                            <div className="added-room-types">
+                                <h3>Added Room Configurations:</h3>
+                                <div className="room-details-table">
+                                    <div className="table-header">
+                                        <span>Type</span>
+                                        <span>Beds/Room</span>
+                                        <span>No. of Rooms</span>
+                                        <span>Price/Bed (₹)</span>
+                                        <span>Actions</span>
+                                    </div>
+                                    {roomDetails.map((room, index) => (
+                                        <div key={index} className="table-row">
+                                            <span>{room.roomType.charAt(0).toUpperCase() + room.roomType.slice(1)}</span>
+                                            <span>{room.bedsPerRoom}</span>
+                                            <span>{room.roomCount}</span>
+                                            <span>{room.price.toLocaleString()}</span>
+                                            <button
+                                                type="button"
+                                                className="remove-room-btn"
+                                                onClick={() => handleRemoveRoomType(index)}
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
+                        )}
+                    </section>
+
+
+                    {/* Amenities */}
+                    <section className="form-section">
+                        <div className="section-header"><h2>Amenities</h2></div>
+                        <div className="form-grid">
                             <div className="form-group full-width">
-                                <label>Amenities</label>
+                                <label>Select Amenities</label>
                                 <div className="amenities-grid">
                                     {amenitiesList.map(amenity => (
                                         <label key={amenity.id} className="amenity-checkbox">
@@ -245,13 +401,12 @@ const CreateListing = () => {
                                 <input
                                     type="file"
                                     ref={fileInputRef}
-                                    style={{ display: 'none' }} // Hidden input
-                                    accept="image/*" // Accept only image files
-                                    multiple // Allow multiple file selection
+                                    style={{ display: 'none' }}
+                                    accept="image/*"
+                                    multiple
                                     onChange={handlePhotoChange}
                                 />
                             </div>
-                            {/* --- Start of UI Change --- */}
                             {photos.length > 0 && (
                                 <div className="file-upload-summary">
                                     <p>Selected {photos.length} file(s):</p>
@@ -262,21 +417,20 @@ const CreateListing = () => {
                                     </ul>
                                 </div>
                             )}
-                            {/* --- End of UI Change --- */}
                         </div>
                     </section>
 
                     {/* Pricing */}
                     <section className="form-section">
-                        <h2>Pricing Details</h2>
+                        <h2>Additional Pricing Details</h2>
                         <div className="form-grid">
                             <div className="form-group">
                                 <label>Security Deposit (₹)</label>
-                                <input type="number" name="deposite" value={formData.deposite} onChange={handleInputChange} />
+                                <input type="number" name="deposite" value={formData.deposite} onChange={handleInputChange} min="0" />
                             </div>
                             <div className="form-group">
                                 <label>Booking Fee (₹)</label>
-                                <input type="number" name="bookingFee" value={formData.bookingFee} onChange={handleInputChange} />
+                                <input type="number" name="bookingFee" value={formData.bookingFee} onChange={handleInputChange} min="0" />
                             </div>
                             <div className="form-group">
                                 <label>Optional Discount (%)</label>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaStar, FaEdit, FaTrash, FaPlus, FaMapMarkerAlt, FaCalendarAlt, FaCheck, FaTimes } from 'react-icons/fa';
-import '../styles/MyReviews.css';
+import '../styles/MyReviews.css'; // Ensure your CSS handles the new button styles
 
 import { getReviewsByTenant, addReview, updateReview, deleteReviewById } from '../services/ReviewService';
 import bookingService from '../services/BookingService';
@@ -8,22 +8,53 @@ import bookingService from '../services/BookingService';
 const MyReviews = () => {
     const [activeTab, setActiveTab] = useState('all');
     const [showReviewForm, setShowReviewForm] = useState(false);
-    const [selectedPG, setSelectedPG] = useState(null); // Stores the full PG object for review
-    const [rating, setRating] = useState(0);
+    const [selectedPG, setSelectedPG] = useState(null);
+    const [rating, setRating] = useState(0); // This is for the overall 1-5 star rating
     const [reviewText, setReviewText] = useState('');
+    const [extraReviewFields, setExtraReviewFields] = useState({
+        cleanliness: '',
+        food: '',
+        noise: '',
+        location: '',
+        transport: '',
+        owner: '',
+        internet: '',
+        water: '',
+        security: '',
+        value: ''
+    });
     const [hoveredRating, setHoveredRating] = useState(0);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [checkInDate, setCheckInDate] = useState('');
     const [checkOutDate, setCheckOutDate] = useState('');
-    const [listings, setListings] = useState([]); // All listings from bookings
-    const [reviews, setReviews] = useState([]); // Published reviews
-    const [pendingReviews, setPendingReviews] = useState([]); // Stays without reviews
+    const [listings, setListings] = useState([]);
+    const [reviews, setReviews] = useState([]);
+    const [pendingReviews, setPendingReviews] = useState([]);
+
+    // Define the mapping from full labels to concise keys and vice-versa
+    const extraQuestionMap = {
+        'Was the PG clean and hygienic?': 'cleanliness',
+        'Was the food quality good?': 'food',
+        'Was the PG quiet and peaceful?': 'noise',
+        'Was the PG in a safe and accessible area?': 'location',
+        'Was it close to public transport or college?': 'transport',
+        'Was the owner/manager friendly and helpful?': 'owner',
+        'Was Wi-Fi speed and stability good?': 'internet',
+        'Did you face water issues?': 'water',
+        'Were there proper security measures?': 'security',
+        'Was the PG worth the price?': 'value'
+    };
+
+    // This map is primarily for parsing, ensuring consistency if backend sends full question
+    const extraQuestionReverseMap = Object.fromEntries(
+        Object.entries(extraQuestionMap).map(([key, value]) => [value, key])
+    );
 
     useEffect(() => {
-        const tenantId = localStorage.getItem('id'); // Assuming tenant ID is stored in localStorage
-        console.log("Tenant ID from localStorage:", tenantId); // Debug log
+        const tenantId = localStorage.getItem('id');
+        console.log("Tenant ID from localStorage:", tenantId);
 
         const fetchData = async () => {
             try {
@@ -40,12 +71,11 @@ const MyReviews = () => {
 
                 const reviewedListingIds = new Set(userReviews.map(r => r.listing?.id));
 
-                // Transform reviews to desired frontend format
                 const published = userReviews.map(r => {
                     const {
                         id,
                         rating,
-                        feedback, // Backend uses 'feedback' for review text
+                        feedback,
                         createdAt,
                         checkInDate,
                         checkOutDate,
@@ -59,16 +89,44 @@ const MyReviews = () => {
                         thumbnailUrl: thumbnail
                     } = listing;
 
+                    let mainReview = '';
+                    const parsedExtraFields = {};
+
+                    // Attempt to parse the feedback string
+                    const feedbackLines = feedback ? feedback.split('\n').filter(line => line.trim() !== '') : [];
+
+                    if (feedbackLines.length > 0) {
+                        if (feedbackLines[0].startsWith('Review:')) {
+                            mainReview = feedbackLines[0].substring('Review:'.length).trim();
+                            for (let i = 1; i < feedbackLines.length; i++) {
+                                const line = feedbackLines[i];
+                                const parts = line.split(':'); // Split by colon for the new format
+                                if (parts.length === 2) {
+                                    const key = parts[0].trim(); // e.g., 'cleanliness'
+                                    const value = parts[1].trim(); // e.g., 'EXCELLENT'
+                                    // Validate key using the map, ensure it's a known extra field
+                                    if (Object.keys(extraQuestionMap).some(originalKey => extraQuestionMap[originalKey] === key)) {
+                                        parsedExtraFields[key] = value;
+                                    }
+                                }
+                            }
+                        } else {
+                            // Fallback for old/plain text format if 'Review:' prefix is missing
+                            mainReview = feedback;
+                        }
+                    }
+
                     return {
                         id,
                         rating,
-                        reviewText: feedback, // Map feedback to reviewText
+                        reviewText: mainReview,
+                        extraReviewFields: parsedExtraFields,
                         date: createdAt,
                         checkInDate,
                         checkOutDate,
                         pgName,
                         location,
-                        thumbnail: listing.url || 'https://via.placeholder.com/150',
+                        thumbnail: listing.urls[0] || 'https://via.placeholder.com/150',
                         listingId,
                         status: 'published'
                     };
@@ -92,18 +150,17 @@ const MyReviews = () => {
                         } = listing;
 
                         return {
-                            id, // This is the booking ID for pending reviews
+                            id,
                             checkInDate,
                             checkOutDate,
                             pgName,
                             location,
-                            thumbnail: listing.url || 'https://via.placeholder.com/150',
-                            listingId, // This is the listing ID
+                            thumbnail: listing.urls[0] || 'https://via.placeholder.com/150',
+                            listingId,
                             status: 'pending'
                         };
                     });
 
-                // Collect unique listings from both reviews and bookings
                 const listingMap = new Map();
                 [...userReviews, ...userBookings].forEach(item => {
                     const listing = item.listing;
@@ -112,7 +169,9 @@ const MyReviews = () => {
                     }
                 });
                 const uniqueListings = Array.from(listingMap.values());
-
+                console.log('Unique Listings:', uniqueListings);
+                console.log('Published Reviews:', published);
+                console.log('Pending Reviews:', pending);
                 setReviews(published);
                 setPendingReviews(pending);
                 setListings(uniqueListings);
@@ -122,14 +181,9 @@ const MyReviews = () => {
         };
 
         fetchData();
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
 
-    // --- START OF THE CHANGE ---
-    // Change this line:
-    // const allReviews = [...reviews, ...pendingReviews];
-    // To:
-    const allReviews = [...reviews]; // "All Reviews" should only show published ones
-    // --- END OF THE CHANGE ---
+    const allReviews = [...reviews];
 
     const filteredReviews = activeTab === 'all'
         ? allReviews
@@ -141,13 +195,20 @@ const MyReviews = () => {
         setRating(newRating);
     };
 
+    const handleExtraFieldChange = (questionName, value) => {
+        setExtraReviewFields(prevFields => ({
+            ...prevFields,
+            [questionName]: value
+        }));
+    };
+
     const handleSubmitReview = async () => {
         if (rating === 0 || !reviewText.trim() || !checkInDate || !checkOutDate || !selectedPG || !selectedPG.listingId) {
             alert('Please provide rating, review text, check-in, check-out dates, and select a PG.');
             return;
         }
 
-        const tenantId = localStorage.getItem('id'); // Get tenant ID from localStorage
+        const tenantId = localStorage.getItem('id');
         if (!tenantId) {
             alert('Tenant ID not found. Please log in again.');
             return;
@@ -155,31 +216,51 @@ const MyReviews = () => {
 
         console.log("Submitting review for listing ID:", selectedPG?.listingId, selectedPG);
 
+        // Construct the fullDescription string with concise extra fields
+        // Ensure values are sent in UPPERCASE as per enum convention if that's what backend expects
+        let extraFieldsString = Object.entries(extraReviewFields)
+            .filter(([, value]) => value !== '') // Only send fields that have been answered
+            .map(([key, value]) => `${key}: ${value.toUpperCase()}`) // Convert value to uppercase
+            .join('\n');
+
+        const fullDescription = `Review: ${reviewText}${extraFieldsString ? `\n\n${extraFieldsString}` : ''}`.trim();
+
         let reviewData = {
             listing: {
-                id: selectedPG.listingId // Ensure listing ID is always passed
+                id: selectedPG.listingId
             },
             rating: rating,
-            feedback: reviewText, // Use 'feedback' for backend
+            feedback: fullDescription,
             checkInDate: checkInDate,
             checkOutDate: checkOutDate,
-            tenant: { // Include tenant object with ID
-                id: Number(tenantId) // Ensure it's a number if your backend expects it
+            tenant: {
+                id: Number(tenantId)
             }
         };
 
         try {
             if (isEditing) {
-                // Update existing review
-                reviewData.id = editingReviewId; // Ensure we send the correct review ID for update
+                reviewData.id = editingReviewId;
                 const updatedReview = await updateReview(reviewData);
+
+                // Re-parse the feedback for updating state
+                const updatedMainReview = updatedReview.feedback.split('\n')[0].replace('Review: ', '').trim();
+                const updatedExtraFields = {};
+                updatedReview.feedback.split('\n').slice(1).forEach(line => {
+                    if (line.includes(':')) {
+                        const [key, value] = line.split(':').map(s => s.trim());
+                        updatedExtraFields[key] = value;
+                    }
+                });
+
                 setReviews(prevReviews =>
                     prevReviews.map(review =>
                         review.id === editingReviewId
                             ? {
                                 ...review,
                                 rating: updatedReview.rating,
-                                reviewText: updatedReview.feedback, // Update with feedback from response
+                                reviewText: updatedMainReview,
+                                extraReviewFields: updatedExtraFields,
                                 date: updatedReview.createdAt,
                                 checkInDate: updatedReview.checkInDate,
                                 checkOutDate: updatedReview.checkOutDate,
@@ -191,24 +272,34 @@ const MyReviews = () => {
                 setIsEditing(false);
                 setEditingReviewId(null);
             } else {
-                // Add new review
-                reviewData.id = Date.now(); // Manually assign an ID for new reviews as required by backend
+                reviewData.id = Date.now();
                 const newReview = await addReview(reviewData);
+
+                // Parse the feedback for updating state
+                const newMainReview = newReview.feedback.split('\n')[0].replace('Review: ', '').trim();
+                const newExtraFields = {};
+                newReview.feedback.split('\n').slice(1).forEach(line => {
+                    if (line.includes(':')) {
+                        const [key, value] = line.split(':').map(s => s.trim());
+                        newExtraFields[key] = value;
+                    }
+                });
+
                 setReviews(prevReviews => [...prevReviews, {
-                    id: newReview.id || reviewData.id, // Use the ID returned from the backend, fallback to client-generated
+                    id: newReview.id || reviewData.id,
                     pgName: selectedPG.pgName,
                     location: selectedPG.location,
                     rating: newReview.rating,
-                    date: newReview.createdAt, // Use the creation date from the backend
-                    reviewText: newReview.feedback, // Use feedback from the backend response
+                    date: newReview.createdAt,
+                    reviewText: newMainReview,
+                    extraReviewFields: newExtraFields,
                     status: "published",
-                    thumbnail: selectedPG.url,
+                    thumbnail: selectedPG.urls[0],
                     checkInDate: newReview.checkInDate,
                     checkOutDate: newReview.checkOutDate,
                     listingId: Number(selectedPG?.listingId),
                 }]);
 
-                // Remove from pending reviews based on listingId
                 setPendingReviews(prevPending =>
                     prevPending.filter(pg => pg.listingId !== selectedPG.listingId)
                 );
@@ -217,10 +308,8 @@ const MyReviews = () => {
             }
 
             setShowSuccessMessage(true);
-            handleCloseForm(); // Close form and reset fields
+            handleCloseForm();
             setTimeout(() => setShowSuccessMessage(false), 3000);
-            // Re-fetch data to ensure all lists are up-to-date after submission/edit
-            // fetchData(); // Call fetchData to refresh all lists - UNCOMMENT IF YOU WANT TO RE-FETCH ALL DATA
         } catch (error) {
             console.error('Error submitting review:', error);
             alert('Failed to submit review. Please try again.');
@@ -234,8 +323,8 @@ const MyReviews = () => {
             setEditingReviewId(reviewId);
             setRating(reviewToEdit.rating);
             setReviewText(reviewToEdit.reviewText);
-            setSelectedPG({ // Set the full PG object for editing context
-                // Use review's listingId here for consistency with handleSubmitReview
+            setExtraReviewFields(reviewToEdit.extraReviewFields); // Set extra fields
+            setSelectedPG({
                 listingId: reviewToEdit.listingId,
                 pgName: reviewToEdit.pgName,
                 location: reviewToEdit.location,
@@ -251,9 +340,8 @@ const MyReviews = () => {
         if (window.confirm('Are you sure you want to delete this review?')) {
             try {
                 await deleteReviewById(reviewId);
-                // Filter out the deleted review directly from the 'reviews' state
                 setReviews(prevReviews => prevReviews.filter(review => review.id !== reviewId));
-                setShowSuccessMessage(true); // Indicate success
+                setShowSuccessMessage(true);
                 setTimeout(() => setShowSuccessMessage(false), 3000);
             } catch (error) {
                 console.error('Error deleting review:', error);
@@ -266,9 +354,13 @@ const MyReviews = () => {
         setShowReviewForm(false);
         setIsEditing(false);
         setEditingReviewId(null);
-        setSelectedPG(null); // Reset to null
+        setSelectedPG(null);
         setRating(0);
         setReviewText('');
+        setExtraReviewFields({
+            cleanliness: '', food: '', noise: '', location: '', transport: '',
+            owner: '', internet: '', water: '', security: '', value: ''
+        });
         setHoveredRating(0);
         setCheckInDate('');
         setCheckOutDate('');
@@ -279,18 +371,18 @@ const MyReviews = () => {
         setCheckInDate(pendingPg.checkInDate || '');
         setCheckOutDate(pendingPg.checkOutDate || '');
         setShowReviewForm(true);
-        setIsEditing(false); // Ensure we are in "add new" mode
-        setRating(0); // Reset rating for new review
-        setReviewText(''); // Reset review text for new review
+        setIsEditing(false);
+        setRating(0);
+        setReviewText('');
+        setExtraReviewFields({
+            cleanliness: '', food: '', noise: '', location: '', transport: '',
+            owner: '', internet: '', water: '', security: '', value: ''
+        });
     };
 
     const getRatingText = (rating) => {
         const ratings = {
-            1: "Poor",
-            2: "Fair",
-            3: "Good",
-            4: "Very Good",
-            5: "Excellent"
+            1: "Poor", 2: "Fair", 3: "Good", 4: "Very Good", 5: "Excellent"
         };
         return ratings[rating] || "";
     };
@@ -299,15 +391,30 @@ const MyReviews = () => {
         if (!dateString) return 'N/A';
         try {
             return new Date(dateString).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+                year: 'numeric', month: 'long', day: 'numeric'
             });
         } catch (error) {
             console.error("Invalid date string:", dateString);
-            return dateString; // Return original if invalid
+            return dateString;
         }
     };
+
+    // Array of objects for rendering questions
+    const extraReviewQuestions = [
+        { label: 'Was the PG clean and hygienic?', name: 'cleanliness', displayTitle: 'Cleanliness' },
+        { label: 'Was the food quality good?', name: 'food', displayTitle: 'Food Quality' },
+        { label: 'Was the PG quiet and peaceful?', name: 'noise', displayTitle: 'Noise Level' },
+        { label: 'Was the PG in a safe and accessible area?', name: 'location', displayTitle: 'Location Safety' },
+        { label: 'Was it close to public transport or college?', name: 'transport', displayTitle: 'Proximity' },
+        { label: 'Was the owner/manager friendly and helpful?', name: 'owner', displayTitle: 'Owner/Manager' },
+        { label: 'Was Wi-Fi speed and stability good?', name: 'internet', displayTitle: 'Internet/Wi-Fi' },
+        { label: 'Did you face water issues?', name: 'water', displayTitle: 'Water Availability' },
+        { label: 'Were there proper security measures?', name: 'security', displayTitle: 'Security' },
+        { label: 'Was the PG worth the price?', name: 'value', displayTitle: 'Value for Money' }
+    ];
+
+    // UPDATED: Use your enum values directly for answer options
+    const answerOptions = ['Excellent', 'Good', 'Fair', 'Poor'];
 
     return (
         <div className="my-reviews-container">
@@ -344,7 +451,7 @@ const MyReviews = () => {
             </section>
 
             {/* Write Review Button (for general new review, if pending list is short/empty) */}
-            {activeTab === 'pending' && pendingReviews.length === 0 && (
+            {activeTab === 'pending'  && (
                 <section className="write-review-section">
                     <button
                         className="write-review-btn"
@@ -374,7 +481,7 @@ const MyReviews = () => {
                             <div className="form-group">
                                 <label>Select PG</label>
                                 <select
-                                    value={selectedPG?.listingId || ''} // Use listingId for value
+                                    value={selectedPG?.listingId || ''}
                                     onChange={(e) => {
                                         const listingId = parseInt(e.target.value, 10);
                                         const pg = listings.find(p => p.id === listingId);
@@ -387,7 +494,7 @@ const MyReviews = () => {
                                             });
                                         }
                                     }}
-                                    disabled={isEditing} // Disable select when editing
+                                    disabled={isEditing}
                                 >
                                     <option value="">Choose a PG to review</option>
                                     {listings.map(pg => (
@@ -405,6 +512,26 @@ const MyReviews = () => {
                                 <label>Check-out Date</label>
                                 <input type="date" value={checkOutDate} onChange={e => setCheckOutDate(e.target.value)} />
                             </div>
+                        
+                            {/* Dynamic Extra Review Fields using buttons */}
+                            <h3>Specific Feedback</h3>
+                            {extraReviewQuestions.map((q, idx) => (
+                                <div className="form-group extra-question-group" key={idx}>
+                                    <label>{q.label}</label>
+                                    <div className="answer-buttons">
+                                        {answerOptions.map((option) => (
+                                            <button
+                                                key={option}
+                                                type="button" // Important for buttons inside a form to prevent submission
+                                                className={`answer-btn ${extraReviewFields[q.name] === option ? 'selected' : ''}`}
+                                                onClick={() => handleExtraFieldChange(q.name, option)}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                             <div className="form-group">
                                 <label>Rating</label>
                                 <div className="star-rating">
@@ -424,19 +551,18 @@ const MyReviews = () => {
                             </div>
 
                             <div className="form-group">
-                                <label>Your Review</label>
+                                <label>Your Main Review</label>
                                 <textarea
                                     value={reviewText}
                                     onChange={(e) => setReviewText(e.target.value)}
-                                    placeholder="Share your experience, what you liked/disliked, and any tips for future tenants..."
-                                    rows="6"
-                                    maxLength="1000"
+                                    placeholder="Share your overall experience..."
+                                    rows="4"
+                                    maxLength="500"
                                 />
                                 <div className="char-count">
-                                    {reviewText.length}/1000 characters
+                                    {reviewText.length}/500 characters
                                 </div>
                             </div>
-
                             <div className="form-actions">
                                 <button
                                     className="cancel-btn"
@@ -501,7 +627,13 @@ const MyReviews = () => {
                                             >
                                                 <FaEdit />
                                             </button>
-                                            
+                                            <button
+                                                className="action-btn delete"
+                                                onClick={() => handleDeleteReview(review.id)}
+                                                title="Delete Review"
+                                            >
+                                                <FaTrash />
+                                            </button>
                                         </div>
                                     )}
                                 </div>
@@ -519,7 +651,26 @@ const MyReviews = () => {
                                         </div>
 
                                         <div className="review-text">
-                                            {review.reviewText}
+                                            <h4>Overall Review:</h4>
+                                            <p>{review.reviewText}</p>
+
+                                            {/* Display Extra Review Fields */}
+                                            {Object.keys(review.extraReviewFields).length > 0 && (
+                                                <div className="extra-details">
+                                                    <h4>Specific Feedback:</h4>
+                                                    <ul>
+                                                        {extraReviewQuestions.map((q, idx) => {
+                                                            // Ensure answer is valid before attempting to display
+                                                            const answer = review.extraReviewFields[q.name];
+                                                            return answer ? (
+                                                                <li key={idx}>
+                                                                    <strong>{q.displayTitle}:</strong> {answer}
+                                                                </li>
+                                                            ) : null;
+                                                        })}
+                                                    </ul>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ) : (
