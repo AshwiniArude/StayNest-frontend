@@ -35,6 +35,9 @@ import ContactSupportOwner from "./pages/ContactSupport owner.jsx";
 import OwnerNotifications from "./pages/OwnerNotifications";
 import ResetPassword from "./pages/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword";
+import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
 
 function AppContent() {
   const location = useLocation();

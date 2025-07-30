@@ -8,13 +8,20 @@ body {
 }
 
 .login-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 4rem 1rem;
-  min-height: 100vh;
-  background: linear-gradient(to right, #f9f7ff, #fff0e3);
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 4rem 4rem !important;
+  min-height: 100vh !important;
+  background: linear-gradient(to right, #f9f7ff, #fff0e3) !important;
+  position: relative !important;
+}
+
+.login-page > * {
+  align-self: center !important;
+  margin-left: auto !important;
+  margin-right: 2rem !important;
 }
 
 .logo-section {
@@ -43,10 +50,12 @@ body {
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(124, 95, 240, 0.15);
   width: 100%;
-  max-width: 420px;
+  max-width: 600px;
   text-align: center;
   position: relative;
   overflow: hidden;
+  margin-left: auto !important;
+  margin-right: 2rem !important;
 }
 
 .login-container::before {
@@ -186,7 +195,8 @@ body {
 
 @media (max-width: 768px) {
   .login-page {
-    padding: 1rem;
+    padding: 2rem;
+    align-items: center;
   }
   .login-container {
     padding: 2rem 1.5rem;
@@ -256,21 +266,3 @@ body {
     100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
 }
 
-/* You might already have these, but ensure the parent container allows the notification to "float" */
-.login-page {
-    /* If this is position: relative/absolute and has overflow: hidden, it might clip the fixed notification */
-    /* Ensure it's not restricting the notification's display */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f0f2f5;
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-    box-sizing: border-box;
-    /* This is usually not needed here, but can cause issues if present */
-    /* overflow: hidden; */
-}
-
-/* Ensure your existing styles don't accidentally hide it */
-/* For example, if you have a rule like * { display: none; } for some reason */
