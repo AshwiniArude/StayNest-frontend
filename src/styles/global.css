@@ -77,10 +77,8 @@ button:hover {
 }
 
 /* Inputs and textareas */
-input[type="text"],
-input[type="email"],
+
 input[type="password"],
-textarea,
 select {
   width: 100%;
   padding: 0.7rem;

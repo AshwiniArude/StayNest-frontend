@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
 import { FaEdit, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEye, FaEyeSlash, FaBell, FaGlobe, FaShieldAlt, FaCheck, FaTimes, FaSpinner } from 'react-icons/fa'; // Added FaSpinner for loading
 import '../styles/MyProfile.css';
 import { getCurrentOwner, updateOwner } from '../services/OwnerService'; // Import the service functions
@@ -53,7 +52,7 @@ const MyProfileOwner = () => {
         setLoading(true);
         setShowErrorMessage(false); // Clear previous errors
         const data = await getCurrentOwner();
-        console.log("Fetched owner data:", data); // Good for debugging!
+       // console.log("Fetched owner data:", data); // Good for debugging!
 
         setProfileData({
           fullName: data.name || '', // Changed from data.fullName to data.name
@@ -171,7 +170,7 @@ const MyProfileOwner = () => {
       //   oldPassword: passwordData.oldPassword,
       //   newPassword: passwordData.newPassword
       // }, getAuthHeaders());
-      console.log('Password updated (simulated backend call):', passwordData); // Replace with actual API call
+      //console.log('Password updated (simulated backend call):', passwordData); // Replace with actual API call
 
       setShowPasswordForm(false);
       setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });

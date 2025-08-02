@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/OwnerDashboard.css';
-import { FaHome, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaRegCalendarAlt, FaMapMarkerAlt, FaCreditCard, FaTrash, FaSpinner } from "react-icons/fa"; // Added FaSpinner
+import { FaHome, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaRegCalendarAlt, FaMapMarkerAlt, FaSpinner } from "react-icons/fa"; // Added FaSpinner
 import listingService from '../services/ListingService';
 import bookingService from '../services/BookingService'; // Import booking service
 import {getCurrentOwner} from '../services/OwnerService'; // Import service to get current owner details
@@ -23,12 +23,12 @@ const OwnerDashboard = () => {
         const fetchOwnerData = async () => { // Define an async function
       try {
         const owner = await getCurrentOwner(); // Await the Promise to get the actual owner object
-        console.log("Current owner (after await):", owner);
+        //console.log("Current owner (after await):", owner);
 
         if (owner && owner.name) { // Always check if owner and owner.name exist
           setName(owner.name); // Set the owner's name
-          console.log("Owner name:", owner.name);
-          console.log("Owner first letter:", owner.name[0]);
+          //console.log("Owner name:", owner.name);
+          //console.log("Owner first letter:", owner.name[0]);
           localStorage.setItem('ownerFirstLetter', owner.name[0]); // Store the first letter
         } else {
           console.warn("Owner data or name not found.");
@@ -42,7 +42,7 @@ const OwnerDashboard = () => {
       try {
         setLoadingListings(true);
         const res = await listingService.getMyListings(ownerId);
-        console.log("Listings response:", res);
+       // console.log("Listings response:", res);
         if (Array.isArray(res)) {
           setOwnerListings(res);
         } else {
@@ -61,25 +61,10 @@ const OwnerDashboard = () => {
       try {
         setLoadingBookings(true);
         const bookings = await bookingService.getBookingsByOWner(); // Fetch all bookings for the owner
-        console.log("Fetched owner bookings:", bookings);
+      //  console.log("Fetched owner bookings:", bookings);
 
-        // Sort bookings by 'createdAt' (or a suitable date field) in descending order
-        // to get the most recent ones first.
-        // Based on your sample, `tenant.createdAt` or `listing.createdAt` or even `id` for newness
-        // could be used, but `id` might not strictly reflect creation time.
-        // Assuming there's an implicit creation order or `id` is sequential.
-        // If a direct booking `createdAt` field existed at the top level, that would be ideal.
-        // For now, let's use the booking's `id` as a proxy for recency if a specific
-        // booking creation timestamp isn't directly at the root.
-        // A better approach would be if your backend returned a `bookingDate` or `createdAt`
-        // field directly on the booking object itself.
         const sortedBookings = bookings.sort((a, b) => {
-          // If you have a `createdAt` or `bookingDate` directly on the booking object, use that:
-          // const dateA = new Date(a.createdAt || a.bookingDate);
-          // const dateB = new Date(b.createdAt || b.bookingDate);
-          // return dateB - dateA;
-
-          // For the provided sample, using `id` as a proxy for recency:
+        
           return b.id - a.id; // Sort by ID descending (assuming higher ID means more recent)
         });
 
@@ -102,46 +87,44 @@ const OwnerDashboard = () => {
     navigate('/owner/create-listing');
   };
 
-  const handleEditListing = (listingId) => {
-    navigate(`/owner/edit-listing/${listingId}`);
-  };
+  // const handleEditListing = (listingId) => {
+  //   navigate(`/owner/edit-listing/${listingId}`);
+  // };
 
-  const handleAccountSettings = () => {
-    navigate('/account-settings');
-  };
+  // const handleAccountSettings = () => {
+  //   navigate('/account-settings');
+  // };
 
-  const handleManageBookings = () => {
-    navigate('/manage-bookings');
-  };
+  // const handleManageBookings = () => {
+  //   navigate('/manage-bookings');
+  // };
 
-  const handleContactSupport = () => {
-    navigate('/contact-support');
-  };
+  // const handleContactSupport = () => {
+  //   navigate('/contact-support');
+  // };
 
-  const handleContactSupportOwner = () => {
-    navigate('/owner/contact-support');
-  };
+  // const handleContactSupportOwner = () => {
+  //   navigate('/owner/contact-support');
+  // };
 
-  const handleViewBookingDetails = (bookingId) => { // Modified to accept bookingId
-    navigate(`/owner/booking-details/${bookingId}`); // Navigate to a detailed booking page
-  };
+  // const handleViewBookingDetails = (bookingId) => { // Modified to accept bookingId
+  //   navigate(`/owner/booking-details/${bookingId}`); // Navigate to a detailed booking page
+  // };
 
-  const handleDeleteListing = async (listingId, idx) => {
-    if (!window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;
-    try {
-      if (listingId) {
-        const listingService = (await import('../services/ListingService')).default;
-        await listingService.deleteListing(listingId);
-      }
-      const updated = ownerListings.filter((_, i) => i !== idx);
-      setOwnerListings(updated);
-      // Removed localStorage.setItem('ownerListings', JSON.stringify(updated));
-      // as it might be better to re-fetch or rely on state for single source of truth
-      alert('Listing deleted successfully.');
-    } catch (err) {
-      alert('Failed to delete listing.');
-    }
-  };
+  // const handleDeleteListing = async (listingId, idx) => {
+  //   if (!window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;
+  //   try {
+  //     if (listingId) {
+  //       const listingService = (await import('../services/ListingService')).default;
+  //       await listingService.deleteListing(listingId);
+  //     }
+  //     const updated = ownerListings.filter((_, i) => i !== idx);
+  //     setOwnerListings(updated);
+  //     alert('Listing deleted successfully.');
+  //   } catch (err) {
+  //     alert('Failed to delete listing.');
+  //   }
+  // };
 
   return (
     <div className="dashboard-container">
@@ -197,25 +180,23 @@ const OwnerDashboard = () => {
                   <span className="status-badge verified">Verified</span>
                 </div>
 
-                {listing.url ? (
-                  <img
-                    src={listing.url}
-                    alt="Listing"
-                    className="listing-image-placeholder"
-                    style={{ objectFit: 'cover', width: '100%', height: '120px', borderRadius: '12px' }}
-                  />
-                ) : (
-                  <div className="listing-image-placeholder"></div>
-                )}
+           {listing.urls && listing.urls.length > 0 ? (
+                    <img
+                      src={listing.urls[0] || listing.url} // Correctly access the first URL in the 'urls' array
+                      alt="Listing"
+                      className="listing-image-placeholder"
+                      style={{ objectFit: 'cover', width: '100%', height: '120px', borderRadius: '12px' }}
+                    />
+                  ) : (
+                    <div className="listing-image-placeholder"></div>
+                  )}
 
                 <div className="listing-content">
                   <h3>{listing.title}</h3>
                   <p className="listing-location">
                     <FaMapMarkerAlt /> {listing.address}
                   </p>
-                  <p className="listing-occupancy">
-                    <FaUser />{/* This still needs dynamic calculation based on rooms/bookings */}
-                  </p>
+                 
                   <div className="listing-price-rating">
                     <span className="listing-price">
                       ₹{listing.rent}<span className="price-period">/month</span>
@@ -227,8 +208,8 @@ const OwnerDashboard = () => {
                 <div className="listing-actions">
                   <button className="action-btn edit-btn" onClick={() => navigate(`/owner/edit-listing/${listing.id}`)}>Edit</button>
                   <button className="action-btn bookings-btn" onClick={() => navigate(`/listing-bookings/${listing.id}`)}>Bookings</button>
-                  {/* <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing(listing.id, idx)}><FaTrash /></button> */}
-                </div>
+                  {/* { <button className="action-btn delete-btn" title="Delete Listing" onClick={() => handleDeleteListing(listing.id, idx)}><FaTrash /></button> }
+                */}</div> 
               </div>
             ))}
 

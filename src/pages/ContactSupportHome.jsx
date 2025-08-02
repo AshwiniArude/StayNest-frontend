@@ -40,7 +40,7 @@ const ContactSupportHome = () => {
     //   formData.append('attachment', form.attachment);
     // }
 
-    await fetch('https://formspree.io/f/xrblpbry', {
+    await fetch('https://formspree.io/f/xrblqpbe', {
       method: 'POST',
       body: formData, // no headers needed for FormData
     });

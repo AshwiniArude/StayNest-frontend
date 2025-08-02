@@ -14,6 +14,7 @@ const getListingById = async (id) => {
 
 // 🔹 Get all listings
 const getAllListings = async () => {
+  
   const res = await api.get('/listing/all');
   return res.data;
 };

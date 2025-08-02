@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaCheck, FaTimes, FaUser, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock, FaStar } from 'react-icons/fa';
 import '../styles/ManageBookings.css';
 import bookingService from '../services/BookingService';
-
+import userIcon from '../assets/images/user_icon.jpg'; 
 
 const ListingBookings = () => {
   console.log('Params:', useParams());
@@ -13,13 +13,13 @@ const ListingBookings = () => {
 //option1
 const { pgId } = useParams();
 
-console.log("Params:", { pgId });
-console.log("PG ID:", pgId);
+//console.log("Params:", { pgId });
+//console.log("PG ID:", pgId);
 
   //option2
   const params = useParams();
-console.log("Params:", params);
-console.log("PG ID:", params.pgId);
+//console.log("Params:", params);
+//console.log("PG ID:", params.pgId);
 
  const formatDate = (dateStr) => {
   if (!dateStr) return 'N/A';
@@ -59,9 +59,9 @@ const backendToUiStatusMap = {
     }
   const fetchRequests = async () => {
     try {
-      console.log("Fetching booking requests for PG ID:", pgId);
+      //console.log("Fetching booking requests for PG ID:", pgId);
       const res =await bookingService.getBookingsByListingId(pgId);
-      console.log("Fetched booking requests:", res);
+      //console.log("Fetched booking requests:", res);
       const mapped = res.map(req => {
   // Normalize status properly
   let uiStatus = 'unknown';
@@ -76,7 +76,10 @@ const backendToUiStatusMap = {
     case 'NOT BOOKED':
       uiStatus = 'cancelled';
       break;
-    default:
+    case  'REJECTED' :
+      uiStatus = 'cancelled';
+      break;
+      default:
       uiStatus = 'unknown';
   }
 
@@ -87,10 +90,10 @@ const backendToUiStatusMap = {
     tenantEmail: req.tenant?.email,
     tenantPhone: req.tenant?.phoneNumber,
     tenantRating: '4.5',
-    tenantImage: 'https://chatgpt.com/backend-api/public_content/enc/eyJpZCI6Im1fNjg4MTI5OThiOTg0ODE5MTkxZGY2YjI0M2RhODkzZGM6ZmlsZV8wMDAwMDAwMDljZTQ2MWY2OGVlZTk2MGNlYjgwOTYyMSIsInRzIjoiNDg3MDI2IiwicCI6InB5aSIsInNpZyI6ImJkNmI4ODIxNzA4ZmZmMWUyM2RmMjU3NzlhYTVlZDdkN2ZhNWJkNmZjMTBhYTk5MTZlYzVkYTEwZmY0NjdhZDAiLCJ2IjoiMCIsImdpem1vX2lkIjpudWxsfQ==',
+    tenantImage: 'userIcon',
     pgName: req.listing?.title,
     location: req.listing?.address,
-    sharing: req.listing?.roomType,
+    sharing: req.roomType,
     checkInDate: formatDate(req.startDate),
     checkOutDate: formatDate(req.endDate),
     requestDate: new Date(req.id).toLocaleString(),
@@ -115,7 +118,7 @@ setRequests(mapped);
     try{
       const res = bookingService.bookingAction(requestId, 'ACCEPT');
       alert("Booking confirmed successfully");
-      console.log("Booking confirmed:", res);
+      //console.log("Booking confirmed:", res);
     }catch (error) {
       console.error("Failed to confirm booking:", error);}
     setRequests(prevRequests =>
@@ -131,8 +134,8 @@ setRequests(mapped);
   const handleCancelBooking = (requestId) => {
     try{
       const res = bookingService.bookingAction(requestId, 'REJECT');
-      alert("Booking confirmed successfully");
-      console.log("Booking confirmed:", res);
+      alert("Booking cancelled successfully");
+      //console.log("Booking confirmed:", res);
     }catch (error) {
       console.error("Failed to confirm booking:", error);}
     setRequests(prevRequests =>
@@ -225,7 +228,7 @@ const filteredRequests = requests.filter(request => {
               <div className="request-header">
                 <div className="tenant-info">
               <img 
-                src={request.tenantImage} 
+                src={userIcon} 
                 alt={request.tenantName} 
                     className="tenant-avatar"
                   />

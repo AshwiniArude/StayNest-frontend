@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
-import { FaSearch, FaBoxOpen, FaComments, FaEnvelope, FaHeadset, FaPhone, FaCheckCircle, FaTimesCircle, FaPaperclip, FaClock, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
+import {  FaEnvelope, FaPhone, FaCheckCircle,  FaWhatsapp } from 'react-icons/fa';
 import '../styles/ContactSupport.css';
 
 const ContactSupport = () => {
@@ -69,7 +68,7 @@ const handleSubmit = async (e) => {
     //   formData.append('attachment', form.attachment);
     // }
 
-    await fetch('https://formspree.io/f/xrblpbry', {
+    await fetch('https://formspree.io/f/xrblqpbe', {
       method: 'POST',
       body: formData, // no headers needed for FormData
     });

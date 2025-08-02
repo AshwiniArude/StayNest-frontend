@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaMapMarkerAlt, FaSearch, FaSoap, FaChevronDown } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaSearch, FaChevronDown } from 'react-icons/fa';
 import './TenantSearchBar.css';
 
 const tenantTypes = [

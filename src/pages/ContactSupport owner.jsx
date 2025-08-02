@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
-import { FaSearch, FaBoxOpen, FaComments, FaEnvelope, FaHeadset, FaPhone, FaCheckCircle, FaTimesCircle, FaPaperclip, FaClock, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
+import {  FaEnvelope, FaPhone, FaCheckCircle,  FaWhatsapp } from 'react-icons/fa';
 import '../styles/ContactSupport.css';
 
 
@@ -70,7 +69,7 @@ const handleSubmit = async (e) => {
     //   formData.append('attachment', form.attachment);
     // }
 
-    const response = await fetch('https://formspree.io/f/xrblpbry', {
+    const response = await fetch('https://formspree.io/f/xrblqpbe', {
       method: 'POST',
       body: formData, // no headers needed for FormData
     });
@@ -171,7 +170,7 @@ const handleSubmit = async (e) => {
             <div className="contact-option-card">
               <div className="option-icon"><FaPhone color="#7c5ff0" /></div>
               <div className="option-label">Available 9 AM – 6 PM (Mon–Sat)</div>
-              <div className="option-number">90962 47010</div>
+              <div className="option-number">+91 90962 47010</div>
               <button className="option-btn" style={{background:'#ff9f59',color:'#232323'}}>Call Now</button>
             </div>
             <div className="contact-option-card">

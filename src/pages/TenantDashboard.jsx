@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/TenantDashboard.css";
-import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaHeart, FaCog, FaArrowRight, FaHome, FaStar, FaChevronDown } from "react-icons/fa";
+import { FaRegCalendarAlt, FaMapMarkerAlt, FaSearch, FaUser, FaRegCommentDots, FaCog, FaArrowRight, FaHome, FaStar, FaChevronDown } from "react-icons/fa";
 import bookingService from "../services/BookingService";
 import userService from "../services/UserService";
 import {getReviewsByTenant} from "../services/ReviewService";
-
 const genderOptions = [
   { label: 'Girls', value: 'girls' },
   { label: 'Boys', value: 'boys' },
@@ -19,83 +18,57 @@ const budgetOptions = [
   { label: 'Above ₹20,000', value: [20000, 50000] },
 ];
 
-function TenantDashboardSearchBar({ onSearch }) {
-  const [location, setLocation] = useState('');
-  const [gender, setGender] = useState('');
-  const [budget, setBudget] = useState('');
-  const [showGenderDropdown, setShowGenderDropdown] = useState(false);
-  const [showBudgetDropdown, setShowBudgetDropdown] = useState(false);
+const extraReviewQuestions = [
+        { label: 'Was the PG clean and hygienic?', name: 'cleanliness', displayTitle: 'Cleanliness' },
+        { label: 'Was the food quality good?', name: 'food', displayTitle: 'Food Quality' },
+        { label: 'Was the PG quiet and peaceful?', name: 'noise', displayTitle: 'Noise Level' },
+        { label: 'Was the PG in a safe and accessible area?', name: 'location', displayTitle: 'Location Safety' },
+        { label: 'Was it close to public transport or college?', name: 'transport', displayTitle: 'Proximity' },
+        { label: 'Was the owner/manager friendly and helpful?', name: 'owner', displayTitle: 'Owner/Manager' },
+        { label: 'Was Wi-Fi speed and stability good?', name: 'internet', displayTitle: 'Internet/Wi-Fi' },
+        { label: 'Did you face water issues?', name: 'water', displayTitle: 'Water Availability' },
+        { label: 'Were there proper security measures?', name: 'security', displayTitle: 'Security' },
+        { label: 'Was the PG worth the price?', name: 'value', displayTitle: 'Value for Money' }
+    ];
 
-  const handleSearch = () => {
-    if (onSearch) onSearch({ location, gender, budget });
-  };
+    // UPDATED: Use your enum values directly for answer options
+    const answerOptions = ['Excellent', 'Good', 'Fair', 'Poor'];
 
-  const handleClear = () => {
-    setLocation('');
-    setGender('');
-    setBudget('');
-  };
+   const extraQuestionMap = {
+        'Was the PG clean and hygienic?': 'cleanliness',
+        'Was the food quality good?': 'food',
+        'Was the PG quiet and peaceful?': 'noise',
+        'Was the PG in a safe and accessible area?': 'location',
+        'Was it close to public transport or college?': 'transport',
+        'Was the owner/manager friendly and helpful?': 'owner',
+        'Was Wi-Fi speed and stability good?': 'internet',
+        'Did you face water issues?': 'water',
+        'Were there proper security measures?': 'security',
+        'Was the PG worth the price?': 'value'
+    };
 
-  return (
-    <div style={{ border: '3px solid orange', borderRadius: 20, padding: '2rem 2.5rem', margin: '2rem auto', maxWidth: 1800, minWidth: 1200, background: '#fff', display: 'flex', alignItems: 'center', boxShadow: '0 4px 24px rgba(44,34,84,0.08)' }}>
-      <div style={{ flex: 2, display: 'flex', flexDirection: 'column', marginRight: 24 }}>
-        <label style={{ color: '#4a2c8c', fontWeight: 600, fontSize: 20, marginBottom: 6 }}>Where</label>
-        <div style={{ display: 'flex', alignItems: 'center', background: '#222', borderRadius: 10, padding: '0.5rem 1rem' }}>
-          <FaMapMarkerAlt style={{ color: '#a78bfa', fontSize: 20, marginRight: 8 }} />
-          <input
-            type="text"
-            placeholder="Search destinations"
-            value={location}
-            onChange={e => setLocation(e.target.value)}
-            style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 20, flex: 1 }}
-          />
-        </div>
-      </div>
-      <div style={{ width: 1, background: '#eee', height: 60, margin: '0 24px' }} />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', marginRight: 24, position: 'relative' }}>
-        <label style={{ color: '#4a2c8c', fontWeight: 600, fontSize: 20, marginBottom: 6 }}>Who</label>
-        <div
-          style={{ background: 'none', border: 'none', borderRadius: 10, padding: '0.7rem 1rem', fontSize: 20, color: gender ? '#222' : '#bbb', fontStyle: gender ? 'normal' : 'italic', cursor: 'pointer', backgroundColor: '#fff', boxShadow: 'none', display: 'flex', alignItems: 'center', position: 'relative' }}
-          onClick={() => setShowGenderDropdown(v => !v)}
-        >
-          {gender ? genderOptions.find(g => g.value === gender).label : 'Select Gender'}
-          <FaChevronDown style={{ marginLeft: 8, color: '#bbb' }} />
-        </div>
-        {showGenderDropdown && (
-          <div style={{ position: 'absolute', top: 60, left: 0, background: '#fff', borderRadius: 10, boxShadow: '0 8px 32px rgba(44,34,84,0.13)', zIndex: 100, minWidth: '100%' }}>
-            {genderOptions.map(opt => (
-              <div key={opt.value} style={{ padding: '0.7rem 1.2rem', cursor: 'pointer', color: '#222', fontSize: 18 }} onClick={() => { setGender(opt.value); setShowGenderDropdown(false); }}>{opt.label}</div>
-            ))}
-          </div>
-        )}
-      </div>
-      <div style={{ width: 1, background: '#eee', height: 60, margin: '0 24px' }} />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', marginRight: 24, position: 'relative' }}>
-        <label style={{ color: '#4a2c8c', fontWeight: 600, fontSize: 20, marginBottom: 6 }}>Budget</label>
-        <div
-          style={{ background: '#f7f3ff', border: 'none', borderRadius: 10, padding: '0.7rem 1rem', fontSize: 20, color: budget ? '#222' : '#bbb', fontStyle: budget ? 'normal' : 'italic', cursor: 'pointer', boxShadow: 'none', display: 'flex', alignItems: 'center', position: 'relative' }}
-          onClick={() => setShowBudgetDropdown(v => !v)}
-        >
-          {budget ? budgetOptions.find(b => b.value[0] === budget[0] && b.value[1] === budget[1])?.label || 'Select budget' : 'Select budget'}
-          <FaChevronDown style={{ marginLeft: 8, color: '#bbb' }} />
-        </div>
-        {showBudgetDropdown && (
-          <div style={{ position: 'absolute', top: 60, left: 0, background: '#fff', borderRadius: 10, boxShadow: '0 8px 32px rgba(44,34,84,0.13)', zIndex: 100, minWidth: '100%' }}>
-            {budgetOptions.map(opt => (
-              <div key={opt.label} style={{ padding: '0.7rem 1.2rem', cursor: 'pointer', color: '#222', fontSize: 18 }} onClick={() => { setBudget(opt.value); setShowBudgetDropdown(false); }}>{opt.label}</div>
-            ))}
-          </div>
-        )}
-      </div>
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 24 }}>
-        <button onClick={handleSearch} style={{ background: 'orange', color: '#fff', border: 'none', borderRadius: 30, padding: '0.7rem 2.5rem', fontSize: 22, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 10, boxShadow: '0 2px 8px #ffa72633', cursor: 'pointer' }}>
-          <FaSearch style={{ fontSize: 22 }} /> Search
-        </button>
-        <button onClick={handleClear} style={{ background: 'none', color: '#a78bfa', border: 'none', fontWeight: 700, fontSize: 20, marginLeft: 10, boxShadow: '0 2px 8px #a78bfa33', borderRadius: 30, padding: '0.7rem 1.5rem', cursor: 'pointer' }}>Clear</button>
-      </div>
-    </div>
-  );
-}
+    // This map is primarily for parsing, ensuring consistency if backend sends full question
+    const extraQuestionReverseMap = Object.fromEntries(
+        Object.entries(extraQuestionMap).map(([key, value]) => [value, key])
+    );
+    const getRatingText = (rating) => {
+  switch (rating) {
+    case 1:
+      return 'Terrible';
+    case 2:
+      return 'Poor';
+    case 3:
+      return 'Average';
+    case 4:
+      return 'Good';
+    case 5:
+      return 'Excellent';
+    default:
+      return '';
+  }
+};
+
+
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
@@ -103,32 +76,84 @@ const TenantDashboard = () => {
   const [userName, setUserName] = useState('');
   const [reviews, setReviews] = useState([]);
 
+      const [extraReviewFields, setExtraReviewFields] = useState({
+          cleanliness: '',
+          food: '',
+          noise: '',
+          location: '',
+          transport: '',
+          owner: '',
+          internet: '',
+          water: '',
+          security: '',
+          value: ''
+      });
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const user = await userService.getCurrentUser();
-        setUserName(user.name || 'User');
-        localStorage.setItem('userFirstLetter', user.name[0]);
+   const fetchData = async () => {
+  try {
+    const user = await userService.getCurrentUser();
+    setUserName(user.name || 'User');
+    localStorage.setItem('userFirstLetter', user.name[0]);
 
-        const bookingData = await bookingService.getMyBookings();
-        const mappedBookings = bookingData.map((b) => ({
-          id: b.id,
-          name: b.listing?.title || "N/A",
-          location: b.listing?.address || "N/A",
-          checkIn: b.startDate ? new Date(b.startDate).toLocaleDateString() : "N/A",
-          checkOut: b.endDate ? new Date(b.endDate).toLocaleDateString() : "N/A",
-          status: b.status || "N/A",
-        }));
-        
-        console.log(mappedBookings.reverse());
-        setBookings(mappedBookings.reverse());
-        const reviewData = await getReviewsByTenant(localStorage.getItem('id'));
-        setReviews(reviewData);
+    const bookingData = await bookingService.getMyBookings();
+    const mappedBookings = bookingData.map((b) => ({
+      id: b.id,
+      name: b.listing?.title || "N/A",
+      location: b.listing?.address || "N/A",
+      checkIn: b.startDate ? new Date(b.startDate).toLocaleDateString() : "N/A",
+      checkOut: b.endDate ? new Date(b.endDate).toLocaleDateString() : "N/A",
+      status: b.status || "N/A",
+    }));
+    setBookings(mappedBookings.reverse());
 
-      } catch (err) {
-        console.error("Failed to fetch dashboard data:", err);
+    const userReviews = await getReviewsByTenant(localStorage.getItem('id'));
+
+const published = userReviews.map(r => {
+  const { id, rating, feedback, createdAt, listing = {} } = r;
+  const { title: pgName, address: location } = listing;
+
+  let mainReview = '';
+  const parsedExtraFields = {};
+
+  if (feedback) {
+    // A regular expression to find the main review text and key-value pairs
+    const parts = feedback.split(/ (cleanliness|food|noise|location|transport|owner|internet|water|security|value):/i);
+
+    // The first element is the main review, if it exists
+    if (parts.length > 0) {
+      mainReview = parts[0].replace('Review: ', '').trim();
+    }
+
+    // Iterate through the rest of the array to find key-value pairs
+    for (let i = 1; i < parts.length; i += 2) {
+      const key = parts[i].trim();
+      const value = parts[i + 1] ? parts[i + 1].trim().split(/\s+(?=cleanliness|food|noise|location|transport|owner|internet|water|security|value:|$)/)[0] : '';
+      
+      const question = extraReviewQuestions.find(q => q.name === key);
+      if (question && value) {
+        parsedExtraFields[question.displayTitle] = value;
       }
-    };
+    }
+  }
+
+  return {
+    id,
+    rating,
+    reviewText: mainReview,
+    extraReviewFields: parsedExtraFields,
+    date: createdAt,
+    pgName,
+    location,
+    // ... other fields
+  };
+});
+console.log("Published reviews:", published);
+setReviews(published);
+  } catch (err) {
+    console.error("Failed to fetch dashboard data:", err);
+  }
+};
 
     fetchData();
   }, []);
@@ -168,16 +193,6 @@ const TenantDashboard = () => {
     checkForNewBookings();
   }, []);
 
-  // Add search state and handler as in Listings.jsx (kept for existing functionality)
-  const [searchParams, setSearchParams] = useState({ location: '', tenantType: '', budget: [3000, 20000] });
-  const handleSearch = (params) => {
-    setSearchParams(params);
-    // Optionally, filter bookings or trigger other actions here
-  };
-
-  const handleCreateReview = () => {
-    navigate('/my-reviews');
-  };
 
   const handleViewDetails = (bookingId) => {
     navigate(`/booking-details/${bookingId}`);
@@ -191,9 +206,9 @@ const TenantDashboard = () => {
     navigate('/account-settings');
   };
 
-  const handleContactSupport = () => {
-    navigate('/contact-support');
-  };
+  // const handleContactSupport = () => {
+  //   navigate('/contact-support');
+  // };
 
   const handleBrowsePGs = () => {
     navigate('/listings');
@@ -315,38 +330,53 @@ const TenantDashboard = () => {
       </section>
 
       <section className="section">
-        <h2>My Reviews & Ratings</h2>
-        <div className="card-grid">
-          {reviews.length === 0 && (
-            <strong> <p className="action-desc">No reviews found. Start exploring and leave your feedback!</p></strong>
-          )}
-
-          {reviews.map((review, index) => (
-            <div className="card" key={index}>
-              <h3>{review.listing.title}</h3>
-              <p>
-                Stayed From {new Date(review.createdAt).toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric'
-                })} to {
-                  (() => {
-                    const startDate = new Date(review.createdAt);
-                    const endDate = new Date(startDate);
-                    endDate.setMonth(endDate.getMonth() + review.duration);
-                    return endDate.toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric'
-                    });
-                  })()
-                }
-              </p>
-              <p>⭐ {review.rating} - {review.feedback}</p>
-            </div>
-          ))}
+  <h2>My Reviews & Ratings</h2>
+  <div className="card-grid">
+    {reviews.length === 0 && (
+      <strong>
+        <p className="action-desc">No reviews found. Start exploring and leave your feedback!</p>
+      </strong>
+    )}
+    {reviews.map((review, index) => (
+      <div className="card new-review-card" key={index}>
+        <div className="card-body">
+          <h3>{review.pgName}</h3>
+          <p className="pg-location">
+            <FaMapMarkerAlt />
+            {review.location}
+          </p>
+          <p className="review-date-info">
+            <FaRegCalendarAlt />
+            Reviewed on {new Date(review.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+          </p>
+          <div className="rating-display">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaStar key={star} className={`star ${star <= review.rating ? 'filled' : ''}`} />
+            ))}
+            <span className="rating-text">{getRatingText(review.rating)}</span>
+          </div>
+          <div className="review-details">
+            <h4>Overall Review:</h4>
+            <p className="overall-review-text">{review.reviewText}</p>
+            {Object.keys(review.extraReviewFields).length > 0 && (
+              <div className="specific-feedback">
+                <h4>Specific Feedback:</h4>
+                <ul className="feedback-list">
+                  {Object.entries(review.extraReviewFields).map(([key, value], idx) => (
+                    <li key={idx}>
+                      <span><strong>{key}:</strong></span>
+                      <span className="feedback-value">{value}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
       <div className="footer-spacing"></div>
     </div>
   );

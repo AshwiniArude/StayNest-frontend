@@ -8,7 +8,6 @@ import {
   FaEye,
   FaEyeSlash,
   FaBell,
-  FaGlobe,
   FaShieldAlt,
   FaCheck,
   FaTimes
@@ -146,7 +145,7 @@ const MyProfile = () => {
       return;
     }
     const res =  authService.updatePassword({password :passwordData.newPassword});
-    console.log('Password updated:', res);
+  //  console.log('Password updated:', res);
     setShowPasswordForm(false);
     setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
     setShowSuccessMessage(true);

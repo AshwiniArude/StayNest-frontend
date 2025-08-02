@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaUserCog, FaMoon, FaSun, FaPalette, FaLock, FaDownload, FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaUserCog, FaMoon, FaSun, FaPalette, FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
 import '../styles/AccountSettings.css';
 import authService from '../services/AuthService';
 import userService from '../services/UserService';
@@ -105,7 +105,7 @@ const AccountSettings = () => {
       return;
     }
     const res =  authService.updatePassword({password :passwordData.newPassword});
-        console.log('Password updated:', res);
+       
     // Here you would typically send to backend
     setShowPasswordForm(false);
     setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
@@ -122,7 +122,6 @@ const AccountSettings = () => {
   const handleDelete = () => {
     setShowDeleteConfirm(false);
     const res = userService.deleteUser();
-    console.log('Account deleted:', res);
     navigate('/'); // Redirect to home after deletion
     setTimeout(() => setToast(''), 1800);
   };

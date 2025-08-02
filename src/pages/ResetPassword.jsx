@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/ForgotPassword.css';
 import authService from '../services/AuthService';
-import { useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
 const ResetPassword = () => {
@@ -23,7 +22,7 @@ const email = queryParams.get('email');
     e.preventDefault();
     setError('');
     
-    console.log('Resetting password for:', email);
+    //console.log('Resetting password for:', email);
     
     if (!newPassword || !confirmPassword) {
       setError('Please fill in all fields.');
@@ -39,7 +38,7 @@ const email = queryParams.get('email');
     }
     // Simulate API call
     const res = authService.resetPassword({ email, password:newPassword });
-    console.log(res);
+   // console.log(res);
     setError('');
     setIsLoading(true);
     setTimeout(() => {

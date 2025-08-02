@@ -43,11 +43,11 @@ const backendToUiStatusMap = {
 useEffect(() => {
   const fetchBooking = async () => {
     try {
-      console.log('Fetching booking with ID:', bookingId); // ✅ Check if bookingId is correct
+     // console.log('Fetching booking with ID:', bookingId); // ✅ Check if bookingId is correct
       const res = await bookingService.getBookingById(bookingId);
-      console.log('Booking data fetched:', res); // ✅ Check if booking data is loaded correctly
+      //console.log('Booking data fetched:', res); // ✅ Check if booking data is loaded correctly
       const data = res;
-      console.log('Fetched Booking Data:', data); // ✅ Check if booking data is loaded correctly
+      //console.log('Fetched Booking Data:', data); // ✅ Check if booking data is loaded correctly
      const transformed = {
   pg: {
     name: data.listing?.title || 'N/A',                    // ✅ title instead of pgName
@@ -69,7 +69,7 @@ useEffect(() => {
   },
 };
 
-      console.log('Booking Details:', transformed); // ✅ Check if booking data is loaded correctly
+      //console.log('Booking Details:', transformed); // ✅ Check if booking data is loaded correctly
       setBooking(transformed);
     } catch (err) {
       console.error('Failed to load booking:', err);

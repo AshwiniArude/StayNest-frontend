@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { FaUserCog, FaMoon, FaSun, FaPalette, FaLock, FaDownload, FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
 import '../styles/AccountSettings.css';
-import OwnerNavbarDashboard from '../components/OwnerNavbarDashboard';
 import {updateOwner} from '../services/OwnerService';
+
 const TABS = [
   { label: 'UI Theme Preferences', value: 'theme' },
   { label: 'Password & Security', value: 'security' },
-
+  { label: 'Notification Preferences', value: 'notifications' },
   { label: 'Privacy & Data Settings', value: 'privacy' },
-  {/*{ label: 'Delete Account', value: 'delete', isDanger: true },*/}
+  { label: 'Delete Account', value: 'delete', isDanger: true },
 ];
 
 const AccountSettings = () => {
@@ -102,7 +102,7 @@ const AccountSettings = () => {
       return;
     }
      const res =  updateOwner({password :passwordData.newPassword});
-      console.log('Password updated:', res);
+      
     // Here you would typically send to backend
     setShowPasswordForm(false);
     setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
@@ -115,7 +115,7 @@ const AccountSettings = () => {
     setToast('✅ Preferences updated');
     setTimeout(() => setToast(''), 1200);
   };
-  // Delete
+  // DeleteF
   const handleDelete = () => {
     setShowDeleteConfirm(false);
     setToast('❌ Account deleted (mock)');
@@ -302,7 +302,7 @@ const AccountSettings = () => {
                 )}
               </section>
             )}
-            {/* Notification Preferences 
+            {/* Notification Preferences */}
             {activeTab === 'notifications' && (
               <section className="settings-section notifications-section">
                 <h2>Notification Preferences</h2>
@@ -338,7 +338,7 @@ const AccountSettings = () => {
                 </div>
                 <button className="settings-save-btn" onClick={() => setToast('✅ Preferences saved!')}>Save Preferences</button>
               </section>
-            )}*/}
+            )}
             {/* Privacy & Data Settings */}
             {activeTab === 'privacy' && (
               <section className="settings-section privacy-section">
@@ -360,12 +360,12 @@ const AccountSettings = () => {
                   </div>
                   <button className="settings-save-btn" onClick={handlePrivacySave}>Save Privacy Settings</button>
                 </div>
-                {/*<div className="data-export">
+                <div className="data-export">
                   <button className="export-btn" onClick={handleExportData}><FaDownload /> Export My Data</button>
-                </div>*/}
+                </div>
               </section>
             )}
-            {/* Delete Account 
+            {/* Delete Account */}
             {activeTab === 'delete' && (
               <section className="settings-section delete-section">
                 <h2 className="delete-title">Delete My Account</h2>
@@ -386,7 +386,7 @@ const AccountSettings = () => {
                   </div>
                 )}
               </section>
-            )}*/}
+            )}
           </div>
         </div>
         {/* Avatar Modal */}

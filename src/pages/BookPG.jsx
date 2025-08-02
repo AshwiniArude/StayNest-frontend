@@ -3,12 +3,69 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     FaStar, FaMapMarkerAlt, FaPhone, FaWifi, FaUtensils, FaSnowflake, FaTshirt,
     FaCar, FaLock, FaBroom, FaDumbbell, FaFemale, FaMale, FaUsers,
-    FaArrowLeft, FaCheck, FaTimes
+    FaArrowLeft, FaCheck, FaTimes, FaLaptopHouse,FaCalendarAlt,FaUser
 } from 'react-icons/fa';
 import axios from 'axios';
 import '../styles/BookPG.css';
 import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
 import bookingService from '../services/BookingService';
+import { getReviewsByListing } from '../services/ReviewService';
+
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+import L from 'leaflet';
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
+
+const getRatingText = (rating) => {
+    switch (rating) {
+        case 1: return 'Poor';
+        case 2: return 'Fair';
+        case 3: return 'Good';
+        case 4: return 'Very Good';
+        case 5: return 'Excellent';
+        default: return '';
+    }
+};
+const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+};
+const parseFeedbackString = (feedbackString) => {
+    const lines = feedbackString.split('\n').filter(line => line.trim() !== '');
+    let reviewText = '';
+    const extraReviewFields = {};
+
+    lines.forEach(line => {
+        if (line.toLowerCase().startsWith('review:')) {
+            reviewText = line.substring('review:'.length).trim();
+        } else {
+            const parts = line.split(':');
+            if (parts.length >= 2) {
+                const key = parts[0].trim().toLowerCase();
+                const value = parts.slice(1).join(':').trim();
+                extraReviewFields[key] = value;
+            }
+        }
+    });
+
+    return { reviewText, extraReviewFields };
+};
+const extraReviewQuestions = [
+    { name: 'cleanliness', displayTitle: 'Cleanliness' },
+    { name: 'noise', displayTitle: 'Noise Level' },
+    { name: 'location', displayTitle: 'Location' },
+    { name: 'owner', displayTitle: 'Owner Interaction' },
+    { name: 'internet', displayTitle: 'Internet' },
+    { name: 'security', displayTitle: 'Security' },
+    { name: 'value', displayTitle: 'Value for Money' },
+];
 
 const BookPG = () => {
     const { id } = useParams();
@@ -22,121 +79,202 @@ const BookPG = () => {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [totalRent, setTotalRent] = useState(0); // State to hold the calculated total rent
+    const [totalRent, setTotalRent] = useState(0);
+    const [reviews, setReviews] = useState([]);
+    const [mapCoordinates, setMapCoordinates] = useState(null);
+    const [mapLoading, setMapLoading] = useState(true);
 
-    // Sample images for testing - these should ideally come from backend
-    const images = [
-        "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1HRqMW.img?w=768&h=432&m=6",
-        "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1HRqMW.img?w=768&h=432&m=6",
-        "https://www.google.com/imgres?q=hostel%20image&imgurl=https%3A%2F%2Fcf.bstatic.com%2Fxdata%2Fimages%2Fhotel%2Fmax1024x768%2F323221867.jpg%3Fk%3D45e7c7a3c5d4b64a8c99b495c05530eb9887e04d1a8c62021f216f6d6615fa54%26o%3D%26hp%3D1&imgrefurl=https%3A%2F%2Fwww.booking.com%2Fhotel%2Fin%2Feness-hostels-pondicherry.html&docid=UF3WnTEv2YdvaM&tbnid=4-OEopFGH77ouM&vet=12ahUKEwjs5NSx3s2OAxXtTmwGHdWVGFIQM3oECH0QAA..i&w=1024&h=768&hcb=2&ved=2ahUKEwjs5NSx3s2OAxXtTmwGHdWVGFIQM3oECH0QAA"
-    ];
+    const defaultMapCenter = [20.5937, 78.9629]; // Latitude and Longitude for India
 
-    // Next and Previous Image Handlers
     const nextImage = () => {
-        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+        if (pgData && pgData.images && pgData.images.length > 0) {
+            setCurrentImageIndex((prev) => (prev + 1) % pgData.images.length);
+        }
     };
 
     const prevImage = () => {
-        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+        if (pgData && pgData.images && pgData.images.length > 0) {
+            setCurrentImageIndex((prev) => (prev - 1 + pgData.images.length) % pgData.images.length);
+        }
     };
 
-    // Effect to fetch PG data on component mount
     useEffect(() => {
         const fetchPGData = async () => {
             try {
                 const res = await axios.get(`http://localhost:8086/listing/${id}`);
                 const data = res.data;
+                console.log('Fetched PG Data:', data);
+
+                const mappedImages = data.urls && data.urls.length > 0 ? data.urls : ['https://via.placeholder.com/600x400?text=No+Image+Available'];
 
                 const mappedAmenities = [
-                    { id: 'ac', name: 'AC', icon: <FaSnowflake />, available: data.isAcAvilable },
-                    { id: 'meals', name: 'Meals', icon: <FaUtensils />, available: data.isMealsAvilable },
-                    { id: 'laundry', name: 'Laundry', icon: <FaTshirt />, available: data.isLaudryAvilable },
-                    { id: 'cctv', name: 'CCTV', icon: <FaLock />, available: data.isCctvAvilable },
-                    { id: 'parking', name: 'Parking', icon: <FaCar />, available: data.isParkingAvilable },
-                    { id: 'common', name: 'Common Areas', icon: <FaBroom />, available: data.isCommonAreasAvilable },
-                    { id: 'study', name: 'Study Desk', icon: <FaWifi />, available: data.isStudyDeskAvilable }
+                    { id: 'ac', name: 'AC', icon: <FaSnowflake />, available: data.acAvilable },
+                    { id: 'wifi', name: 'Wi-Fi', icon: <FaWifi />, available: data.wifiAvilable },
+                    { id: 'meals', name: 'Meals', icon: <FaUtensils />, available: data.mealsAvilable },
+                    { id: 'laundry', name: 'Laundry', icon: <FaTshirt />, available: data.laudryAvilable },
+                    { id: 'cctv', name: 'CCTV', icon: <FaLock />, available: data.cctvAvilable },
+                    { id: 'parking', name: 'Parking', icon: <FaCar />, available: data.parkingAvilable },
+                    { id: 'common', name: 'Common Areas', icon: <FaBroom />, available: data.commonAreasAvilable },
+                    { id: 'study', name: 'Study Desk', icon: <FaLaptopHouse />, available: data.studyDeskAvilable }
                 ];
 
-                const mappedRoomOptions = [
-                    {
-                        type: data.roomType,
-                        rent: data.rent,
-                        availability: "Available"
-                    }
-                ];
+                const mappedRoomOptions = data.roomDetails.map(room => ({
+                    type: room.roomType,
+                    rent: room.price > 0 ? room.price : data.rent,
+                    availability: room.bedsPerRoom > 0 ? "Available" : "Currently Not Available",
+                    bedsPerRoom: room.bedsPerRoom,
+                    roomCount: room.roomCount ,// Add roomCount here
+                    avilableBedsPerRoom:room.avilableBedsPerRoom,
 
-                // Use placeholder image if data.url is null or empty
-                const mappedImages = [data.url && data.url !== "" ? data.url : 'https://feeds.abplive.com/onecms/images/uploaded-images/2022/02/27/6e0333158bad98f5a39917a646828a0b_original.jpg'];
+                }));
 
-                const mappedNearby = ["Metro Station", "Mall", "Hospital"];
-                const mappedReviews = []; // Assuming reviews are fetched separately or not needed here
+                let initialSelectedRoom = null;
+                const firstAvailableRoom = mappedRoomOptions.find(room => room.bedsPerRoom > 0);
+                if (firstAvailableRoom) {
+                    initialSelectedRoom = firstAvailableRoom;
+                } else if (mappedRoomOptions.length > 0) {
+                    initialSelectedRoom = mappedRoomOptions[0];
+                } else {
+                    initialSelectedRoom = { type: "Default", rent: data.rent || 0, availability: "Currently Not Available", bedsPerRoom: 0, roomCount: 0 };
+                }
+
+               // console.log('Fetching reviews for PG ID:', id);
+                const reviews = await getReviewsByListing(id);
+                //console.log('Fetched Reviews:', reviews);
+                const processedReviews = reviews.map(review => {
+                    const { reviewText, extraReviewFields } = parseFeedbackString(review.feedback);
+                    return {
+                        ...review,
+                        pgName: review.listing?.title || 'Unknown PG',
+                        location: review.listing?.address || 'Unknown Location',
+                        thumbnail: review.listing?.urls?.[0] || 'https://via.placeholder.com/50',
+                        date: review.createdAt,
+                        reviewText: reviewText,
+                        extraReviewFields: extraReviewFields,
+                        checkInDate: review.listing?.startDate || null,
+                        checkOutDate: review.listing?.endDate || null,
+                        tenant:{
+                            name: review.tenant?.name || 'Anonymous',
+                            phone: review.tenant?.phoneNumber || 'N/A',
+                            icon: null,
+                            verified: true
+                        }
+                    };
+                });
+                setReviews(processedReviews);
+                const totalRatingSum = reviews.reduce((sum, review) => sum + review.rating, 0);
+                const averageRating = reviews.length > 0 ? (totalRatingSum / reviews.length).toFixed(1) : 0;
 
                 setPgData({
                     ...data,
                     amenities: mappedAmenities,
                     roomOptions: mappedRoomOptions,
                     images: mappedImages,
-                    nearby: mappedNearby,
-                    reviews: mappedReviews,
+                    reviews: reviews,
                     owner: {
                         name: data.owner?.name || 'Owner',
                         phone: data.owner?.phoneNumber || 'N/A',
-                        icon: null, // No icon from backend, keep null
-                        verified: true // Assuming verified by default
+                        icon: null,
+                        verified: true
                     },
                     name: data.title,
                     location: data.address,
-                    rating: 4.2, // Static rating, as not from backend
-                    totalReviews: 18, // Static total reviews
-                    availability: "Available", // Static availability
+                    rating: averageRating,
+                    totalReviews: reviews.length,
+                    availability: "Available",
                     securityDeposit: data.deposite || 0,
-                    bookingFee: data.discount || 0 // Assuming discount is booking fee
+                    bookingFee: data.bookingFee || 0,
+                    discount: data.discount || 0
                 });
 
-                // Set initial selected room and calculate initial total rent
-                const initialSelectedRoom = { type: data.roomType, rent: data.rent };
                 setSelectedRoom(initialSelectedRoom);
-                setTotalRent(initialSelectedRoom.rent * parseInt(duration)); // Calculate initial total rent
+                setTotalRent(initialSelectedRoom.bedsPerRoom > 0 ? initialSelectedRoom.rent * parseInt(duration) : 0);
+
             } catch (err) {
                 console.error('Failed to fetch PG:', err);
-                navigate('/404'); // Navigate to 404 on error
+                navigate('/400');
             } finally {
-                setLoading(false); // Set loading to false regardless of success or error
+                setLoading(false);
             }
         };
 
         fetchPGData();
-    }, [id, navigate]); // Dependencies: id changes, navigate function
+    }, [id, navigate]);
 
-    // Effect to recalculate total rent when selectedRoom or duration changes
+    useEffect(() => {
+        const geocodeAddress = async () => {
+            if (pgData && pgData.location) {
+                try {
+                    setMapLoading(true);
+                    const response = await axios.get(
+                        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pgData.location)}&limit=1`
+                    );
+
+                    if (response.data && response.data.length > 0) {
+                        const { lat, lon } = response.data[0];
+                        setMapCoordinates([parseFloat(lat), parseFloat(lon)]);
+                    } else {
+                        console.warn("Nominatim geocoding API did not return results for address:", pgData.location);
+                        setMapCoordinates(defaultMapCenter);
+                    }
+                } catch (error) {
+                    console.error("Error geocoding address with Nominatim:", error);
+                    setMapCoordinates(defaultMapCenter);
+                } finally {
+                    setMapLoading(false);
+                }
+            } else if (pgData) {
+                setMapCoordinates(defaultMapCenter);
+                setMapLoading(false);
+            }
+        };
+
+        geocodeAddress();
+    }, [pgData]);
+
     useEffect(() => {
         if (selectedRoom) {
-            setTotalRent(selectedRoom.rent * parseInt(duration));
+            setTotalRent(selectedRoom.bedsPerRoom > 0 ? selectedRoom.rent * parseInt(duration) : 0);
         }
-    }, [selectedRoom, duration]); // Dependencies: selectedRoom object, duration string
+    }, [selectedRoom, duration]);
+
+    // --- New useEffect for automatic image sliding ---
+    useEffect(() => {
+        let intervalId;
+        if (pgData && pgData.images && pgData.images.length > 1) {
+            intervalId = setInterval(() => {
+                setCurrentImageIndex((prev) => (prev + 1) % pgData.images.length);
+            }, 3000); // Change image every 3 seconds (3000 milliseconds)
+        }
+
+        return () => {
+            // Cleanup: Clear the interval when the component unmounts or pgData.images changes
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    }, [pgData]); // Re-run effect if pgData changes (especially pgData.images)
+    // --- End of new useEffect ---
 
     if (loading) return <div>Loading PG details...</div>;
     if (!pgData) return <div>No PG found.</div>;
 
-    // Amenities list (redundant with pgData.amenities, can be simplified)
-    // Keeping it here for now as it was in the original code, but consider using pgData.amenities directly
-    const amenities = [
-        { id: 'ac', name: 'AC', icon: <FaSnowflake />, available: pgData.isAcAvilable },
-        { id: 'meals', name: 'Meals', icon: <FaUtensils />, available: pgData.isMealsAvilable },
-        { id: 'laundry', name: 'Laundry', icon: <FaTshirt />, available: pgData.isLaudryAvilable },
-        { id: 'cctv', name: 'CCTV', icon: <FaLock />, available: pgData.isCctvAvilable },
-        { id: 'parking', name: 'Parking', icon: <FaCar />, available: pgData.isParkingAvilable },
-        { id: 'common', name: 'Common Areas', icon: <FaBroom />, available: pgData.isCommonAreasAvilable },
-        { id: 'study', name: 'Study Desk', icon: <FaWifi />, available: pgData.isStudyDeskAvilable },
-    ];
-
-    // Calculate total amount including rent, deposit, and discount
-    const finalTotalAmount = (pgData.bookingFee || 0) + (pgData.securityDeposit || 0) + totalRent - ((pgData.discount || 0) * 0.01 * totalRent);
+    const discountAmount = (pgData.discount / 100) * totalRent;
+    const finalTotalAmount = selectedRoom?.bedsPerRoom > 0
+        ? ((pgData.bookingFee || 0) + (pgData.securityDeposit || 0) + totalRent - discountAmount)
+        : 0;
 
     const handleBookNow = () => {
         if (!termsAccepted) {
-            // Replaced alert with a more user-friendly message or modal in a real app
             alert('Please accept terms & conditions');
+            return;
+        }
+        if (!checkInDate) {
+            alert('Please select a check-in date.');
+            return;
+        }
+        if (!selectedRoom || selectedRoom.bedsPerRoom === 0) {
+            alert('Please select an available room type.');
             return;
         }
         setShowBookingModal(true);
@@ -145,59 +283,70 @@ const BookPG = () => {
     const handleConfirmBooking = async () => {
         try {
             const bookingData = {
-                listing: { id: id }, // Pass the listing ID
-                id: Date.now(), // Generate a unique ID for the booking (consider backend generated ID)
+                id:Date.now(),
+                listing: { id: id },
                 startDate: checkInDate,
                 endDate: new Date(
                     new Date(checkInDate).setMonth(new Date(checkInDate).getMonth() + parseInt(duration))
                 ).toISOString().split('T')[0],
-                totalRent: finalTotalAmount, // Use the calculated finalTotalAmount
+                totalRent: finalTotalAmount,
+                roomType: selectedRoom?.type // Add the roomType here
             };
 
-            // Send the booking to backend
             const response = await bookingService.createBooking(bookingData);
-            console.log('Booking response:', response); // Log response for debugging
+          //  console.log('Booking response:', response);
 
-            alert('Booking Confirmed!'); // Replaced with a custom modal for better UX
-            navigate('/tenant/dashboard'); // Redirect to tenant dashboard
+            alert('Booking Confirmed!');
+            navigate('/tenant/dashboard');
         } catch (err) {
             console.error('Booking failed:', err);
-            alert('Failed to book PG. Please try again later.'); // Replaced with a custom modal for better UX
+            alert('Failed to book PG. Please try again later.');
         } finally {
-            setShowBookingModal(false); // Close modal after attempt
+            setShowBookingModal(false);
         }
     };
 
     return (
         <>
+            {/* <TenantDashboardNavbar /> */}
             <div className="book-pg-container">
-                {/* Hero Section */}
+                <button className="back-btn" onClick={() => navigate(-1)}>
+                    <FaArrowLeft /> Back
+                </button>
                 <section className="hero-section">
                     <div className="image-carousel">
-                        <img src={pgData.images[currentImageIndex]} alt={pgData.name} />
-                        <button className="carousel-btn prev" onClick={prevImage}>‹</button>
-                        <button className="carousel-btn next" onClick={nextImage}>›</button>
-                        <div className="carousel-dots">
-                            {pgData.images.map((_, index) => (
-                                <span
-                                    key={index}
-                                    className={`dot ${index === currentImageIndex ? 'active' : ''}`}
-                                    onClick={() => setCurrentImageIndex(index)}
-                                />
-                            ))}
-                        </div>
+                        {pgData.images && pgData.images.length > 0 ? (
+                            <img src={pgData.images[currentImageIndex]} alt={pgData.name} onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'https://via.placeholder.com/600x400?text=Image+Load+Error';
+                            }} />
+                        ) : (
+                            <img src="https://via.placeholder.com/600x400?text=No+Image+Available" alt="No Image" />
+                        )}
+                        {pgData.images && pgData.images.length > 1 && (
+                            <>
+                                <button className="carousel-btn prev" onClick={prevImage}>‹</button>
+                                <button className="carousel-btn next" onClick={nextImage}>›</button>
+                            </>
+                        )}
+                        {pgData.images && pgData.images.length > 0 && (
+                            <div className="carousel-dots">
+                                {pgData.images.map((_, index) => (
+                                    <span
+                                        key={index}
+                                        className={`dot ${index === currentImageIndex ? 'active' : ''}`}
+                                        onClick={() => setCurrentImageIndex(index)}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="hero-overlay">
                         <div className="hero-content">
-                            <button className="back-btn" onClick={console.log('Back button clicked')}>
-                                <FaArrowLeft />
-                                Back
-                            </button>
-
                             <div className="pg-basic-info">
                                 <h1>{pgData.name}</h1>
-                                <p className="location" ><FaMapMarkerAlt /> {pgData.location}</p>
+                                <p className="location"><FaMapMarkerAlt /> {pgData.location}</p>
                                 <div className="rating">
                                     <FaStar />
                                     <span>{pgData.rating}</span>
@@ -208,7 +357,7 @@ const BookPG = () => {
 
                         <div className="quick-info-card">
                             <div className="price-info">
-                                <span className="amount">₹{pgData.rent}</span>
+                                <span className="amount">₹{pgData.rent?.toLocaleString() || 'N/A'}</span>
                                 <span className="period">/month</span>
                             </div>
                             <div className="status-badge available">
@@ -216,7 +365,7 @@ const BookPG = () => {
                                 {pgData.availability}
                             </div>
                             <div className="gender-badge">
-                                {pgData.gender === "Girls" ? <FaFemale /> : pgData.gender === "Boys" ? <FaMale /> : <FaUsers />}
+                                {pgData.gender?.toLowerCase() === "female" ? <FaFemale /> : pgData.gender?.toLowerCase() === "male" ? <FaMale /> : <FaUsers />}
                                 {pgData.gender} PG
                             </div>
                             {pgData.verified && <div className="verified-badge">✓ Verified</div>}
@@ -226,10 +375,9 @@ const BookPG = () => {
 
                 <div className="content-wrapper">
                     <div className="main-content">
-                        {/* PG Overview Section */}
                         <section className="pg-overview">
                             <h2>About This PG</h2>
-                            <p>{pgData.description}</p>
+                            <p>{pgData.description || "No description available."}</p>
 
                             <div className="amenities-grid">
                                 <h3>Amenities</h3>
@@ -250,44 +398,73 @@ const BookPG = () => {
                                     <div className="room-header">
                                         <span>Type</span>
                                         <span>Rent</span>
+                                        <span>Rooms Available</span> 
                                         <span>Availability</span>
+                                    
                                     </div>
-                                    {pgData.roomOptions.map((room, index) => (
-                                        <div key={index} className={`room-row`}>
-                                            <span>{room.type}</span>
-                                            <span>₹{room.rent}/month</span>
-                                            <span className="availability">{room.availability}</span>
-                                        </div>
-                                    ))}
+                                    {pgData.roomOptions.length > 0 ? (
+                                        pgData.roomOptions.map((room, index) => (
+                                            <div key={index} className={`room-row ${room.bedsPerRoom === 0 ? 'not-available-row' : ''}`}>
+                                                <span>{room.type} ({room.bedsPerRoom} Beds)</span>
+                                                <span>
+                                                    {`₹${room.rent?.toLocaleString()}/month`}
+                                                </span>
+                                              <span className="availability">
+                                                {(room.type) === "private" ?
+                                               <p>{room.roomCount} Rooms </p>
+                                                :<p> {room.avilableBedsPerRoom} Beds</p>}
+                                                </span> 
+                                                <span className="availability">
+                                                    {(room.roomCount === 0 && room.roomType==="private") || (room.avilableBedsPerRoom=== 0 && room.roomType==="shared")? <span className="red-text">Unavailable</span> : <span className="green-text">{room.availability}</span>}
+                                                </span>
+                                                  
+                                               {/* Displaying roomCount */}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>No specific room options listed. General rent applies.</p>
+                                    )}
                                 </div>
                             </div>
                         </section>
 
-                        {/* Location Section */}
                         <section className="location-section">
                             <h2>Location</h2>
                             <div className="map-placeholder">
-                                <div className="map-content">
-                                    <FaMapMarkerAlt className="map-icon" />
-                                    <p>Interactive map showing {pgData.location}</p>
-                                    <p>Google Maps integration would go here</p>
-                                </div>
-                            </div>
-                            <div className="nearby-tags">
-                                <h3>Nearby</h3>
-                                <div className="tags">
-                                    {pgData.nearby.map(tag => (
-                                        <span key={tag} className="nearby-tag">{tag}</span>
-                                    ))}
-                                </div>
+                                {mapLoading ? (
+                                    <div>Loading map...</div>
+                                ) : (
+                                    mapCoordinates ? (
+                                        <MapContainer
+                                            key={mapCoordinates[0] + '-' + mapCoordinates[1]}
+                                            center={mapCoordinates}
+                                            zoom={15}
+                                            scrollWheelZoom={false}
+                                            style={{ height: '400px', width: '100%', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                                        >
+                                            <TileLayer
+                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            />
+                                            <Marker position={mapCoordinates}>
+                                                <Popup>
+                                                    {pgData.name} <br /> {pgData.location}
+                                                </Popup>
+                                            </Marker>
+                                        </MapContainer>
+                                    ) : (
+                                        <p>Map not available for this location. ({pgData.location})</p>
+                                    )
+                                )}
                             </div>
                         </section>
 
-                        {/* Owner Info */}
                         <section className="owner-section">
                             <h2>Owner Information</h2>
                             <div className="owner-card">
-                                <div className="owner-avatar">{pgData.owner.icon}</div>
+                                <div className="owner-avatar">
+                                    {pgData.owner.icon || (pgData.owner.name ? pgData.owner.name.charAt(0).toUpperCase() : 'O')}
+                                </div>
                                 <div className="owner-details">
                                     <h3>{pgData.owner.name}</h3>
                                     {pgData.owner.verified && <span className="verified-badge">✓ Verified Owner</span>}
@@ -296,35 +473,76 @@ const BookPG = () => {
                             </div>
                         </section>
 
-                        {/* Reviews Section
-                        <section className="reviews-section">
-                            <h2>Reviews</h2>
-                            <div className="reviews-list">
-                                {pgData.reviews.map(review => (
-                                    <div key={review.id} className="review-card">
-                                        <div className="review-header">
-                                            <div className="reviewer-info">
-                                                <span className="reviewer-avatar">{review.avatar}</span>
-                                                <div>
-                                                    <h4>{review.name}</h4>
-                                                    <div className="review-rating">
-                                                        {[...Array(5)].map((_, i) => (
-                                                            <FaStar key={i} className={i < review.rating ? 'star-filled' : 'star-empty'} />
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <span className="review-date">{review.date}</span>
-                                        </div>
-                                        <p className="review-comment">{review.comment}</p>
-                                    </div>
-                                ))}
+                      <section className="reviews-section">
+    <h2>Reviews ({reviews.length})</h2>
+    <div className="reviews-grid">
+        {Array.isArray(reviews) && reviews.length > 0 ? (
+            reviews.map((review) => (
+                <div key={review.id} className="review-card">
+                    <div className="review-header">
+                        <div className="owner-avatar">
+                            {(review.tenant?.name ? review.tenant?.name.charAt(0).toUpperCase() : 'R')}
+                        </div>
+                        <div className="pg-info"> 
+                            <h3>{review.tenant?.name}</h3>
+                            
+                        </div>
+                    </div>
+                    <div className="pg-details">
+                                {/* Removed <br/> here and rely on CSS for line breaks */}
+                                <p className="date"> {/* Add a class for better styling */}
+                                    {review.checkInDate && review.checkOutDate && (
+                                        <>
+                                            Stayed From :- {formatDate(review.checkInDate)}<br />
+                                            Stayed Upto - {formatDate(review.checkOutDate)}
+                                        </>
+                                    )}
+                                </p>
                             </div>
-                            <button className="write-review-btn" onClick={() => navigate('/my-reviews')}>Write a Review</button>
-                        </section> */}
+                    <div className="review-content">
+                        <div className="rating-display">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <FaStar
+                                    key={star}
+                                    className={`star ${star <= review.rating ? 'filled' : ''}`}
+                                />
+                            ))}
+                            <span className="rating-text">{getRatingText(review.rating)}</span>
+                        </div>
+
+                        <div className="review-text">
+                            <h4>Overall Review:</h4>
+                            <p>{review.reviewText}</p>
+
+                            {Object.keys(review.extraReviewFields || {}).length > 0 && (
+                                <div className="extra-details">
+                                    <h4>Specific Feedback:</h4>
+                                    <ul>
+                                        {extraReviewQuestions.map((q, idx) => {
+                                            const answer = review.extraReviewFields[q.name];
+                                            return answer ? (
+                                                <li key={idx}>
+                                                    <strong>{q.displayTitle}:</strong> {answer}
+                                                </li>
+                                            ) : null;
+                                        })}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <p>Reviewed on {formatDate(review.date)}</p>
+                </div>
+            ))
+        ) : (
+            <p className="no-reviews-message">
+                No published reviews yet. Be the first to review this PG!
+            </p>
+        )}
+    </div>
+</section>
                     </div>
 
-                    {/* Booking Panel */}
                     <div className="booking-panel">
                         <div className="booking-card">
                             <h3>Book This PG</h3>
@@ -343,20 +561,34 @@ const BookPG = () => {
                                 <div className="form-group">
                                     <label>Room Type</label>
                                     <select
-                                        value={selectedRoom?.type || ''} // Handle initial null selectedRoom
+                                        value={selectedRoom?.type || ''}
                                         onChange={(e) => setSelectedRoom(pgData.roomOptions.find(r => r.type === e.target.value))}
+                                        disabled={pgData.roomOptions.length === 0}
                                     >
-                                        {pgData.roomOptions.map(room => (
-                                            <option key={room.type} value={room.type}>
-                                                {room.type} - ₹{room.rent}/month
-                                            </option>
-                                        ))}
+                                        {pgData.roomOptions.length > 0 ? (
+                                            pgData.roomOptions.map(room => (
+                                                <option
+                                                    key={room.type}
+                                                    value={room.type}
+                                                    disabled={room.bedsPerRoom === 0}
+                                                >
+                                                    {room.type} -
+                                                    {` ₹${room.rent?.toLocaleString()}/month `}
+                                                </option>
+                                            ))
+                                        ) : (
+                                            <option value="">No specific room types available</option>
+                                        )}
                                     </select>
                                 </div>
 
                                 <div className="form-group">
                                     <label>Duration (months)</label>
-                                    <select value={duration} onChange={(e) => setDuration(e.target.value)}>
+                                    <select
+                                        value={duration}
+                                        onChange={(e) => setDuration(e.target.value)}
+                                        disabled={selectedRoom?.bedsPerRoom === 0}
+                                    >
                                         <option value="1">1 month</option>
                                         <option value="3">3 months</option>
                                         <option value="6">6 months</option>
@@ -367,24 +599,26 @@ const BookPG = () => {
                                 <div className="price-breakdown">
                                     <h4>Price Breakdown</h4>
                                     <div className="price-item">
-                                        <span>Total Rent</span>
-                                        <span>₹{totalRent}</span> {/* Use the totalRent state */}
+                                        <span>Rent ({duration} {duration === '1' ? 'month' : 'months'})</span>
+                                        <span>₹{totalRent.toLocaleString()}</span>
                                     </div>
                                     <div className="price-item">
                                         <span>Security Deposit</span>
-                                        <span>₹{pgData.securityDeposit}</span>
+                                        <span>₹{pgData.securityDeposit.toLocaleString()}</span>
                                     </div>
                                     <div className="price-item">
                                         <span>Booking Fee</span>
-                                        <span>₹{pgData.bookingFee}</span>
+                                        <span>₹{pgData.bookingFee.toLocaleString()}</span>
                                     </div>
-                                    <div className="price-item">
-                                        <span>Discount ({pgData.discount}%)</span> {/* Display discount percentage */}
-                                        <span>- ₹{(pgData.discount * 0.01 * totalRent).toFixed(2)}</span> {/* Calculate and display discount amount */}
-                                    </div>
+                                    {pgData.discount > 0 && (
+                                        <div className="price-item discount">
+                                            <span>Discount ({pgData.discount}%)</span>
+                                            <span>- ₹{discountAmount.toFixed(2)}</span>
+                                        </div>
+                                    )}
                                     <div className="price-item total">
-                                        <span>Total Amount</span>
-                                        <span>₹{finalTotalAmount.toFixed(2)}</span> {/* Use the calculated finalTotalAmount */}
+                                        <span>Total Amount Payable</span>
+                                        <span>₹{finalTotalAmount.toFixed(2)}</span>
                                     </div>
                                 </div>
 
@@ -394,6 +628,7 @@ const BookPG = () => {
                                             type="checkbox"
                                             checked={termsAccepted}
                                             onChange={(e) => setTermsAccepted(e.target.checked)}
+                                            disabled={selectedRoom?.bedsPerRoom === 0}
                                         />
                                         <span>I agree to the terms and conditions</span>
                                     </label>
@@ -402,7 +637,7 @@ const BookPG = () => {
                                 <button
                                     className="book-now-btn"
                                     onClick={handleBookNow}
-                                    disabled={!termsAccepted || !checkInDate || !selectedRoom} // Disable if no check-in date or room selected
+                                    disabled={!termsAccepted || !checkInDate || !selectedRoom || selectedRoom.bedsPerRoom === 0}
                                 >
                                     Book Now
                                 </button>
@@ -411,7 +646,6 @@ const BookPG = () => {
                     </div>
                 </div>
 
-                {/* Booking Modal */}
                 {showBookingModal && (
                     <div className="modal-overlay">
                         <div className="booking-modal">
@@ -421,7 +655,7 @@ const BookPG = () => {
                                 <p><strong>Room Type:</strong> {selectedRoom?.type}</p>
                                 <p><strong>Check-in:</strong> {checkInDate}</p>
                                 <p><strong>Duration:</strong> {duration} months</p>
-                                <p><strong>Total Amount:</strong> ₹{finalTotalAmount.toFixed(2)}</p> {/* Display final total amount */}
+                                <p><strong>Total Amount:</strong> ₹{finalTotalAmount.toFixed(2)}</p>
                             </div>
                             <div className="modal-actions">
                                 <button className="cancel-btn" onClick={() => setShowBookingModal(false)}>

@@ -20,10 +20,10 @@ const STAR_FILTERS = [
     { label: '1⭐', value: 1 },
 ];
 
-const SORT_OPTIONS = [
-    { label: 'Most Recent', value: 'recent' },
-    { label: 'Highest Rated', value: 'highest' },
-];
+// const SORT_OPTIONS = [
+//     { label: 'Most Recent', value: 'recent' },
+//     { label: 'Highest Rated', value: 'highest' },
+// ];
 
 const ViewReviewsOwner = () => {
     const [reviewsData, setReviewsData] = useState([]); // Renamed MOCK_REVIEWS to reviewsData for clarity
@@ -32,7 +32,7 @@ const ViewReviewsOwner = () => {
     const [starFilter, setStarFilter] = useState('all');
     const [sort, setSort] = useState('recent');
     const [showReply, setShowReply] = useState({});
-    const [showMenu, setShowMenu] = useState({}); // This state is not used in the provided UI, consider removing if not needed
+   // const [showMenu, setShowMenu] = useState({}); // This state is not used in the provided UI, consider removing if not needed
 
     // Helper function to format dates
     const formatDate = (dateString) => {
@@ -61,7 +61,7 @@ const ViewReviewsOwner = () => {
         const fetchReviews = async () => {
             try {
                 const response = await getReviewByOwnerId(localStorage.getItem('id'));
-                console.log("Fetched raw reviews:", response);
+               // console.log("Fetched raw reviews:", response);
 
                 // Transform backend response to frontend format
                 const transformedReviews = response.map(review => ({
@@ -82,7 +82,7 @@ const ViewReviewsOwner = () => {
                 }));
 
                 setReviewsData(transformedReviews);
-                console.log("Transformed reviews:", transformedReviews);
+             //   console.log("Transformed reviews:", transformedReviews);
             } catch (error) {
                 console.error("Error fetching reviews:", error);
                 setReviewsData([]); // Set to empty array on error
@@ -118,13 +118,13 @@ const ViewReviewsOwner = () => {
         trend: [4.1, 4.2, 4.3, 4.4, 4.3, 4.2, 4.3], // This remains static mock data
     };
 
-    const renderTrend = () => (
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 36, marginTop: 8 }}>
-            {OWNER_ANALYTICS.trend.map((v, i) => (
-                <div key={i} style={{ width: 16, height: `${(v - 4) * 40 + 20}px`, background: '#004E64', borderRadius: 4, opacity: 0.7 }}></div>
-            ))}
-        </div>
-    );
+    // const renderTrend = () => (
+    //     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 36, marginTop: 8 }}>
+    //         {OWNER_ANALYTICS.trend.map((v, i) => (
+    //             <div key={i} style={{ width: 16, height: `${(v - 4) * 40 + 20}px`, background: '#004E64', borderRadius: 4, opacity: 0.7 }}></div>
+    //         ))}
+    //     </div>
+    // );
 
     return (
         <>

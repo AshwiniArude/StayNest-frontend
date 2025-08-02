@@ -224,3 +224,14 @@
     padding: 1rem;
   }
 }
+/* ... existing styles ... */
+
+/* Find the .pg-card selector and add the following style to ensure buttons are at the bottom */
+.pg-card {
+  /* ... existing styles ... */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Add this line */
+}
+
+/* ... existing styles ... */

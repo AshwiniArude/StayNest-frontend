@@ -16,7 +16,7 @@ const OwnerNotifications = () => {
     setError(null);
     try {
       const response = await bookingService.getBookingsByOWner();
-      console.log('Raw bookings data:', response);
+//      console.log('Raw bookings data:', response);
 
       const pendingBookings = response.filter(booking => booking.status === 'PENDING');
 
@@ -49,9 +49,9 @@ const OwnerNotifications = () => {
     fetchPendingBookings();
   }, [fetchPendingBookings]);
 
-  const handleViewDetails = (bookingId) => {
-    navigate(`/listing-bookings/${bookingId}`);
-  };
+  // const handleViewDetails = (bookingId) => {
+  //   navigate(`/listing-bookings/${bookingId}`);
+  // };
 
   return (
     <div className="owner-notifications-page">
