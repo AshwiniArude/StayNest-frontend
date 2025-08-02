@@ -52,14 +52,17 @@
   flex: 1;
   padding: 0.8rem 0.5rem;
   color: 00000;
+  color: 00000;
   height: 100%;
   border-radius: 8px;
   box-sizing: border-box;
     background-color: white;
     outline: black;
 
+
 }
 .location-input:focus {
+  box-shadow: 0 0 0 2px hsla(200, 9%, 93%, 0.2);
   box-shadow: 0 0 0 2px hsla(200, 9%, 93%, 0.2);
   border-radius: 8px;
 }
@@ -106,6 +109,7 @@
 .date-input {
   border: none;
   outline: none;
+  background: #eee;
   background: #eee;
   font-size: 1rem;
   padding: 0.5rem 0.2rem;

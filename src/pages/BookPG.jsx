@@ -7,7 +7,6 @@ import {
 } from 'react-icons/fa';
 import axios from 'axios';
 import '../styles/BookPG.css';
-import TenantDashboardNavbar from '../components/TenantDashboardNavbar';
 import bookingService from '../services/BookingService';
 import { getReviewsByListing } from '../services/ReviewService';
 
@@ -70,7 +69,6 @@ const extraReviewQuestions = [
 const BookPG = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-
     const [pgData, setPgData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null);
@@ -90,9 +88,15 @@ const BookPG = () => {
         if (pgData && pgData.images && pgData.images.length > 0) {
             setCurrentImageIndex((prev) => (prev + 1) % pgData.images.length);
         }
+        if (pgData && pgData.images && pgData.images.length > 0) {
+            setCurrentImageIndex((prev) => (prev + 1) % pgData.images.length);
+        }
     };
 
     const prevImage = () => {
+        if (pgData && pgData.images && pgData.images.length > 0) {
+            setCurrentImageIndex((prev) => (prev - 1 + pgData.images.length) % pgData.images.length);
+        }
         if (pgData && pgData.images && pgData.images.length > 0) {
             setCurrentImageIndex((prev) => (prev - 1 + pgData.images.length) % pgData.images.length);
         }
@@ -171,9 +175,12 @@ const BookPG = () => {
                     roomOptions: mappedRoomOptions,
                     images: mappedImages,
                     reviews: reviews,
+                    reviews: reviews,
                     owner: {
                         name: data.owner?.name || 'Owner',
                         phone: data.owner?.phoneNumber || 'N/A',
+                        icon: null,
+                        verified: true
                         icon: null,
                         verified: true
                     },
@@ -182,7 +189,12 @@ const BookPG = () => {
                     rating: averageRating,
                     totalReviews: reviews.length,
                     availability: "Available",
+                    rating: averageRating,
+                    totalReviews: reviews.length,
+                    availability: "Available",
                     securityDeposit: data.deposite || 0,
+                    bookingFee: data.bookingFee || 0,
+                    discount: data.discount || 0
                     bookingFee: data.bookingFee || 0,
                     discount: data.discount || 0
                 });
@@ -193,11 +205,12 @@ const BookPG = () => {
             } catch (err) {
                 console.error('Failed to fetch PG:', err);
                 navigate('/400');
+                navigate('/400');
             } finally {
+                setLoading(false);
                 setLoading(false);
             }
         };
-
         fetchPGData();
     }, [id, navigate]);
 
@@ -234,6 +247,7 @@ const BookPG = () => {
 
     useEffect(() => {
         if (selectedRoom) {
+            setTotalRent(selectedRoom.bedsPerRoom > 0 ? selectedRoom.rent * parseInt(duration) : 0);
             setTotalRent(selectedRoom.bedsPerRoom > 0 ? selectedRoom.rent * parseInt(duration) : 0);
         }
     }, [selectedRoom, duration]);
@@ -277,6 +291,14 @@ const BookPG = () => {
             alert('Please select an available room type.');
             return;
         }
+        if (!checkInDate) {
+            alert('Please select a check-in date.');
+            return;
+        }
+        if (!selectedRoom || selectedRoom.bedsPerRoom === 0) {
+            alert('Please select an available room type.');
+            return;
+        }
         setShowBookingModal(true);
     };
 
@@ -301,7 +323,9 @@ const BookPG = () => {
         } catch (err) {
             console.error('Booking failed:', err);
             alert('Failed to book PG. Please try again later.');
+            alert('Failed to book PG. Please try again later.');
         } finally {
+            setShowBookingModal(false);
             setShowBookingModal(false);
         }
     };
@@ -341,30 +365,26 @@ const BookPG = () => {
                             </div>
                         )}
                     </div>
-
                     <div className="hero-overlay">
                         <div className="hero-content">
                             <div className="pg-basic-info">
                                 <h1>{pgData.name}</h1>
                                 <p className="location"><FaMapMarkerAlt /> {pgData.location}</p>
                                 <div className="rating">
-                                    <FaStar />
-                                    <span>{pgData.rating}</span>
+                                    <FaStar /><span>{pgData.rating}</span>
                                     <span className="review-count">({pgData.totalReviews} reviews)</span>
                                 </div>
                             </div>
                         </div>
-
                         <div className="quick-info-card">
                             <div className="price-info">
                                 <span className="amount">₹{pgData.rent?.toLocaleString() || 'N/A'}</span>
+                                <span className="amount">₹{pgData.rent?.toLocaleString() || 'N/A'}</span>
                                 <span className="period">/month</span>
                             </div>
-                            <div className="status-badge available">
-                                <FaCheck />
-                                {pgData.availability}
-                            </div>
+                            <div className="status-badge available"><FaCheck />{pgData.availability}</div>
                             <div className="gender-badge">
+                                {pgData.gender?.toLowerCase() === "female" ? <FaFemale /> : pgData.gender?.toLowerCase() === "male" ? <FaMale /> : <FaUsers />}
                                 {pgData.gender?.toLowerCase() === "female" ? <FaFemale /> : pgData.gender?.toLowerCase() === "male" ? <FaMale /> : <FaUsers />}
                                 {pgData.gender} PG
                             </div>
@@ -372,7 +392,6 @@ const BookPG = () => {
                         </div>
                     </div>
                 </section>
-
                 <div className="content-wrapper">
                     <div className="main-content">
                         <section className="pg-overview">
@@ -391,7 +410,6 @@ const BookPG = () => {
                                     ))}
                                 </div>
                             </div>
-
                             <div className="room-options">
                                 <h3>Room Options</h3>
                                 <div className="room-table">
@@ -465,10 +483,13 @@ const BookPG = () => {
                                 <div className="owner-avatar">
                                     {pgData.owner.icon || (pgData.owner.name ? pgData.owner.name.charAt(0).toUpperCase() : 'O')}
                                 </div>
+                                <div className="owner-avatar">
+                                    {pgData.owner.icon || (pgData.owner.name ? pgData.owner.name.charAt(0).toUpperCase() : 'O')}
+                                </div>
                                 <div className="owner-details">
                                     <h3>{pgData.owner.name}</h3>
                                     {pgData.owner.verified && <span className="verified-badge">✓ Verified Owner</span>}
-                                    <p className="owner-phone"><FaPhone /> {pgData.owner.phone}</p>
+                                    <p className="owner-phone"><FaPhone />{pgData.owner.phone}</p>
                                 </div>
                             </div>
                         </section>
@@ -499,6 +520,7 @@ const BookPG = () => {
                                     )}
                                 </p>
                             </div>
+                        </section>
                     <div className="review-content">
                         <div className="rating-display">
                             {[1, 2, 3, 4, 5].map((star) => (
@@ -546,7 +568,6 @@ const BookPG = () => {
                     <div className="booking-panel">
                         <div className="booking-card">
                             <h3>Book This PG</h3>
-
                             <div className="booking-form">
                                 <div className="form-group">
                                     <label>Check-in Date</label>
@@ -557,12 +578,13 @@ const BookPG = () => {
                                         min={new Date().toISOString().split('T')[0]}
                                     />
                                 </div>
-
                                 <div className="form-group">
                                     <label>Room Type</label>
                                     <select
                                         value={selectedRoom?.type || ''}
+                                        value={selectedRoom?.type || ''}
                                         onChange={(e) => setSelectedRoom(pgData.roomOptions.find(r => r.type === e.target.value))}
+                                        disabled={pgData.roomOptions.length === 0}
                                         disabled={pgData.roomOptions.length === 0}
                                     >
                                         {pgData.roomOptions.length > 0 ? (
@@ -581,9 +603,13 @@ const BookPG = () => {
                                         )}
                                     </select>
                                 </div>
-
                                 <div className="form-group">
                                     <label>Duration (months)</label>
+                                    <select
+                                        value={duration}
+                                        onChange={(e) => setDuration(e.target.value)}
+                                        disabled={selectedRoom?.bedsPerRoom === 0}
+                                    >
                                     <select
                                         value={duration}
                                         onChange={(e) => setDuration(e.target.value)}
@@ -595,19 +621,22 @@ const BookPG = () => {
                                         <option value="12">12 months</option>
                                     </select>
                                 </div>
-
                                 <div className="price-breakdown">
                                     <h4>Price Breakdown</h4>
                                     <div className="price-item">
+                                        <span>Rent ({duration} {duration === '1' ? 'month' : 'months'})</span>
+                                        <span>₹{totalRent.toLocaleString()}</span>
                                         <span>Rent ({duration} {duration === '1' ? 'month' : 'months'})</span>
                                         <span>₹{totalRent.toLocaleString()}</span>
                                     </div>
                                     <div className="price-item">
                                         <span>Security Deposit</span>
                                         <span>₹{pgData.securityDeposit.toLocaleString()}</span>
+                                        <span>₹{pgData.securityDeposit.toLocaleString()}</span>
                                     </div>
                                     <div className="price-item">
                                         <span>Booking Fee</span>
+                                        <span>₹{pgData.bookingFee.toLocaleString()}</span>
                                         <span>₹{pgData.bookingFee.toLocaleString()}</span>
                                     </div>
                                     {pgData.discount > 0 && (
@@ -619,9 +648,10 @@ const BookPG = () => {
                                     <div className="price-item total">
                                         <span>Total Amount Payable</span>
                                         <span>₹{finalTotalAmount.toFixed(2)}</span>
+                                        <span>Total Amount Payable</span>
+                                        <span>₹{finalTotalAmount.toFixed(2)}</span>
                                     </div>
                                 </div>
-
                                 <div className="terms-checkbox">
                                     <label>
                                         <input
@@ -629,14 +659,15 @@ const BookPG = () => {
                                             checked={termsAccepted}
                                             onChange={(e) => setTermsAccepted(e.target.checked)}
                                             disabled={selectedRoom?.bedsPerRoom === 0}
+                                            disabled={selectedRoom?.bedsPerRoom === 0}
                                         />
                                         <span>I agree to the terms and conditions</span>
                                     </label>
                                 </div>
-
                                 <button
                                     className="book-now-btn"
                                     onClick={handleBookNow}
+                                    disabled={!termsAccepted || !checkInDate || !selectedRoom || selectedRoom.bedsPerRoom === 0}
                                     disabled={!termsAccepted || !checkInDate || !selectedRoom || selectedRoom.bedsPerRoom === 0}
                                 >
                                     Book Now
@@ -656,14 +687,11 @@ const BookPG = () => {
                                 <p><strong>Check-in:</strong> {checkInDate}</p>
                                 <p><strong>Duration:</strong> {duration} months</p>
                                 <p><strong>Total Amount:</strong> ₹{finalTotalAmount.toFixed(2)}</p>
+                                <p><strong>Total Amount:</strong> ₹{finalTotalAmount.toFixed(2)}</p>
                             </div>
                             <div className="modal-actions">
-                                <button className="cancel-btn" onClick={() => setShowBookingModal(false)}>
-                                    Cancel
-                                </button>
-                                <button className="confirm-btn" onClick={handleConfirmBooking}>
-                                    Confirm Booking
-                                </button>
+                                <button className="cancel-btn" onClick={() => setShowBookingModal(false)}>Cancel</button>
+                                <button className="confirm-btn" onClick={handleConfirmBooking}>Confirm Booking</button>
                             </div>
                         </div>
                     </div>

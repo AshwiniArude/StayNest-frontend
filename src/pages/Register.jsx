@@ -84,7 +84,8 @@ const Register = () => {
           {successMsg}
         </div>
       )}
-      <div className="register-container">
+      <div className="register-page">
+        <div className="register-container">
         <div className="role-toggle">
           <button
             className={formData.role === "TENANT" ? "active" : ""}
@@ -214,6 +215,7 @@ const Register = () => {
             </div>
           </div>
         </div>*/}
+        </div>
       </div>
     </>
   );

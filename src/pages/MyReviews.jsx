@@ -54,7 +54,10 @@ const MyReviews = () => {
 
     useEffect(() => {
         const tenantId = localStorage.getItem('id');
+
        // console.log("Tenant ID from localStorage:", tenantId);
+
+
 
         const fetchData = async () => {
             try {
@@ -169,9 +172,15 @@ const MyReviews = () => {
                     }
                 });
                 const uniqueListings = Array.from(listingMap.values());
+// <<<<<<< HEAD
                 //console.log('Unique Listings:', uniqueListings);
                 //console.log('Published Reviews:', published);
                 //console.log('Pending Reviews:', pending);
+// =======
+//                 console.log('Unique Listings:', uniqueListings);
+//                 console.log('Published Reviews:', published);
+//                 console.log('Pending Reviews:', pending);
+// >>>>>>> 8654a1fff1a931c5617de7b11cd80c428609d6ca
                 setReviews(published);
                 setPendingReviews(pending);
                 setListings(uniqueListings);
@@ -215,6 +224,15 @@ const MyReviews = () => {
         }
 
         //console.log("Submitting review for listing ID:", selectedPG?.listingId, selectedPG);
+
+        // Construct the fullDescription string with concise extra fields
+        // Ensure values are sent in UPPERCASE as per enum convention if that's what backend expects
+        let extraFieldsString = Object.entries(extraReviewFields)
+            .filter(([, value]) => value !== '') // Only send fields that have been answered
+            .map(([key, value]) => `${key}: ${value.toUpperCase()}`) // Convert value to uppercase
+            .join('\n');
+
+        const fullDescription = `Review: ${reviewText}${extraFieldsString ? `\n\n${extraFieldsString}` : ''}`.trim();
 
         // Construct the fullDescription string with concise extra fields
         // Ensure values are sent in UPPERCASE as per enum convention if that's what backend expects

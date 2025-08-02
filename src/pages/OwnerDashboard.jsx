@@ -63,8 +63,28 @@ const OwnerDashboard = () => {
         const bookings = await bookingService.getBookingsByOWner(); // Fetch all bookings for the owner
       //  console.log("Fetched owner bookings:", bookings);
 
+<<<<<<< HEAD
         const sortedBookings = bookings.sort((a, b) => {
         
+=======
+        // Sort bookings by 'createdAt' (or a suitable date field) in descending order
+        // to get the most recent ones first.
+        // Based on your sample, tenant.createdAt or listing.createdAt or even id for newness
+        // could be used, but id might not strictly reflect creation time.
+        // Assuming there's an implicit creation order or id is sequential.
+        // If a direct booking createdAt field existed at the top level, that would be ideal.
+        // For now, let's use the booking's id as a proxy for recency if a specific
+        // booking creation timestamp isn't directly at the root.
+        // A better approach would be if your backend returned a bookingDate or createdAt
+        // field directly on the booking object itself.
+        const sortedBookings = bookings.sort((a, b) => {
+          // If you have a createdAt or bookingDate directly on the booking object, use that:
+          // const dateA = new Date(a.createdAt || a.bookingDate);
+          // const dateB = new Date(b.createdAt || b.bookingDate);
+          // return dateB - dateA;
+
+          // For the provided sample, using id as a proxy for recency:
+
           return b.id - a.id; // Sort by ID descending (assuming higher ID means more recent)
         });
 

@@ -136,6 +136,8 @@ setRequests(mapped);
       const res = bookingService.bookingAction(requestId, 'REJECT');
       alert("Booking cancelled successfully");
       //console.log("Booking confirmed:", res);
+      alert("Booking cancelled successfully");
+      console.log("Booking confirmed:", res);
     }catch (error) {
       console.error("Failed to confirm booking:", error);}
     setRequests(prevRequests =>
