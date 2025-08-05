@@ -32,19 +32,11 @@ const CreateListing = () => {
     const [newRoomPrice, setNewRoomPrice] = useState(''); // Price for this specific room type
 
 
-    // New state for handling multiple room details
-    const [roomDetails, setRoomDetails] = useState([]); // Array to store { roomType, bedsPerRoom, roomCount, price } objects
-    const [newRoomType, setNewRoomType] = useState('private'); // 'private' or 'shared'
-    const [newBedsPerRoom, setNewBedsPerRoom] = useState(1); // Default for private, can be more for shared
-    const [newRoomCount, setNewRoomCount] = useState(1);
-    const [newRoomPrice, setNewRoomPrice] = useState(''); // Price for this specific room type
-
     const [photos, setPhotos] = useState([]); // Store actual File objects for upload
     const fileInputRef = useRef(null);
 
     // --- Cloudinary Configuration ---
     const CLOUD_NAME = 'dqzdhaxkv';
-    const UPLOAD_PRESET = 'Staynest';
     const UPLOAD_PRESET = 'Staynest';
 
     const amenitiesList = [
@@ -126,55 +118,6 @@ const CreateListing = () => {
 
     const handleRemoveRoomType = (indexToRemove) => {
         setRoomDetails(prev => prev.filter((_, index) => index !== indexToRemove));
-        setPhotos(files);
-    };
-
-    // --- New functions for room details management ---
-    const handleAddNewRoomType = () => {
-        // Validation logic updated to reflect newbedsPerRoom behavior
-        if (!newRoomType || newRoomCount <= 0 || newRoomPrice === '' || newRoomPrice <= 0) {
-            alert('Please fill all room type details correctly.');
-            return;
-        }
-
-        // Validate bedsPerRoom for shared rooms explicitly
-        if (newRoomType === 'shared' && newBedsPerRoom <= 1) {
-            alert('Shared rooms must have at least 2 beds per room.');
-            return;
-        }
-
-        // Check for duplicate "private" room type
-        if (newRoomType === 'private' && roomDetails.some(room => room.roomType === 'private')) {
-            alert('A private room configuration already exists. You can only have one private room entry.');
-            return;
-        }
-        
-        // If the 'shared' room type is being added and a shared room type with the same bedsPerRoom already exists, prevent addition.
-        if (newRoomType === 'shared' && roomDetails.some(room => room.roomType === 'shared' && room.bedsPerRoom === parseInt(newBedsPerRoom))) {
-            alert(`A shared room configuration with ${newBedsPerRoom} beds per room already exists. Please select a different bed count or remove the existing one.`);
-            return;
-        }
-
-        setRoomDetails(prev => [
-            ...prev,
-            {
-                roomType: newRoomType,
-                bedsPerRoom: newRoomType === 'private' ? 1 : parseInt(newBedsPerRoom), // Ensure bedsPerRoom is 1 for private
-                roomCount: parseInt(newRoomCount),
-                price: parseFloat(newRoomPrice)
-            }
-        ]);
-
-        // Reset new room input fields, ensure private default is 1 bed
-        // Set newRoomType to the first available option after adding the current one
-        setNewRoomType(availableRoomTypes.filter(type => !roomDetails.some(room => room.roomType === type))[0] || 'private');
-        setNewBedsPerRoom(1);
-        setNewRoomCount(1);
-        setNewRoomPrice('');
-    };
-
-    const handleRemoveRoomType = (indexToRemove) => {
-        setRoomDetails(prev => prev.filter((_, index) => index !== indexToRemove));
     };
 
     const handleSubmit = async (e) => {
@@ -185,14 +128,8 @@ const CreateListing = () => {
             return;
         }
 
-        if (roomDetails.length === 0) {
-            alert('Please add at least one room type configuration.');
-            return;
-        }
-
         let uploadedImageUrls = [];
 
-        // 1. Upload images to Cloudinary
         // 1. Upload images to Cloudinary
         if (photos.length > 0) {
             try {
@@ -202,7 +139,6 @@ const CreateListing = () => {
                     cloudinaryData.append('upload_preset', UPLOAD_PRESET);
 
                     const res = await axios.post(
-                        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
                         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
                         cloudinaryData
                     );
@@ -216,9 +152,7 @@ const CreateListing = () => {
         }
 
         // 2. Build payload for backend
-        // 2. Build payload for backend
         const newListing = {
-            id: Date.now(), // Use current timestamp as unique ID
             id: Date.now(), // Use current timestamp as unique ID
             title: formData.pgName,
             address: formData.address,
@@ -233,17 +167,8 @@ const CreateListing = () => {
             parkingAvilable: formData.amenities.includes('parking'),
             commonAreasAvilable: formData.amenities.includes('commonArea'),
             studyDeskAvilable: formData.amenities.includes('studyDesk'),
-            acAvilable: formData.amenities.includes('ac'), // Corrected backend names
-            wifiAvilable: formData.amenities.includes('wifi'),
-            mealsAvilable: formData.amenities.includes('meals'),
-            laundryAvilable: formData.amenities.includes('laundry'),
-            cctvAvilable: formData.amenities.includes('cctv'),
-            parkingAvilable: formData.amenities.includes('parking'),
-            commonAreasAvilable: formData.amenities.includes('commonArea'),
-            studyDeskAvilable: formData.amenities.includes('studyDesk'),
             deposite: parseFloat(formData.deposite),
             discount: parseFloat(formData.discount),
-            urls: uploadedImageUrls,
             urls: uploadedImageUrls,
             description: formData.description,
             startDate: new Date().toISOString().slice(0, 10), // Default to today
@@ -259,38 +184,13 @@ const CreateListing = () => {
             newListing.rent = 0; // Or handle this case as an error if no room details are added
         }
 
-
-        // 3. Send listing to backend
-            startDate: new Date().toISOString().slice(0, 10), // Default to today
-            endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().slice(0, 10), // Default to 1 year from now
-            bookingFee: parseFloat(formData.bookingFee),
-            roomDetails: roomDetails // <--- IMPORTANT: Send the array of room details
-        };
-
-        // Set the general rent field to the lowest price among the defined room types if available.
-        if (roomDetails.length > 0) {
-            newListing.rent = Math.min(...roomDetails.map(room => room.price));
-        } else {
-            newListing.rent = 0; // Or handle this case as an error if no room details are added
-        }
-
-
         // 3. Send listing to backend
         try {
-            //console.log('Submitting new listing:', newListing);
             await api.post('/listing/add', newListing);
             alert('Listing published successfully!');
             navigate('/owner/dashboard');
         } catch (err) {
             console.error('Error saving listing:', err);
-            // Log the error response from the server if available
-            if (err.response) {
-                console.error('Server Error Data:', err.response.data);
-                console.error('Server Error Status:', err.response.status);
-                alert(`Failed to publish listing: ${err.response.data.message || 'Server error'}`);
-            } else {
-                alert('Failed to publish listing. Please try again.');
-            }
             // Log the error response from the server if available
             if (err.response) {
                 console.error('Server Error Data:', err.response.data);
@@ -318,21 +218,6 @@ const CreateListing = () => {
         value: type,
         label: type.charAt(0).toUpperCase() + type.slice(1)
     }));
-
-
-    // Determine which room types are still available to be added
-    const availableRoomTypes = [];
-    if (!roomDetails.some(room => room.roomType === 'private')) {
-        availableRoomTypes.push('private');
-    }
-    availableRoomTypes.push('shared'); // Always allow shared
-
-    // Special logic for the room type dropdown options
-    const roomTypeOptions = availableRoomTypes.map(type => ({
-        value: type,
-        label: type.charAt(0).toUpperCase() + type.slice(1)
-    }));
-
 
     return (
         <div className="create-listing-container">
@@ -377,7 +262,6 @@ const CreateListing = () => {
                     </section>
 
                     {/* Room Details (New Section) */}
-                    {/* Room Details (New Section) */}
                     <section className="form-section">
                         <div className="section-header">
                             <h2>Room Configurations</h2>
@@ -416,66 +300,7 @@ const CreateListing = () => {
                                         value={newBedsPerRoom}
                                         onChange={(e) => setNewBedsPerRoom(parseInt(e.target.value) || 0)}
                                         min={newRoomType === 'private' ? "1" : "2"}
-                                        readOnly={newRoomType === 'private'} // This is the fix for readOnly
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Number of Rooms</label>
-                                    <input
-                                        type="number"
-                                        value={newRoomCount}
-                                        onChange={(e) => setNewRoomCount(parseInt(e.target.value) || 0)}
-                                        min="1"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Price per Bed (₹)</label>
-                                    <input
-                                        type="number"
-                                        value={newRoomPrice}
-                                        onChange={(e) => setNewRoomPrice(e.target.value)}
-                                        min="0"
-                                        required
-                                    />
-                                </div>
-                        <div className="section-header">
-                            <h2>Room Configurations</h2>
-                        </div>
-                        <div className="room-config-adder">
-                            <div className="form-grid room-input-grid">
-                                <div className="form-group">
-                                    <label>Room Type</label>
-                                    <select
-                                        value={newRoomType}
-                                        onChange={(e) => {
-                                            setNewRoomType(e.target.value);
-                                            if (e.target.value === 'private') {
-                                                setNewBedsPerRoom(1);
-                                            } else {
-                                                setNewBedsPerRoom(prev => prev < 2 ? 2 : prev);
-                                            }
-                                        }}
-                                        
-                                    >
-                                        {roomTypeOptions.length === 0 ? (
-                                            <option value="">All room types added</option>
-                                        ) : (
-                                            roomTypeOptions.map(option => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))
-                                        )}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Beds per Room</label>
-                                    <input
-                                        type="number"
-                                        value={newBedsPerRoom}
-                                        onChange={(e) => setNewBedsPerRoom(parseInt(e.target.value) || 0)}
-                                        min={newRoomType === 'private' ? "1" : "2"}
-                                        readOnly={newRoomType === 'private'} // This is the fix for readOnly
+                                        readOnly={newRoomType === 'private'}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -498,39 +323,7 @@ const CreateListing = () => {
                                     />
                                 </div>
                             </div>
-                            <button type="button" className="add-room-btn" onClick={handleAddNewRoomType}
-                                disabled={false}> {/* Replaced with disabled={false} as per instructions */}
-                                <FaPlus /> Add Room Type
-                            </button>
-                        </div>
-
-                        {roomDetails.length > 0 && (
-                            <div className="added-room-types">
-                                <h3>Added Room Configurations:</h3>
-                                <div className="room-details-table">
-                                    <div className="table-header">
-                                        <span>Type</span>
-                                        <span>Beds/Room</span>
-                                        <span>No. of Rooms</span>
-                                        <span>Price/Bed (₹)</span>
-                                        <span>Actions</span>
-                                    </div>
-                                    {roomDetails.map((room, index) => (
-                                        <div key={index} className="table-row">
-                                            <span>{room.roomType.charAt(0).toUpperCase() + room.roomType.slice(1)}</span>
-                                            <span>{room.bedsPerRoom}</span>
-                                            <span>{room.roomCount}</span>
-                                            <span>{room.price.toLocaleString()}</span>
-                                            <button
-                                                type="button"
-                                                className="remove-room-btn"
-                                                onClick={() => handleRemoveRoomType(index)}
-                                            >
-                                                <FaTimes />
-                                            </button>
-                                        </div>
-                            <button type="button" className="add-room-btn" onClick={handleAddNewRoomType}
-                                disabled={false}> {/* Replaced with disabled={false} as per instructions */}
+                            <button type="button" className="add-room-btn" onClick={handleAddNewRoomType}>
                                 <FaPlus /> Add Room Type
                             </button>
                         </div>
@@ -571,16 +364,7 @@ const CreateListing = () => {
                     <section className="form-section">
                         <div className="section-header"><h2>Amenities</h2></div>
                         <div className="form-grid">
-                        )}
-                    </section>
-
-
-                    {/* Amenities */}
-                    <section className="form-section">
-                        <div className="section-header"><h2>Amenities</h2></div>
-                        <div className="form-grid">
                             <div className="form-group full-width">
-                                <label>Select Amenities</label>
                                 <label>Select Amenities</label>
                                 <div className="amenities-grid">
                                     {amenitiesList.map(amenity => (
@@ -617,9 +401,6 @@ const CreateListing = () => {
                                     style={{ display: 'none' }}
                                     accept="image/*"
                                     multiple
-                                    style={{ display: 'none' }}
-                                    accept="image/*"
-                                    multiple
                                     onChange={handlePhotoChange}
                                 />
                             </div>
@@ -639,16 +420,13 @@ const CreateListing = () => {
                     {/* Pricing */}
                     <section className="form-section">
                         <h2>Additional Pricing Details</h2>
-                        <h2>Additional Pricing Details</h2>
                         <div className="form-grid">
                             <div className="form-group">
                                 <label>Security Deposit (₹)</label>
                                 <input type="number" name="deposite" value={formData.deposite} onChange={handleInputChange} min="0" />
-                                <input type="number" name="deposite" value={formData.deposite} onChange={handleInputChange} min="0" />
                             </div>
                             <div className="form-group">
                                 <label>Booking Fee (₹)</label>
-                                <input type="number" name="bookingFee" value={formData.bookingFee} onChange={handleInputChange} min="0" />
                                 <input type="number" name="bookingFee" value={formData.bookingFee} onChange={handleInputChange} min="0" />
                             </div>
                             <div className="form-group">

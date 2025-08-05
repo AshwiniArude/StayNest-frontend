@@ -32,7 +32,7 @@ const ForgotPassword = () => {
   } catch (err) {
     setError(
       err?.response?.data?.message ||
-      "Password reset failed. Please try again."
+      "User not found. Please check your email or register if you don't have an account."
     );
   } finally {
     setIsLoading(false);

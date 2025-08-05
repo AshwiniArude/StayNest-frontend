@@ -82,7 +82,7 @@ const handleSubmit = async (e) => {
 
     setTimeout(() => setFormSuccess(false), 2500);
   } catch (error) {
-    setFormError(error.message || 'Something went wrong');
+    setFormError('Failed to send message. Please try again later.');
     setFormSuccess(false);
   } finally {
     setSubmitting(false);

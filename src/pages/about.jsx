@@ -6,7 +6,7 @@ const About = () => {
   return (
     <div className="about-container">
       <h2 className="about-heading">
-        How <span>StayNest</span> Works
+        How <span>STAYNEST</span> Works
       </h2>
       <p className="about-subtext">
         Finding your perfect accommodation has never been easier. Follow these

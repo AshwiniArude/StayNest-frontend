@@ -5,7 +5,7 @@ const WhyChoose = () => {
   return (
     <div className="whychoose-container">
       <h2 className="whychoose-heading">
-        Why Choose <span>StayNest?</span>
+        Why Choose <span>STAYNEST?</span>
       </h2>
       <p className="whychoose-subtext">
         We’re not just another platform. We’re your trusted partner in finding the perfect accommodation.
@@ -45,7 +45,7 @@ const WhyChoose = () => {
         </div>
       </div>
 
-      <div className="whychoose-stats">
+      {/* <div className="whychoose-stats">
         <div className="stat-item">
           <span className="stat-number">1000+</span>
           <p>Verified Properties</p>
@@ -62,7 +62,7 @@ const WhyChoose = () => {
           <span className="stat-number">98%</span>
           <p>Satisfaction Rate</p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

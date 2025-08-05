@@ -238,7 +238,7 @@ const MyProfile = () => {
                   type="email"
                   value={formData?.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  disabled={!isEditing}
+                  disabled={isEditing}
                 />
               </div>
 

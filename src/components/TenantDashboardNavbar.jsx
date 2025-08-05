@@ -52,7 +52,9 @@ const TenantDashboardNavbar = () => {
       {/* Navbar */}
       <div className="navbar">
         <div className="navbar-logo">
-          <Link to="/">StayNest</Link>
+          <Link to="/">
+            <img src="/logo.png" alt="StayNest" className="navbar-logo-img" />
+          </Link>
         </div>
         <div className="navbar-center-links">
           <Link to="/tenant/dashboard">Dashboard</Link>

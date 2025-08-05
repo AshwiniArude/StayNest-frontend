@@ -232,14 +232,7 @@ const MyReviews = () => {
             .map(([key, value]) => `${key}: ${value.toUpperCase()}`) // Convert value to uppercase
             .join('\n');
 
-        const fullDescription = `Review: ${reviewText}${extraFieldsString ? `\n\n${extraFieldsString}` : ''}`.trim();
-
-        // Construct the fullDescription string with concise extra fields
-        // Ensure values are sent in UPPERCASE as per enum convention if that's what backend expects
-        let extraFieldsString = Object.entries(extraReviewFields)
-            .filter(([, value]) => value !== '') // Only send fields that have been answered
-            .map(([key, value]) => `${key}: ${value.toUpperCase()}`) // Convert value to uppercase
-            .join('\n');
+        
 
         const fullDescription = `Review: ${reviewText}${extraFieldsString ? `\n\n${extraFieldsString}` : ''}`.trim();
 
@@ -302,6 +295,7 @@ const MyReviews = () => {
                         newExtraFields[key] = value;
                     }
                 });
+                const imageUrl = (selectedPG.urls && selectedPG.urls.length > 0) ? selectedPG.urls[0] : 'https://via.placeholder.com/150';
 
                 setReviews(prevReviews => [...prevReviews, {
                     id: newReview.id || reviewData.id,
@@ -312,7 +306,7 @@ const MyReviews = () => {
                     reviewText: newMainReview,
                     extraReviewFields: newExtraFields,
                     status: "published",
-                    thumbnail: selectedPG.urls[0],
+                    thumbnail:   imageUrl,
                     checkInDate: newReview.checkInDate,
                     checkOutDate: newReview.checkOutDate,
                     listingId: Number(selectedPG?.listingId),
@@ -609,10 +603,10 @@ const MyReviews = () => {
                                 <div className="review-header">
                                     <div className="pg-info">
                                         <img
-                                            src={review.thumbnail}
-                                            alt={review.pgName}
-                                            className="pg-thumbnail"
-                                        />
+            src={review.thumbnail || 'https://via.placeholder.com/150'} // <-- Add a fallback here
+            alt={review.pgName}
+            className="pg-thumbnail"
+        />
                                         <div className="pg-details">
                                             <h3>{review.pgName}</h3>
                                             <p className="location">

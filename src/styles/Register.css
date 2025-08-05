@@ -6,19 +6,22 @@ body {
 
 .register-page {
   display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
+  flex-direction: row !important;
+  justify-content: flex-end !important;
   align-items: center !important;
-  padding: 4rem 4rem !important;
+  padding: 0 !important;
   min-height: 100vh !important;
-  background: linear-gradient(to right, #f9f7ff, #fff0e3) !important;
+  background-color: #512B81 !important;
+  background-image: url('../../public/register_image.png') !important;
+  background-size: auto 100% !important;
+  background-position: left center !important;
+  background-repeat: no-repeat !important;
   position: relative !important;
 }
 
 .register-page > * {
   align-self: center !important;
-  margin-left: auto !important;
-  margin-right: 2rem !important;
+  margin: 0 !important;
 }
 
 nav {
@@ -55,17 +58,16 @@ nav .logo {
 
 .register-container {
   background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(124, 95, 240, 0.15);
-  padding: 2.5rem 2rem;
-  max-width: 600px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(124, 95, 240, 0.12);
+  padding: 1.2rem;
+  max-width: 350px;
   width: 100%;
-  margin: 3rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
   margin-left: auto !important;
-  margin-right: 2rem !important;
+  margin-right: 3rem !important;
 }
 
 .register-container::before {

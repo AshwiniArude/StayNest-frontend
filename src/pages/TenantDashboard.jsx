@@ -19,16 +19,16 @@ const budgetOptions = [
 ];
 
 const extraReviewQuestions = [
-        { label: 'Was the PG clean and hygienic?', name: 'cleanliness', displayTitle: 'Cleanliness' },
-        { label: 'Was the food quality good?', name: 'food', displayTitle: 'Food Quality' },
-        { label: 'Was the PG quiet and peaceful?', name: 'noise', displayTitle: 'Noise Level' },
-        { label: 'Was the PG in a safe and accessible area?', name: 'location', displayTitle: 'Location Safety' },
-        { label: 'Was it close to public transport or college?', name: 'transport', displayTitle: 'Proximity' },
-        { label: 'Was the owner/manager friendly and helpful?', name: 'owner', displayTitle: 'Owner/Manager' },
-        { label: 'Was Wi-Fi speed and stability good?', name: 'internet', displayTitle: 'Internet/Wi-Fi' },
-        { label: 'Did you face water issues?', name: 'water', displayTitle: 'Water Availability' },
-        { label: 'Were there proper security measures?', name: 'security', displayTitle: 'Security' },
-        { label: 'Was the PG worth the price?', name: 'value', displayTitle: 'Value for Money' }
+      { label: 'Was the PG clean and hygienic?', name: 'cleanliness', displayTitle: 'Cleanliness' },
+      { label: 'Was the food quality good?', name: 'food', displayTitle: 'Food Quality' },
+      { label: 'Was the PG quiet and peaceful?', name: 'noise', displayTitle: 'Noise Level' },
+      { label: 'Was the PG in a safe and accessible area?', name: 'location', displayTitle: 'Location Safety' },
+      { label: 'Was it close to public transport or college?', name: 'transport', displayTitle: 'Proximity' },
+      { label: 'Was the owner/manager friendly and helpful?', name: 'owner', displayTitle: 'Owner/Manager' },
+      { label: 'Was Wi-Fi speed and stability good?', name: 'internet', displayTitle: 'Internet/Wi-Fi' },
+      { label: 'Did you face water issues?', name: 'water', displayTitle: 'Water Availability' },
+      { label: 'Were there proper security measures?', name: 'security', displayTitle: 'Security' },
+      { label: 'Was the PG worth the price?', name: 'value', displayTitle: 'Value for Money' }
     ];
 
     // UPDATED: Use your enum values directly for answer options
@@ -52,20 +52,20 @@ const extraReviewQuestions = [
         Object.entries(extraQuestionMap).map(([key, value]) => [value, key])
     );
     const getRatingText = (rating) => {
-  switch (rating) {
-    case 1:
-      return 'Terrible';
-    case 2:
-      return 'Poor';
-    case 3:
-      return 'Average';
-    case 4:
-      return 'Good';
-    case 5:
-      return 'Excellent';
-    default:
-      return '';
-  }
+  switch (rating) {
+    case 1:
+      return 'Terrible';
+    case 2:
+      return 'Poor';
+    case 3:
+      return 'Average';
+    case 4:
+      return 'Good';
+    case 5:
+      return 'Excellent';
+    default:
+      return '';
+  }
 };
 
 
@@ -76,18 +76,23 @@ const TenantDashboard = () => {
   const [userName, setUserName] = useState('');
   const [reviews, setReviews] = useState([]);
 
-      const [extraReviewFields, setExtraReviewFields] = useState({
-          cleanliness: '',
-          food: '',
-          noise: '',
-          location: '',
-          transport: '',
-          owner: '',
-          internet: '',
-          water: '',
-          security: '',
-          value: ''
-      });
+  //Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const bookingsPerPage = 9;
+
+
+  const [extraReviewFields, setExtraReviewFields] = useState({
+      cleanliness: '',
+      food: '',
+      noise: '',
+      location: '',
+      transport: '',
+      owner: '',
+      internet: '',
+      water: '',
+      security: '',
+      value: ''
+    });
 
   useEffect(() => {
    const fetchData = async () => {
@@ -207,12 +212,21 @@ setReviews(published);
   };
 
   // const handleContactSupport = () => {
-  //   navigate('/contact-support');
+  //    navigate('/contact-support');
   // };
 
   const handleBrowsePGs = () => {
     navigate('/listings');
   };
+
+  // Pagination Logic
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = bookings.slice(indexOfFirstBooking, indexOfLastBooking);
+
+  const totalPages = Math.ceil(bookings.length / bookingsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="dashboard-container">
@@ -247,7 +261,7 @@ setReviews(published);
       <section className="section" style={{ marginTop: '3.5rem' }}>
         <h2>My Bookings</h2>
         <div className="card-grid">
-          {bookings.map((booking) => (
+          {currentBookings.map((booking) => (
             <div className="card" key={booking.id}>
               <div className={`status-label status-${booking.status.toLowerCase()}`}>
                 {booking.status}
@@ -265,6 +279,21 @@ setReviews(published);
             </div>
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="pagination">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => paginate(i + 1)}
+                className={`pagination-button ${currentPage === i + 1 ? 'active' : ''}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="section quick-actions-section">

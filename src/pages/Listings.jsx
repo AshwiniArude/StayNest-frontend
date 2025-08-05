@@ -4,7 +4,7 @@ import TenantSearchBar from "../components/TenantSearchBar";
 import "../styles/Listings.css";
 import listingService from "../services/ListingService";
 import "../styles/Comparison.css";
-
+import "../styles/Comparison.css";
 // Function to extract clean URLs from the messy backend string
 function extractUrls(urlString) {
   if (!urlString || typeof urlString !== 'string') {
@@ -100,12 +100,39 @@ const ComparisonModal = ({ listings, onClose, onRemove }) => {
   );
 };
 
+// New Pagination component
+const Pagination = ({ totalPages, currentPage, onPageChange }) => {
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
+
+  return (
+    <div className="pagination-container">
+      {pageNumbers.map(number => (
+        <button
+          key={number}
+          onClick={() => onPageChange(number)}
+          className={`pagination-button ${currentPage === number ? 'active' : ''}`}
+        >
+          {number}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+
 const Listings = () => {
   const navigate = useNavigate();
   const [pgData, setPgData] = useState([]);
   const [filteredPgData, setFilteredPgData] = useState([]);
   const [selectedForComparison, setSelectedForComparison] = useState([]);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(8); // Number of listings per page
 
   useEffect(() => {
     listingService.getAllListings().then(data => {
@@ -148,6 +175,7 @@ const Listings = () => {
       });
     }
     setFilteredPgData(filtered);
+    setCurrentPage(1); // Reset to the first page on a new search
   };
 
   const handleViewDetails = (pgId) => {
@@ -169,6 +197,17 @@ const Listings = () => {
   };
 
   const listingsToCompare = pgData.filter(pg => selectedForComparison.includes(pg.id));
+  
+  // Pagination Logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredPgData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredPgData.length / itemsPerPage);
+  
+  const handlePageChange = (pageNumber) => {
+      setCurrentPage(pageNumber);
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Optional: Scroll to top on page change
+  };
 
   return (
     <>
@@ -185,31 +224,25 @@ const Listings = () => {
           ) : filteredPgData.length === 0 && pgData.length === 0 ? (
             <p>Loading properties or no properties available...</p>
           ) : (
-            filteredPgData.map((pg, index) => (
-              <div
-                className={`pg-card ${selectedForComparison.includes(pg.id) ? 'selected-for-comparison' : ''}`}
-                key={pg.id || index}
-              >
-                <div className="pg-card-image-container">
-                  <img src={pg.imageUrl} alt={pg.name} className="pg-card-image" onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found'; }} />
+            currentItems.map((pg, index) => (
+              <div className="pg-card" key={pg.id || index}>
+              <div className="pg-card-image-container">
+                  <img src={pg.imageUrl} alt={pg.name} className="pg-card-image" onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found'; }}/>
                 </div>
-                <div className="pg-tags">
-                  {pg.tags.map((tag, i) => (
-                    <span className={`tag ${tag.toLowerCase().replace(/\s/g, "-")}`} key={i}>{tag}</span>
-                  ))}
+                <div className="pg-card-content">
+                  <h2>{pg.name}</h2>
+                  <p className="location">{pg.location}</p>
+                  <p className="price">₹{pg.price?.toLocaleString() || 'N/A'}/month</p>
+                  <p>Sharing:{pg.sharing}</p>
+                  <p className="availability">Availability:{pg.availability}</p>
+                  <div className="pg-tags">
+                    {pg.tags.map((tag, i) => (<span className={`tag ${tag.toLowerCase().replace(/\s/g, "-")}`} key={i}>{tag}</span>
+                    ))}
+                  </div>
                 </div>
-                <h2>{pg.name}</h2>
-                <p className="location">{pg.location}</p>
-                <p className="rating">⭐{pg.rating}</p>
-                <p className="price">₹{pg.price?.toLocaleString() || 'N/A'}/month</p>
-                <p>Sharing: {pg.sharing}</p>
-                <p className="availability">Availability: {pg.availability}</p>
                 <div className="pg-card-actions">
                   <button className="details-btn" onClick={() => handleViewDetails(pg.id)}>View Details</button>
-                  <button
-                    className={`compare-btn ${selectedForComparison.includes(pg.id) ? 'selected' : ''}`}
-                    onClick={() => handleCompareToggle(pg.id)}
-                  >
+                  <button className={`compare-btn${selectedForComparison.includes(pg.id) ? 'selected' : ''}`} onClick={() => handleCompareToggle(pg.id)}>
                     {selectedForComparison.includes(pg.id) ? 'Remove' : 'Compare'}
                   </button>
                 </div>
@@ -217,6 +250,14 @@ const Listings = () => {
             ))
           )}
         </div>
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+            <Pagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+            />
+        )}
       </div>
       {selectedForComparison.length >= 2 && (
         <button className="floating-compare-button" onClick={() => setShowComparisonModal(true)}>

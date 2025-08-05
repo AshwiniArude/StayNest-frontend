@@ -86,7 +86,7 @@ const Login = () => {
             <div className="login-container">
                 <div className="logo-section">
                     <Link to="/">
-                        <h1 className="logo">StayNest</h1>
+                        <h1 className="logo">STAYNEST</h1>
                     </Link>
                 </div>
                 <div className="header-content">

@@ -5,13 +5,18 @@ import '../styles/NavBar.css';
 import { FaHome, FaInfoCircle, FaPhoneAlt, FaBed, FaSignInAlt, FaUserPlus } from 'react-icons/fa'; // ✅ Added icons
 
 const Navbar = () => {
+
   return (
     <nav className="navbar">
       {/* Left: Logo */}
       <div className="navbar-logo">
-        <Link to="/">StayNest</Link>
+        <Link to="/">
+          <img src="/logo.png" alt="StayNest Logo" className="navbar-logo-img" />
+        </Link>
       </div>
-
+     <div class="navbar-toggle" id="mobile-menu">
+    <i class="fas fa-bars"></i>
+  </div>
       {/* Center: Main navigation */}
       <div className="navbar-center-links">
         <Link to="/"><FaHome className="nav-icon" /> Home</Link>
@@ -34,5 +39,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-

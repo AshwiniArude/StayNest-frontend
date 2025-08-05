@@ -52,7 +52,9 @@ const OwnerNavbarDashboard = () => {
       {/* Navbar */}
       <div className="navbar">
         <div className="navbar-logo">
-          <Link to="/">StayNest</Link>
+          <Link to="/">
+            <img src="/logo.png" alt="StayNest Logo" className="navbar-logo-img" />
+          </Link>
         </div>
         <div className="navbar-center-links">
           <Link to="/owner/dashboard">Dashboard</Link>
@@ -62,7 +64,7 @@ const OwnerNavbarDashboard = () => {
         </div>
         <div className="navbar-auth">
           {/* Avatar and Menu Toggle Icon */}
-          <div className="header-avatar">{'O'}</div>
+          <div className="header-avatar">{localStorage.getItem('ownerFirstLetter')?.toLocaleUpperCase() ||'O'}</div>
           <i
             ref={iconRef}
             className="fas fa-bars menu-toggle-icon"
@@ -75,7 +77,7 @@ const OwnerNavbarDashboard = () => {
       {isMenuOpen && <div className="backdrop" onClick={() => setIsMenuOpen(false)}></div>}
 
       {/* User Menu Container - Conditionally rendered and positioned */}
-     <div ref={menuRef} className={`user-menu-wrapper ${isMenuOpen ? 'open' : ''}`}>
+     <div ref={menuRef} className={`user-menu-wrapper ${isMenuOpen ? 'open' : ''}`}>
         {/* Header (User Menu Top Bar) - now inside the dropdown */}
         <div className="header">
           <div className="header-text">Account</div> {/* Changed text to 'Account' as per common dropdowns */}

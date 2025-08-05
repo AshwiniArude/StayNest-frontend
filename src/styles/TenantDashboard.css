@@ -630,3 +630,42 @@
   font-size: 0.9rem;
   margin-bottom: 0.3rem;
 }
+.pagination {
+  display: flex;
+  justify-content: center; /* This is the key change */
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-list {
+  list-style: none;
+  display: flex;
+  padding: 0;
+  margin: 0;
+  gap: 10px; /* Optional: adds space between page number buttons */
+  margin: 10px;
+}
+
+.page-item {
+  display: inline;
+}
+
+.page-link {
+  border: 1px solid #ddd;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  border-radius: 8px; /* Match the rounded style from your image */
+  background-color: #f0f0f0; /* Default background */
+  transition: all 0.3s ease;
+}
+
+.page-item.active .page-link {
+  background-color: #8a2be2; /* Your primary color for active state */
+  color: #fff;
+  border-color: #8a2be2;
+}
+
+.page-link:hover {
+  background-color: #ddd;
+}
